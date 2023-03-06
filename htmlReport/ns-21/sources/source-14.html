@@ -1,0 +1,948 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > OfficeTools</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: OfficeTools (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OfficeTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/192)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/328)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">OfficeTools$DocumentType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">OfficeTools$OfficeProductInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">OfficeTools$RemoteCheck</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/40)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/192)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/352)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.awt.Image;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import javax.imageio.ImageIO;
+&nbsp;import javax.swing.ImageIcon;
+&nbsp;
+&nbsp;import org.apache.commons.lang3.StringUtils;
+&nbsp;import org.apache.commons.lang3.SystemUtils;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.languagetool.JLanguageTool;
+&nbsp;
+&nbsp;import com.sun.star.awt.XMenuBar;
+&nbsp;import com.sun.star.awt.XPopupMenu;
+&nbsp;import com.sun.star.beans.Property;
+&nbsp;import com.sun.star.beans.PropertyValue;
+&nbsp;import com.sun.star.beans.XPropertySet;
+&nbsp;import com.sun.star.beans.XPropertySetInfo;
+&nbsp;import com.sun.star.container.XNameAccess;
+&nbsp;import com.sun.star.frame.XController;
+&nbsp;import com.sun.star.frame.XDesktop;
+&nbsp;import com.sun.star.frame.XDispatchHelper;
+&nbsp;import com.sun.star.frame.XDispatchProvider;
+&nbsp;import com.sun.star.frame.XFrame;
+&nbsp;import com.sun.star.frame.XLayoutManager;
+&nbsp;import com.sun.star.frame.XModel;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;import com.sun.star.lang.XMultiComponentFactory;
+&nbsp;import com.sun.star.lang.XMultiServiceFactory;
+&nbsp;import com.sun.star.linguistic2.XSearchableDictionaryList;
+&nbsp;import com.sun.star.text.XTextDocument;
+&nbsp;import com.sun.star.ui.XUIElement;
+&nbsp;import com.sun.star.uno.UnoRuntime;
+&nbsp;import com.sun.star.uno.XComponentContext;
+&nbsp;
+&nbsp;/**
+&nbsp; * Some tools to get information of LibreOffice/OpenOffice document context
+&nbsp; * @since 4.3
+&nbsp; * @author Fred Kruse
+&nbsp; */
+<b class="nc">&nbsp;class OfficeTools {</b>
+&nbsp;  
+<b class="nc">&nbsp;  public enum DocumentType {</b>
+<b class="nc">&nbsp;    WRITER,       //  Writer document</b>
+<b class="nc">&nbsp;    IMPRESS,      //  Impress document</b>
+<b class="nc">&nbsp;    CALC,         //  Calc document</b>
+<b class="nc">&nbsp;    UNSUPPORTED   //  unsupported document</b>
+&nbsp;  }
+&nbsp;  
+<b class="nc">&nbsp;  public enum RemoteCheck {</b>
+<b class="nc">&nbsp;    NONE,         //  no remote check</b>
+<b class="nc">&nbsp;    ALL,          //  spell and grammar check</b>
+<b class="nc">&nbsp;    ONLY_SPELL,   //  only spell check</b>
+<b class="nc">&nbsp;    ONLY_GRAMMAR  //  only grammar check</b>
+&nbsp;  }
+&nbsp;    
+&nbsp;  public static final String EXTENSION_MAINTAINER = &quot;Fred Kruse&quot;;
+&nbsp;  public static final String LT_SERVICE_NAME = &quot;org.languagetool.openoffice.Main&quot;;
+&nbsp;  public static final int PROOFINFO_UNKNOWN = 0;
+&nbsp;  public static final int PROOFINFO_GET_PROOFRESULT = 1;
+&nbsp;  public static final int PROOFINFO_MARK_PARAGRAPH = 2;
+&nbsp;
+&nbsp;  public static final String END_OF_PARAGRAPH = &quot;\n\n&quot;;   //  Paragraph Separator like in standalone GUI
+<b class="nc">&nbsp;  public static final int NUMBER_PARAGRAPH_CHARS = END_OF_PARAGRAPH.length();  //  number of end of paragraph characters</b>
+&nbsp;  public static final String SINGLE_END_OF_PARAGRAPH = &quot;\n&quot;;
+&nbsp;  public static final String MANUAL_LINEBREAK = &quot;\r&quot;;     //  to distinguish from paragraph separator
+&nbsp;  public static final String ZERO_WIDTH_SPACE = &quot;\u200B&quot;; // Used to mark footnotes, functions, etc.
+&nbsp;  public static final char ZERO_WIDTH_SPACE_CHAR = &#39;\u200B&#39;; // Used to mark footnotes, functions, etc.
+&nbsp;  public static final String IGNORE_LANGUAGE = &quot;zxx&quot;;     // Used from LT to mark automatic generated text like indexes
+<b class="nc">&nbsp;  public static final String LOG_LINE_BREAK = System.lineSeparator();  //  LineBreak in Log-File (MS-Windows compatible)</b>
+&nbsp;  public static final int MAX_SUGGESTIONS = 15;           // Number of suggestions maximal shown in LO/OO
+&nbsp;  public static final int NUMBER_TEXTLEVEL_CACHE = 4;     // Number of caches for matches of text level rules
+&nbsp;  public static final String MULTILINGUAL_LABEL = &quot;99-&quot;;  // Label added in front of variant to indicate a multilingual paragraph (returned is the main language)
+&nbsp;  public static final int CHECK_MULTIPLIKATOR = 40;       //  Number of minimum checks for a first check run
+&nbsp;  public static final int CHECK_SHAPES_TIME = 1000;       //  time interval to run check for changes in text inside of shapes
+<b class="nc">&nbsp;  public static int TIME_TOLERANCE = 100;                 //  Minimal milliseconds to show message in TM debug mode</b>
+&nbsp;  
+<b class="nc">&nbsp;  public static int DEBUG_MODE_SD = 0;            //  Set Debug Mode for SingleDocument</b>
+<b class="nc">&nbsp;  public static int DEBUG_MODE_SC = 0;            //  Set Debug Mode for SingleCheck</b>
+<b class="nc">&nbsp;  public static int DEBUG_MODE_CR = 0;            //  Set Debug Mode for CheckRequest</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_MD = false;    //  Activate Debug Mode for MultiDocumentsHandler</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_DC = false;    //  Activate Debug Mode for DocumentCache</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_FP = false;    //  Activate Debug Mode for FlatParagraphTools</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_LM = false;    //  Activate Debug Mode for LanguageToolMenus</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_TQ = false;    //  Activate Debug Mode for TextLevelCheckQueue</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_LD = false;    //  Activate Debug Mode for LtDictionary</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_CD = false;    //  Activate Debug Mode for SpellAndGrammarCheckDialog</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_IO = false;    //  Activate Debug Mode for Cache save to file</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_SR = false;    //  Activate Debug Mode for SortedTextRules</b>
+<b class="nc">&nbsp;  public static boolean DEBUG_MODE_TM = false;    //  Activate Debug Mode for time measurements</b>
+<b class="nc">&nbsp;  public static boolean DEVELOP_MODE = false;     //  Activate Development Mode</b>
+&nbsp;
+&nbsp;  public  static final String CONFIG_FILE = &quot;Languagetool.cfg&quot;;
+&nbsp;  public  static final String OOO_CONFIG_FILE = &quot;Languagetool-ooo.cfg&quot;;
+&nbsp;  private static final String OLD_CONFIG_FILE = &quot;.languagetool-ooo.cfg&quot;;
+&nbsp;  private static final String LOG_FILE = &quot;LanguageTool.log&quot;;
+&nbsp;
+&nbsp;  private static final String VENDOR_ID = &quot;languagetool.org&quot;;
+&nbsp;  private static final String APPLICATION_ID = &quot;LanguageTool&quot;;
+&nbsp;  private static final String CACHE_ID = &quot;cache&quot;;
+<b class="nc">&nbsp;  private static String OFFICE_EXTENSION_ID = null;</b>
+<b class="nc">&nbsp;  private static OfficeProductInfo OFFICE_PRODUCT_INFO = null;</b>
+&nbsp;
+&nbsp;  private static final String MENU_BAR = &quot;private:resource/menubar/menubar&quot;;
+&nbsp;  private static final String LOG_DELIMITER = &quot;,&quot;;
+&nbsp;  
+&nbsp;  private static final double LT_HEAP_LIMIT_FACTOR = 0.9;
+<b class="nc">&nbsp;  private static double MAX_HEAP_SPACE = -1;</b>
+<b class="nc">&nbsp;  private static double LT_HEAP_LIMIT = -1;</b>
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns the XDesktop
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  static XDesktop getDesktop(XComponentContext xContext) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (xContext == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XMultiComponentFactory xMCF = UnoRuntime.queryInterface(XMultiComponentFactory.class,</b>
+<b class="nc">&nbsp;              xContext.getServiceManager());</b>
+<b class="nc">&nbsp;      if (xMCF == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Object desktop = xMCF.createInstanceWithContext(&quot;com.sun.star.frame.Desktop&quot;, xContext);</b>
+<b class="nc">&nbsp;      if (desktop == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return UnoRuntime.queryInterface(XDesktop.class, desktop);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * Returns the current XComponent 
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  static XComponent getCurrentComponent(XComponentContext xContext) {
+&nbsp;    try {
+<b class="nc">&nbsp;      XDesktop xdesktop = getDesktop(xContext);</b>
+<b class="nc">&nbsp;      if (xdesktop == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      else return xdesktop.getCurrentComponent();</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;    
+&nbsp;  /**
+&nbsp;   * Returns the current text document (if any) 
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  static XTextDocument getCurrentDocument(XComponentContext xContext) {
+&nbsp;    try {
+<b class="nc">&nbsp;      XComponent curComp = getCurrentComponent(xContext);</b>
+<b class="nc">&nbsp;      if (curComp == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      else return UnoRuntime.queryInterface(XTextDocument.class, curComp);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  static void printPropertySet (Object o) {
+<b class="nc">&nbsp;    XPropertySet propSet = UnoRuntime.queryInterface(XPropertySet.class, o);</b>
+<b class="nc">&nbsp;    if (propSet == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeTools: printPropertySet: XPropertySet == null&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    XPropertySetInfo propertySetInfo = propSet.getPropertySetInfo();</b>
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;OfficeTools: printPropertySet: PropertySet:&quot;);</b>
+<b class="nc">&nbsp;    for (Property property : propertySetInfo.getProperties()) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;Name: &quot; + property.Name + &quot;, Type: &quot; + property.Type.getTypeName());</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Returns the searchable dictionary list
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  static XSearchableDictionaryList getSearchableDictionaryList(XComponentContext xContext) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (xContext == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XMultiComponentFactory xMCF = UnoRuntime.queryInterface(XMultiComponentFactory.class,</b>
+<b class="nc">&nbsp;              xContext.getServiceManager());</b>
+<b class="nc">&nbsp;      if (xMCF == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Object dictionaryList = xMCF.createInstanceWithContext(&quot;com.sun.star.linguistic2.DictionaryList&quot;, xContext);</b>
+<b class="nc">&nbsp;      if (dictionaryList == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return UnoRuntime.queryInterface(XSearchableDictionaryList.class, dictionaryList);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get the menu bar of LO/OO
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;/*  static XMenuBar getMenuBar(XComponentContext xContext) {
+&nbsp;    try {
+&nbsp;      XDesktop desktop = OfficeTools.getDesktop(xContext);
+&nbsp;      if (desktop == null) {
+&nbsp;        return null;
+&nbsp;      }
+&nbsp;      XFrame frame = desktop.getCurrentFrame();
+&nbsp;*/
+&nbsp;  static XMenuBar getMenuBar(XComponent xComponent) {
+&nbsp;    try {
+<b class="nc">&nbsp;      XModel xModel = UnoRuntime.queryInterface(XModel.class, xComponent);</b>
+<b class="nc">&nbsp;      if (xModel == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;SingleDocument: setDokumentListener: XModel not found!&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XController xController = xModel.getCurrentController();</b>
+<b class="nc">&nbsp;      if (xController == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;SingleDocument: setDokumentListener: XController not found!&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XFrame frame = xController.getFrame();</b>
+<b class="nc">&nbsp;      if (frame == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XPropertySet propSet = UnoRuntime.queryInterface(XPropertySet.class, frame);</b>
+<b class="nc">&nbsp;      if (propSet == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XLayoutManager layoutManager = UnoRuntime.queryInterface(XLayoutManager.class,  propSet.getPropertyValue(&quot;LayoutManager&quot;));</b>
+<b class="nc">&nbsp;      if (layoutManager == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XUIElement oMenuBar = layoutManager.getElement(MENU_BAR); </b>
+<b class="nc">&nbsp;      XPropertySet props = UnoRuntime.queryInterface(XPropertySet.class, oMenuBar); </b>
+<b class="nc">&nbsp;      return UnoRuntime.queryInterface(XMenuBar.class,  props.getPropertyValue(&quot;XMenuBar&quot;));</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Returns a empty Popup Menu 
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  static XPopupMenu getPopupMenu(XComponentContext xContext) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (xContext == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XMultiComponentFactory xMCF = UnoRuntime.queryInterface(XMultiComponentFactory.class,</b>
+<b class="nc">&nbsp;              xContext.getServiceManager());</b>
+<b class="nc">&nbsp;      if (xMCF == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Object oPopupMenu = xMCF.createInstanceWithContext(&quot;com.sun.star.awt.PopupMenu&quot;, xContext);</b>
+<b class="nc">&nbsp;      if (oPopupMenu == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return UnoRuntime.queryInterface(XPopupMenu.class, oPopupMenu);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  dispatch an internal LO/OO command
+&nbsp;   */
+&nbsp;  public static boolean dispatchCmd(String cmd, XComponentContext xContext) {
+<b class="nc">&nbsp;    return dispatchCmd(cmd, new PropertyValue[0], xContext);</b>
+&nbsp;  } 
+&nbsp;
+&nbsp;  /**
+&nbsp;   *  dispatch an internal LO/OO command
+&nbsp;   *  cmd does not include the &quot;.uno:&quot; substring; e.g. pass &quot;Zoom&quot; not &quot;.uno:Zoom&quot;
+&nbsp;   */
+&nbsp;  public static boolean dispatchUnoCmd(String cmd, XComponentContext xContext) {
+<b class="nc">&nbsp;    return dispatchCmd((&quot;.uno:&quot; + cmd), new PropertyValue[0], xContext);</b>
+&nbsp;  } 
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Dispatch a internal LO/OO command
+&nbsp;   */
+&nbsp;  public static boolean dispatchCmd(String cmd, PropertyValue[] props, XComponentContext xContext) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (xContext == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeTools: dispatchCmd: xContext == null&quot;);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XMultiComponentFactory xMCF = UnoRuntime.queryInterface(XMultiComponentFactory.class,</b>
+<b class="nc">&nbsp;              xContext.getServiceManager());</b>
+<b class="nc">&nbsp;      if (xMCF == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeTools: dispatchCmd: xMCF == null&quot;);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Object desktop = xMCF.createInstanceWithContext(&quot;com.sun.star.frame.Desktop&quot;, xContext);</b>
+<b class="nc">&nbsp;      if (desktop == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeTools: dispatchCmd: desktop == null&quot;);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XDesktop xdesktop = UnoRuntime.queryInterface(XDesktop.class, desktop);</b>
+<b class="nc">&nbsp;      if (xdesktop == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeTools: dispatchCmd: xdesktop == null&quot;);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Object helper = xMCF.createInstanceWithContext(&quot;com.sun.star.frame.DispatchHelper&quot;, xContext);</b>
+<b class="nc">&nbsp;      if (helper == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeTools: dispatchCmd: helper == null&quot;);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XDispatchHelper dispatchHelper = UnoRuntime.queryInterface(XDispatchHelper.class, helper);</b>
+<b class="nc">&nbsp;      if (dispatchHelper == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeTools: dispatchCmd: dispatchHelper == null&quot;);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XDispatchProvider provider = UnoRuntime.queryInterface(XDispatchProvider.class, xdesktop.getCurrentFrame());</b>
+<b class="nc">&nbsp;      if (provider == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeTools: dispatchCmd: provider == null&quot;);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      dispatchHelper.executeDispatch(provider, cmd, &quot;&quot;, 0, props);</b>
+<b class="nc">&nbsp;      return true;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Get a String from local
+&nbsp;   */
+&nbsp;  static String localeToString(Locale locale) {
+<b class="nc">&nbsp;    return locale.Language + (locale.Country.isEmpty() ? &quot;&quot; : &quot;-&quot; + locale.Country) + (locale.Variant.isEmpty() ? &quot;&quot; : &quot;-&quot; + locale.Variant);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   *  return true if two locales are equal  
+&nbsp;   */
+&nbsp;  static boolean isEqualLocale(Locale locale1, Locale locale2) {
+<b class="nc">&nbsp;    return (locale1.Language.equals(locale2.Language) &amp;&amp; locale1.Country.equals(locale2.Country) </b>
+<b class="nc">&nbsp;        &amp;&amp; locale1.Variant.equals(locale2.Variant));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   *  return true if the list of locales contains the locale
+&nbsp;   */
+&nbsp;  static boolean containsLocale(List&lt;Locale&gt; locales, Locale locale) {
+<b class="nc">&nbsp;    for (Locale loc : locales) {</b>
+<b class="nc">&nbsp;      if (isEqualLocale(loc, locale)) {</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns old configuration file
+&nbsp;   */
+&nbsp;  public static File getOldConfigFile() {
+<b class="nc">&nbsp;    String homeDir = System.getProperty(&quot;user.home&quot;);</b>
+<b class="nc">&nbsp;    if (homeDir == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(new RuntimeException(&quot;Could not get home directory&quot;));</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return new File(homeDir, OLD_CONFIG_FILE);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns directory to store every information for LT office extension
+&nbsp;   * @since 4.7
+&nbsp;   */
+&nbsp;  public static File getLOConfigDir() {
+<b class="nc">&nbsp;    return getLOConfigDir(null);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static File getLOConfigDir(XComponentContext xContext) {
+<b class="nc">&nbsp;    if (OFFICE_EXTENSION_ID == null) {</b>
+<b class="nc">&nbsp;      if (xContext == null) {</b>
+<b class="nc">&nbsp;        OFFICE_EXTENSION_ID = &quot;LibreOffice&quot;;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        OFFICE_EXTENSION_ID = getOfficeProductInfo(xContext).ooName;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    String userHome = null;</b>
+&nbsp;    File directory;
+&nbsp;    try {
+<b class="nc">&nbsp;      userHome = System.getProperty(&quot;user.home&quot;);</b>
+<b class="nc">&nbsp;    } catch (SecurityException ex) {</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (userHome == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(new RuntimeException(&quot;Could not get home directory&quot;));</b>
+<b class="nc">&nbsp;      directory = null;</b>
+<b class="nc">&nbsp;    } else if (SystemUtils.IS_OS_WINDOWS) {</b>
+&nbsp;      // Path: \\user\&lt;YourUserName&gt;\AppData\Roaming\languagetool.org\LanguageTool\LibreOffice  
+<b class="nc">&nbsp;      File appDataDir = null;</b>
+&nbsp;      try {
+<b class="nc">&nbsp;        String appData = System.getenv(&quot;APPDATA&quot;);</b>
+<b class="nc">&nbsp;        if (!StringUtils.isEmpty(appData)) {</b>
+<b class="nc">&nbsp;          appDataDir = new File(appData);</b>
+&nbsp;        }
+<b class="nc">&nbsp;      } catch (SecurityException ex) {</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (appDataDir != null &amp;&amp; appDataDir.isDirectory()) {</b>
+<b class="nc">&nbsp;        String path = VENDOR_ID + &quot;\\&quot; + APPLICATION_ID + &quot;\\&quot; + OFFICE_EXTENSION_ID + &quot;\\&quot;;</b>
+<b class="nc">&nbsp;        directory = new File(appDataDir, path);</b>
+<b class="nc">&nbsp;      } else {</b>
+<b class="nc">&nbsp;        String path = &quot;Application Data\\&quot; + VENDOR_ID + &quot;\\&quot; + APPLICATION_ID + &quot;\\&quot; + OFFICE_EXTENSION_ID + &quot;\\&quot;;</b>
+<b class="nc">&nbsp;        directory = new File(userHome, path);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } else if (SystemUtils.IS_OS_LINUX) {</b>
+&nbsp;      // Path: /home/&lt;YourUserName&gt;/.config/LanguageTool/LibreOffice  
+<b class="nc">&nbsp;      File appDataDir = null;</b>
+&nbsp;      try {
+<b class="nc">&nbsp;        String xdgConfigHome = System.getenv(&quot;XDG_CONFIG_HOME&quot;);</b>
+<b class="nc">&nbsp;        if (!StringUtils.isEmpty(xdgConfigHome)) {</b>
+<b class="nc">&nbsp;          appDataDir = new File(xdgConfigHome);</b>
+<b class="nc">&nbsp;          if (!appDataDir.isAbsolute()) {</b>
+&nbsp;            //https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+&nbsp;            //All paths set in these environment variables must be absolute.
+&nbsp;            //If an implementation encounters a relative path in any of these
+&nbsp;            //variables it should consider the path invalid and ignore it.
+<b class="nc">&nbsp;            appDataDir = null;</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;      } catch (SecurityException ex) {</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (appDataDir != null &amp;&amp; appDataDir.isDirectory()) {</b>
+<b class="nc">&nbsp;        String path = APPLICATION_ID + &quot;/&quot; + OFFICE_EXTENSION_ID + &quot;/&quot;;</b>
+<b class="nc">&nbsp;        directory = new File(appDataDir, path);</b>
+<b class="nc">&nbsp;      } else {</b>
+<b class="nc">&nbsp;        String path = &quot;.config/&quot; + APPLICATION_ID + &quot;/&quot; + OFFICE_EXTENSION_ID + &quot;/&quot;;</b>
+<b class="nc">&nbsp;        directory = new File(userHome, path);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } else if (SystemUtils.IS_OS_MAC_OSX) {</b>
+<b class="nc">&nbsp;      String path = &quot;Library/Application Support/&quot; + APPLICATION_ID + &quot;/&quot; + OFFICE_EXTENSION_ID + &quot;/&quot;;</b>
+<b class="nc">&nbsp;      directory = new File(userHome, path);</b>
+<b class="nc">&nbsp;    } else {</b>
+<b class="nc">&nbsp;      String path = &quot;.&quot; + APPLICATION_ID + &quot;/&quot; + OFFICE_EXTENSION_ID + &quot;/&quot;;</b>
+<b class="nc">&nbsp;      directory = new File(userHome, path);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (directory != null &amp;&amp; !directory.exists()) {</b>
+<b class="nc">&nbsp;      directory.mkdirs();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return directory;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Returns log file 
+&nbsp;   */
+&nbsp;  public static String getLogFilePath() {
+<b class="nc">&nbsp;    return getLogFilePath(null);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static String getLogFilePath(XComponentContext xContext) {
+<b class="nc">&nbsp;    return new File(getLOConfigDir(xContext), LOG_FILE).getAbsolutePath();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns directory to saves caches
+&nbsp;   * @since 5.2
+&nbsp;   */
+&nbsp;  public static File getCacheDir() {
+<b class="nc">&nbsp;    return getCacheDir(null);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public static File getCacheDir(XComponentContext xContext) {
+<b class="nc">&nbsp;    File cacheDir = new File(getLOConfigDir(xContext), CACHE_ID);</b>
+<b class="nc">&nbsp;    if (cacheDir != null &amp;&amp; !cacheDir.exists()) {</b>
+<b class="nc">&nbsp;      cacheDir.mkdirs();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return cacheDir;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  private static double getMaxHeapSpace() {
+<b class="nc">&nbsp;    if(MAX_HEAP_SPACE &lt; 0) {</b>
+<b class="nc">&nbsp;      MAX_HEAP_SPACE = Runtime.getRuntime().maxMemory();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return MAX_HEAP_SPACE;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  private static double getHeapLimit(double maxHeap) {
+<b class="nc">&nbsp;    if(LT_HEAP_LIMIT &lt; 0) {</b>
+<b class="nc">&nbsp;      LT_HEAP_LIMIT = maxHeap * LT_HEAP_LIMIT_FACTOR;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return LT_HEAP_LIMIT;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public static double getCurrentHeapRatio() {
+<b class="nc">&nbsp;    return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / LT_HEAP_LIMIT;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public static boolean isHeapLimitReached() {
+<b class="nc">&nbsp;    long usedHeap = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();</b>
+<b class="nc">&nbsp;    return (LT_HEAP_LIMIT &lt; usedHeap);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get information about Java as String
+&nbsp;   */
+&nbsp;  public static String getJavaInformation () {
+<b class="nc">&nbsp;    return &quot;Java-Version: &quot; + System.getProperty(&quot;java.version&quot;) + &quot;, max. Heap-Space: &quot; + ((int) (getMaxHeapSpace()/1048576)) +</b>
+<b class="nc">&nbsp;        &quot; MB, LT Heap Space Limit: &quot; + ((int) (getHeapLimit(getMaxHeapSpace())/1048576)) + &quot; MB&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get information about LanguageTool
+&nbsp;   */
+&nbsp;  public static String getLtInformation () {
+<b class="nc">&nbsp;    String txt = JLanguageTool.VERSION;</b>
+<b class="nc">&nbsp;    if (JLanguageTool.VERSION.contains(&quot;SNAPSHOT&quot;)) {</b>
+<b class="nc">&nbsp;      txt += &quot; - &quot; + JLanguageTool.BUILD_DATE + &quot;, &quot; + JLanguageTool.GIT_SHORT_ID;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return txt;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get LanguageTool Image
+&nbsp;   */
+&nbsp;  public static Image getLtImage() {
+&nbsp;    try {
+<b class="nc">&nbsp;      URL url = OfficeTools.class.getResource(&quot;/images/LanguageToolSmall.png&quot;);</b>
+<b class="nc">&nbsp;      return ImageIO.read(url);</b>
+<b class="nc">&nbsp;    } catch (IOException e) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(e);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get LanguageTool Image
+&nbsp;   */
+&nbsp;  public static ImageIcon getLtImageIcon(boolean big) {
+&nbsp;    URL url;
+<b class="nc">&nbsp;    if (big) {</b>
+<b class="nc">&nbsp;      url = OfficeTools.class.getResource(&quot;/images/LanguageToolBig.png&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      url = OfficeTools.class.getResource(&quot;/images/LanguageToolSmall.png&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return new ImageIcon(url);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get information of LO/OO office product
+&nbsp;   */
+&nbsp;  public static OfficeProductInfo getOfficeProductInfo(XComponentContext xContext) {
+<b class="nc">&nbsp;    if (OFFICE_PRODUCT_INFO == null) {</b>
+<b class="nc">&nbsp;      OFFICE_PRODUCT_INFO = readOfficeProductInfo(xContext);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return OFFICE_PRODUCT_INFO;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * read information of LO/OO office product from system
+&nbsp;   */
+&nbsp;  private static OfficeProductInfo readOfficeProductInfo(XComponentContext xContext) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (xContext == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XMultiServiceFactory xMSF = UnoRuntime.queryInterface(XMultiServiceFactory.class, xContext.getServiceManager());</b>
+<b class="nc">&nbsp;      if (xMSF == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;XMultiServiceFactory == null&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Object oConfigProvider = xMSF.createInstance(&quot;com.sun.star.configuration.ConfigurationProvider&quot;);</b>
+<b class="nc">&nbsp;      XMultiServiceFactory confMsf = UnoRuntime.queryInterface(XMultiServiceFactory.class, oConfigProvider);</b>
+&nbsp;
+<b class="nc">&nbsp;      final String sView = &quot;com.sun.star.configuration.ConfigurationAccess&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;      Object args[] = new Object[1];</b>
+<b class="nc">&nbsp;      PropertyValue aPathArgument = new PropertyValue();</b>
+<b class="nc">&nbsp;      aPathArgument.Name = &quot;nodepath&quot;;</b>
+<b class="nc">&nbsp;      aPathArgument.Value = &quot;org.openoffice.Setup/Product&quot;;</b>
+<b class="nc">&nbsp;      args[0] = aPathArgument;</b>
+<b class="nc">&nbsp;      Object oConfigAccess =  confMsf.createInstanceWithArguments(sView, args);</b>
+<b class="nc">&nbsp;      XNameAccess xName = UnoRuntime.queryInterface(XNameAccess.class, oConfigAccess);</b>
+&nbsp;      
+<b class="nc">&nbsp;      aPathArgument.Value = &quot;org.openoffice.Setup/L10N&quot;;</b>
+<b class="nc">&nbsp;      Object oConfigAccess1 =  confMsf.createInstanceWithArguments(sView, args);</b>
+&nbsp;      
+<b class="nc">&nbsp;      XNameAccess xName1 = UnoRuntime.queryInterface(XNameAccess.class, oConfigAccess1);</b>
+&nbsp;      
+&nbsp;//      for (String name : xName.getElementNames()) {
+&nbsp;//        MessageHandler.printToLogFile(&quot;config Element: &quot; + name + &quot; = &quot; + xName.getByName(name));
+&nbsp;//      }
+<b class="nc">&nbsp;      return (new OfficeProductInfo(xName.getByName(&quot;ooName&quot;), xName.getByName(&quot;ooSetupVersion&quot;), </b>
+<b class="nc">&nbsp;          xName.getByName(&quot;ooSetupExtension&quot;), xName.getByName(&quot;ooVendor&quot;), xName1.getByName(&quot;ooLocale&quot;), System.getProperty(&quot;os.arch&quot;)));</b>
+&nbsp;      
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    }
+&nbsp;
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get a boolean value from an Object
+&nbsp;   */
+&nbsp;  public static boolean getBooleanValue(Object o) {
+<b class="nc">&nbsp;    if (o != null &amp;&amp; o instanceof Boolean) {</b>
+<b class="nc">&nbsp;      return ((Boolean) o).booleanValue();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Handle logLevel for debugging and development
+&nbsp;   */
+&nbsp;  static void setLogLevel(String logLevel) {
+<b class="nc">&nbsp;    if (logLevel != null) {</b>
+<b class="nc">&nbsp;      String[] levels = logLevel.split(LOG_DELIMITER);</b>
+<b class="nc">&nbsp;      for (String level : levels) {</b>
+<b class="nc">&nbsp;        if (level.equals(&quot;1&quot;) || level.equals(&quot;2&quot;) || level.equals(&quot;3&quot;) || level.startsWith(&quot;all:&quot;)) {</b>
+&nbsp;          int numLevel;
+<b class="nc">&nbsp;          if (level.startsWith(&quot;all:&quot;)) {</b>
+<b class="nc">&nbsp;            String[] levelAll = level.split(&quot;:&quot;);</b>
+<b class="nc">&nbsp;            if (levelAll.length != 2) {</b>
+<b class="nc">&nbsp;              continue;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            numLevel = Integer.parseInt(levelAll[1]);</b>
+<b class="nc">&nbsp;          } else {</b>
+<b class="nc">&nbsp;            numLevel = Integer.parseInt(level);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (numLevel &gt; 0) {</b>
+<b class="nc">&nbsp;            DEBUG_MODE_MD = true;</b>
+<b class="nc">&nbsp;            DEBUG_MODE_TQ = true;</b>
+<b class="nc">&nbsp;            if (DEBUG_MODE_SD == 0) {</b>
+<b class="nc">&nbsp;              DEBUG_MODE_SD = numLevel;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (DEBUG_MODE_SC == 0) {</b>
+<b class="nc">&nbsp;              DEBUG_MODE_SC = numLevel;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (DEBUG_MODE_CR == 0) {</b>
+<b class="nc">&nbsp;              DEBUG_MODE_CR = numLevel;</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          if (numLevel &gt; 1) {</b>
+<b class="nc">&nbsp;            DEBUG_MODE_DC = true;</b>
+<b class="nc">&nbsp;            DEBUG_MODE_LM = true;</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (numLevel &gt; 2) {</b>
+<b class="nc">&nbsp;            DEBUG_MODE_FP = true;</b>
+&nbsp;          }
+<b class="nc">&nbsp;        } else if (level.startsWith(&quot;sd:&quot;) || level.startsWith(&quot;sc:&quot;) || level.startsWith(&quot;cr:&quot;)) {</b>
+<b class="nc">&nbsp;          String[] levelSD = level.split(&quot;:&quot;);</b>
+<b class="nc">&nbsp;          if (levelSD.length != 2) {</b>
+<b class="nc">&nbsp;            continue;</b>
+&nbsp;          }
+<b class="nc">&nbsp;          int numLevel = Integer.parseInt(levelSD[1]);</b>
+<b class="nc">&nbsp;          if (numLevel &gt; 0) {</b>
+<b class="nc">&nbsp;            if (levelSD[0].equals(&quot;sd&quot;)) {</b>
+<b class="nc">&nbsp;              DEBUG_MODE_SD = numLevel;</b>
+<b class="nc">&nbsp;            } else if (levelSD[0].equals(&quot;sc&quot;)) {</b>
+<b class="nc">&nbsp;              DEBUG_MODE_SC = numLevel;</b>
+<b class="nc">&nbsp;            } else if (levelSD[0].equals(&quot;cr&quot;)) {</b>
+<b class="nc">&nbsp;              DEBUG_MODE_CR = numLevel;</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;        } else if (level.equals(&quot;md&quot;)) {</b>
+<b class="nc">&nbsp;          DEBUG_MODE_MD = true;</b>
+<b class="nc">&nbsp;        } else if (level.equals(&quot;dc&quot;)) {</b>
+<b class="nc">&nbsp;          DEBUG_MODE_DC = true;</b>
+<b class="nc">&nbsp;        } else if (level.equals(&quot;fp&quot;)) {</b>
+<b class="nc">&nbsp;          DEBUG_MODE_FP = true;</b>
+<b class="nc">&nbsp;        } else if (level.equals(&quot;lm&quot;)) {</b>
+<b class="nc">&nbsp;          DEBUG_MODE_LM = true;</b>
+<b class="nc">&nbsp;        } else if (level.equals(&quot;tq&quot;)) {</b>
+<b class="nc">&nbsp;          DEBUG_MODE_TQ = true;</b>
+<b class="nc">&nbsp;        } else if (level.equals(&quot;ld&quot;)) {</b>
+<b class="nc">&nbsp;          DEBUG_MODE_LD = true;</b>
+<b class="nc">&nbsp;        } else if (level.equals(&quot;cd&quot;)) {</b>
+<b class="nc">&nbsp;          DEBUG_MODE_CD = true;</b>
+<b class="nc">&nbsp;        } else if (level.equals(&quot;io&quot;)) {</b>
+<b class="nc">&nbsp;          DEBUG_MODE_IO = true;</b>
+<b class="nc">&nbsp;        } else if (level.equals(&quot;sr&quot;)) {</b>
+<b class="nc">&nbsp;          DEBUG_MODE_SR = true;</b>
+<b class="nc">&nbsp;        } else if (level.startsWith(&quot;tm&quot;)) {</b>
+<b class="nc">&nbsp;          String[] levelTm = level.split(&quot;:&quot;);</b>
+<b class="nc">&nbsp;          if (levelTm[0].equals(&quot;tm&quot;)) {</b>
+<b class="nc">&nbsp;            DEBUG_MODE_TM = true;</b>
+<b class="nc">&nbsp;            if(levelTm.length &gt; 1) {</b>
+<b class="nc">&nbsp;              int time = Integer.parseInt(levelTm[1]);</b>
+<b class="nc">&nbsp;              if (time &gt;= 0) {</b>
+<b class="nc">&nbsp;                TIME_TOLERANCE = time;</b>
+&nbsp;              }
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;        } else if (level.equals(&quot;dev&quot;)) {</b>
+<b class="nc">&nbsp;          DEVELOP_MODE = true;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  public static class OfficeProductInfo {
+&nbsp;    public final String ooName;
+&nbsp;    public final String ooVersion;
+&nbsp;    public final String ooExtension;
+&nbsp;    public final String ooVendor;
+&nbsp;    public final String ooLocale;
+&nbsp;    public final String osArch;
+&nbsp;    
+<b class="nc">&nbsp;    OfficeProductInfo(Object name, Object version, Object extension, Object vendor, Object locale, Object arch) {</b>
+<b class="nc">&nbsp;      ooName = (String) name;</b>
+<b class="nc">&nbsp;      ooVersion = (String) version;</b>
+<b class="nc">&nbsp;      ooExtension = (String) extension;</b>
+<b class="nc">&nbsp;      ooVendor = (String) vendor;</b>
+<b class="nc">&nbsp;      ooLocale = (String) locale;</b>
+<b class="nc">&nbsp;      osArch = (String) arch;</b>
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    OfficeProductInfo(String name, String version, String extension, String vendor, String locale, String arch) {</b>
+<b class="nc">&nbsp;      ooName = name;</b>
+<b class="nc">&nbsp;      ooVersion = version;</b>
+<b class="nc">&nbsp;      ooExtension = extension;</b>
+<b class="nc">&nbsp;      ooVendor = vendor;</b>
+<b class="nc">&nbsp;      ooLocale = locale;</b>
+<b class="nc">&nbsp;      osArch = arch;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

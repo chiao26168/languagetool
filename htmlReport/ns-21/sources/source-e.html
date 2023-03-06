@@ -1,0 +1,487 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LtDictionary</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: LtDictionary (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LtDictionary</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/112)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/188)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.io.BufferedReader;
+&nbsp;import java.io.BufferedWriter;
+&nbsp;import java.io.File;
+&nbsp;import java.io.FileInputStream;
+&nbsp;import java.io.FileOutputStream;
+&nbsp;import java.io.FileWriter;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.io.InputStreamReader;
+&nbsp;import java.io.OutputStream;
+&nbsp;import java.io.OutputStreamWriter;
+&nbsp;import java.net.URI;
+&nbsp;import java.net.URL;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;import org.languagetool.JLanguageTool;
+&nbsp;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.linguistic2.DictionaryType;
+&nbsp;import com.sun.star.linguistic2.XDictionary;
+&nbsp;import com.sun.star.linguistic2.XDictionaryEntry;
+&nbsp;import com.sun.star.linguistic2.XSearchableDictionaryList;
+&nbsp;import com.sun.star.uno.XComponentContext;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class to add manual LT dictionaries temporarily to LibreOffice/OpenOffice
+&nbsp; * @since 5.0
+&nbsp; * @author Fred Kruse
+&nbsp; */
+&nbsp;public class LtDictionary {
+&nbsp;  
+&nbsp;  private final static String INTERNAL_DICT_PREFIX = &quot;__LT_&quot;;
+<b class="nc">&nbsp;  private final static String[] ADD_ALL = { &quot;e&quot;, &quot;er&quot;, &quot;es&quot;, &quot;en&quot;, &quot;em&quot; };</b>
+&nbsp;  private final static int MAX_DICTIONARY_SIZE = 30000;
+&nbsp;  private final static int NUM_PATHS = 7;
+&nbsp;  
+&nbsp;  private static boolean debugMode; //  should be false except for testing
+&nbsp;
+<b class="nc">&nbsp;  private Set&lt;String&gt; dictionaryList = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;  private XDictionary listIgnoredWords = null;</b>
+&nbsp;  
+<b class="nc">&nbsp;  public LtDictionary() {</b>
+<b class="nc">&nbsp;    debugMode = OfficeTools.DEBUG_MODE_LD;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Add a non permanent dictionary to LO/OO that contains additional words defined in LT
+&nbsp;   */
+&nbsp;  public boolean setLtDictionary(XComponentContext xContext, Locale locale, LinguisticServices linguServices) {
+<b class="nc">&nbsp;    XSearchableDictionaryList searchableDictionaryList = OfficeTools.getSearchableDictionaryList(xContext);</b>
+<b class="nc">&nbsp;    if (searchableDictionaryList == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LtDictionary: setLtDictionary: searchableDictionaryList == null&quot;);</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (listIgnoredWords == null) {</b>
+<b class="nc">&nbsp;      XDictionary[] dictionaryList = searchableDictionaryList.getDictionaries();</b>
+<b class="nc">&nbsp;      listIgnoredWords = dictionaryList[dictionaryList.length - 1];</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;dictionary for ignored words found: &quot; + listIgnoredWords.getName());</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    String shortCode = OfficeTools.localeToString(locale);</b>
+<b class="nc">&nbsp;    String dictionaryNamePrefix = INTERNAL_DICT_PREFIX + shortCode + &quot;_internal&quot;;</b>
+<b class="nc">&nbsp;    String dictionaryName = dictionaryNamePrefix + &quot;1.dic&quot;;</b>
+&nbsp;//    String dictionaryName = &quot;LT_Spelling_&quot; + shortCode + &quot;.dic&quot;;
+&nbsp;//    MessageHandler.printToLogFile(&quot;dictionary name: &quot; + dictionaryName);
+<b class="nc">&nbsp;    if (!dictionaryList.contains(dictionaryName) &amp;&amp; searchableDictionaryList.getDictionaryByName(dictionaryName) == null) {</b>
+<b class="nc">&nbsp;      dictionaryList.add(dictionaryName);</b>
+<b class="nc">&nbsp;      String ltDictionaryPath = getLTDictionaryFile(locale, linguServices);</b>
+<b class="nc">&nbsp;      if (ltDictionaryPath != null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;setLtDictionary: Create LT spelling dictionary &quot; + dictionaryName + &quot;: File path: &quot; + ltDictionaryPath);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;setLtDictionary: Create LT spelling dictionary &quot; + dictionaryName);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        long startTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;        List&lt;String&gt; words = getSpellingWordsAsLines(ltDictionaryPath);</b>
+<b class="nc">&nbsp;        int count = 0;</b>
+<b class="nc">&nbsp;        int dictNum = 1;</b>
+<b class="nc">&nbsp;        int dictCount = 0;</b>
+<b class="nc">&nbsp;        XDictionary manualDictionary = searchableDictionaryList.createDictionary(dictionaryName, locale, DictionaryType.POSITIVE, &quot;&quot;);</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Add &quot; + words.size() + &quot; words to &quot; + dictionaryName);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        for (String word : words) {</b>
+<b class="nc">&nbsp;          manualDictionary.add(word, false, &quot;&quot;);</b>
+<b class="nc">&nbsp;          count++;</b>
+<b class="nc">&nbsp;          if (count &gt;= MAX_DICTIONARY_SIZE) {</b>
+<b class="nc">&nbsp;            manualDictionary.setActive(true);</b>
+<b class="nc">&nbsp;            searchableDictionaryList.addDictionary(manualDictionary);</b>
+<b class="nc">&nbsp;            dictCount += manualDictionary.getCount();</b>
+<b class="nc">&nbsp;            dictNum++;</b>
+<b class="nc">&nbsp;            dictionaryName = dictionaryNamePrefix + dictNum + &quot;.dic&quot;;</b>
+<b class="nc">&nbsp;            manualDictionary = searchableDictionaryList.createDictionary(dictionaryName, locale, DictionaryType.POSITIVE, &quot;&quot;);</b>
+<b class="nc">&nbsp;            count = 0;</b>
+&nbsp;          }
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        manualDictionary.setActive(true);</b>
+<b class="nc">&nbsp;        searchableDictionaryList.addDictionary(manualDictionary);</b>
+<b class="nc">&nbsp;        dictCount += manualDictionary.getCount();</b>
+<b class="nc">&nbsp;        long endTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Internal LT dicitionary for language &quot; + shortCode + &quot; added: Number of words = &quot; + dictCount);</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to generate dictionary: &quot; + (endTime - startTime));</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          for (XDictionaryEntry entry : manualDictionary.getEntries()) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(entry.getDictionaryWord());</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;//    MessageHandler.printToLogFile(&quot;dictionary name &quot; + dictionaryName + &quot; is in list&quot;);
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  private String getSpellingFilePath(Locale locale, int i) {
+<b class="nc">&nbsp;    if (i == 0) {</b>
+<b class="nc">&nbsp;      return &quot;/&quot; + locale.Language + &quot;/spelling.txt&quot;;</b>
+<b class="nc">&nbsp;    } else if (i == 1) {</b>
+<b class="nc">&nbsp;      return &quot;/&quot; + locale.Language + &quot;/spelling/spelling.txt&quot;;</b>
+<b class="nc">&nbsp;    } else if (i == 2) {</b>
+<b class="nc">&nbsp;      return &quot;/&quot; + locale.Language + &quot;/hunspell/spelling.txt&quot;;</b>
+<b class="nc">&nbsp;    } else if (i == 3) {</b>
+<b class="nc">&nbsp;      return &quot;/&quot; + locale.Language + &quot;/hunspell/spelling-&quot; + locale.Language + &quot;-&quot; + locale.Country + &quot;.txt&quot;;</b>
+<b class="nc">&nbsp;    } else if (i == 4) {</b>
+<b class="nc">&nbsp;      return &quot;/&quot; + locale.Language + &quot;/hunspell/spelling-&quot; + locale.Language + &quot;_&quot; + locale.Country + &quot;.txt&quot;;</b>
+<b class="nc">&nbsp;    } else if (i == 5) {</b>
+<b class="nc">&nbsp;      return &quot;/&quot; + locale.Language + &quot;/hunspell/spelling_merged.txt&quot;;</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      return &quot;/&quot; + locale.Language + &quot;/hunspell/spelling_custom.txt&quot;;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get the list of words out of spelling.txt files defined by LT
+&nbsp;   */
+&nbsp;  private Set&lt;String&gt; getManualWordList(Locale locale, LinguisticServices linguServices) {
+<b class="nc">&nbsp;    Set&lt;String&gt; words = new HashSet&lt;&gt;();</b>
+&nbsp;    String path;
+<b class="nc">&nbsp;    for (int i = 0; i &lt; NUM_PATHS; i++) {</b>
+<b class="nc">&nbsp;      path = getSpellingFilePath(locale, i);</b>
+<b class="nc">&nbsp;      if (JLanguageTool.getDataBroker().resourceExists(path)) {</b>
+<b class="nc">&nbsp;        List&lt;String&gt; lines = JLanguageTool.getDataBroker().getFromResourceDirAsLines(path);</b>
+<b class="nc">&nbsp;        if (lines != null) {</b>
+<b class="nc">&nbsp;          for (String line : lines) {</b>
+<b class="nc">&nbsp;            line = line.trim();</b>
+<b class="nc">&nbsp;            if (!line.isEmpty() &amp;&amp; !line.startsWith(&quot;#&quot;)) {</b>
+<b class="nc">&nbsp;              String[] lineWords = line.trim().split(&quot;#&quot;);</b>
+<b class="nc">&nbsp;              lineWords = lineWords[0].trim().split(&quot;/&quot;);</b>
+<b class="nc">&nbsp;              lineWords[0] = lineWords[0].replaceAll(&quot;_&quot;,&quot;&quot;);</b>
+<b class="nc">&nbsp;              if (!lineWords[0].isEmpty()) {</b>
+<b class="nc">&nbsp;                words.add(lineWords[0]);</b>
+<b class="nc">&nbsp;                if (lineWords.length &gt; 1) {</b>
+<b class="nc">&nbsp;                  lineWords[1] = lineWords[1].trim();</b>
+<b class="nc">&nbsp;                  for (int n = 0; n &lt; lineWords[1].length(); n++) {</b>
+<b class="nc">&nbsp;                    if (lineWords[1].charAt(n) == &#39;A&#39;) {</b>
+<b class="nc">&nbsp;                      for (String add : ADD_ALL) {</b>
+<b class="nc">&nbsp;                        String word = lineWords[0] + add;</b>
+<b class="nc">&nbsp;                        words.add(word);</b>
+&nbsp;                      }
+&nbsp;                    } else {
+<b class="nc">&nbsp;                      String word = lineWords[0];</b>
+<b class="nc">&nbsp;                      if (lineWords[1].charAt(n) == &#39;E&#39;) {</b>
+<b class="nc">&nbsp;                        word += &quot;e&quot;;</b>
+<b class="nc">&nbsp;                      } else if (lineWords[1].charAt(n) == &#39;S&#39;) {</b>
+<b class="nc">&nbsp;                        word += &quot;s&quot;;</b>
+<b class="nc">&nbsp;                      } else if (lineWords[1].charAt(n) == &#39;N&#39;) {</b>
+<b class="nc">&nbsp;                        word += &quot;n&quot;;</b>
+<b class="nc">&nbsp;                      } else if (lineWords[1].charAt(n) == &#39;F&#39;) {</b>
+<b class="nc">&nbsp;                        word += &quot;in&quot;;</b>
+&nbsp;                      }
+<b class="nc">&nbsp;                      words.add(word);</b>
+&nbsp;                    }
+&nbsp;                  }
+&nbsp;                }
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;          }</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return words;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get the list of words out of LT full spelling list
+&nbsp;   */
+&nbsp;  public List&lt;String&gt; getSpellingWordsAsLines(String path) {
+<b class="nc">&nbsp;    List&lt;String&gt; lines = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    try (InputStream stream = new FileInputStream(path);</b>
+<b class="nc">&nbsp;         InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;         BufferedReader br = new BufferedReader(reader)</b>
+&nbsp;        ) {
+&nbsp;      String line;
+<b class="nc">&nbsp;      while ((line = br.readLine()) != null) {</b>
+<b class="nc">&nbsp;        lines.add(line);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (IOException e) {</b>
+<b class="nc">&nbsp;      throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return lines;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get the LT dictionary file from LT installation directory
+&nbsp;   * create the dictionary file, if not exist
+&nbsp;   */
+&nbsp;  private String getLTDictionaryFile(Locale locale, LinguisticServices linguServices) {
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;getLTDictionaryFile: start generate full LT dictionary file&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    long startTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;    URL url = null;</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; NUM_PATHS &amp;&amp; url == null; i++) {</b>
+<b class="nc">&nbsp;      url = JLanguageTool.getDataBroker().getAsURL(JLanguageTool.getDataBroker().getResourceDir() + getSpellingFilePath(locale, i));</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (url == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;No LT spelling file found for &quot; + OfficeTools.localeToString(locale));</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+&nbsp;    try {
+<b class="nc">&nbsp;      URI uri = url.toURI();</b>
+<b class="nc">&nbsp;      File file = new File(uri.getPath());</b>
+<b class="nc">&nbsp;      File dictionary = new File(file.getParent(), &quot;LT_Spelling_&quot;  + OfficeTools.localeToString(locale) + &quot;.dic&quot;);</b>
+<b class="nc">&nbsp;      if (dictionary.exists() &amp;&amp; !dictionary.isDirectory()) {</b>
+<b class="nc">&nbsp;        return dictionary.getAbsolutePath();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      String path = dictionary.getPath();</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;getLTDictionaryFile: LT dictionary file &quot; + path + &quot; doesn&#39;t exist: start to create&quot;);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;getLTDictionaryFile: LT dictionary file doesn&#39;t exist: start to create&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Set&lt;String&gt; words = getManualWordList(locale, linguServices);</b>
+<b class="nc">&nbsp;      try (OutputStream stream = new FileOutputStream(path);</b>
+<b class="nc">&nbsp;          OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;          BufferedWriter br = new BufferedWriter(writer)</b>
+&nbsp;          ) {
+<b class="nc">&nbsp;        for (String word : words) {</b>
+<b class="nc">&nbsp;          writer.write(word + &quot;\n&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;      } catch (IOException e) {</b>
+<b class="nc">&nbsp;        throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      long endTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(words.size() + &quot;written to file &quot; + path);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;Time to generate LT spelling file: &quot; + (endTime - startTime));</b>
+<b class="nc">&nbsp;      return dictionary.getAbsolutePath();</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Remove the non permanent LT dictionaries
+&nbsp;   */
+&nbsp;  public boolean removeLtDictionaries(XComponentContext xContext) {
+<b class="nc">&nbsp;    if (!dictionaryList.isEmpty()) {</b>
+<b class="nc">&nbsp;      XSearchableDictionaryList searchableDictionaryList = OfficeTools.getSearchableDictionaryList(xContext);</b>
+<b class="nc">&nbsp;      if (searchableDictionaryList == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LtDictionary: removeLtDictionaries: searchableDictionaryList == null&quot;);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (String dictionaryName : dictionaryList) {</b>
+<b class="nc">&nbsp;        XDictionary manualDictionary = searchableDictionaryList.getDictionaryByName(dictionaryName);</b>
+<b class="nc">&nbsp;        if (manualDictionary != null) {</b>
+<b class="nc">&nbsp;          searchableDictionaryList.removeDictionary(manualDictionary);</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      dictionaryList.clear();</b>
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Add a word to the List of ignored words
+&nbsp;   * Used for ignore all in spelling check
+&nbsp;   */
+&nbsp;  public void addIgnoredWord(String word) {
+<b class="nc">&nbsp;    listIgnoredWords.add(word, false, &quot;&quot;);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Remove a word from the List of ignored words
+&nbsp;   * Used for ignore all in spelling check
+&nbsp;   */
+&nbsp;  public void removeIgnoredWord(String word) {
+<b class="nc">&nbsp;    listIgnoredWords.remove(word);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Add a word to a user dictionary
+&nbsp;   */
+&nbsp;  public void addWordToDictionary(String dictionaryName, String word, XComponentContext xContext) {
+<b class="nc">&nbsp;    XSearchableDictionaryList searchableDictionaryList = OfficeTools.getSearchableDictionaryList(xContext);</b>
+<b class="nc">&nbsp;    if (searchableDictionaryList == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LtDictionary: addWordToDictionary: searchableDictionaryList == null&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    XDictionary dictionary = searchableDictionaryList.getDictionaryByName(dictionaryName);</b>
+<b class="nc">&nbsp;    dictionary.add(word, false, &quot;&quot;);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Add a word to a user dictionary
+&nbsp;   */
+&nbsp;  public void removeWordFromDictionary(String dictionaryName, String word, XComponentContext xContext) {
+<b class="nc">&nbsp;    XSearchableDictionaryList searchableDictionaryList = OfficeTools.getSearchableDictionaryList(xContext);</b>
+<b class="nc">&nbsp;    if (searchableDictionaryList == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LtDictionary: removeWordFromDictionary: searchableDictionaryList == null&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    XDictionary dictionary = searchableDictionaryList.getDictionaryByName(dictionaryName);</b>
+<b class="nc">&nbsp;    dictionary.remove(word);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get all user dictionaries
+&nbsp;   */
+&nbsp;  public String[] getUserDictionaries(XComponentContext xContext) {
+<b class="nc">&nbsp;    XSearchableDictionaryList searchableDictionaryList = OfficeTools.getSearchableDictionaryList(xContext);</b>
+<b class="nc">&nbsp;    if (searchableDictionaryList == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LtDictionary: getUserDictionaries: searchableDictionaryList == null&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    XDictionary[] dictionaryList = searchableDictionaryList.getDictionaries();</b>
+<b class="nc">&nbsp;    if (listIgnoredWords == null) {</b>
+<b class="nc">&nbsp;      listIgnoredWords = dictionaryList[dictionaryList.length - 1];</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;dictionary for ignored words found: &quot; + listIgnoredWords.getName());</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    List&lt;String&gt; userDictionaries = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;    for (XDictionary dictionary : dictionaryList) {</b>
+<b class="nc">&nbsp;      if (dictionary.isActive()) {</b>
+<b class="nc">&nbsp;        String name = dictionary.getName();</b>
+<b class="nc">&nbsp;        if (!name.startsWith(INTERNAL_DICT_PREFIX) &amp;&amp; !name.equals(listIgnoredWords.getName())) {</b>
+<b class="nc">&nbsp;          userDictionaries.add(new String(name));</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return userDictionaries.toArray(new String[userDictionaries.size()]);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,857 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LanguageToolMenus</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: LanguageToolMenus (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LanguageToolMenus</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LanguageToolMenus$ContextMenuInterceptor</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/70)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/182)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LanguageToolMenus$LTHeadMenu</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/82)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/148)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/156)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/349)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;import org.languagetool.JLanguageTool;
+&nbsp;import org.languagetool.gui.Configuration;
+&nbsp;import org.languagetool.openoffice.OfficeTools.DocumentType;
+&nbsp;
+&nbsp;import com.sun.star.awt.MenuEvent;
+&nbsp;import com.sun.star.awt.MenuItemStyle;
+&nbsp;import com.sun.star.awt.XMenuBar;
+&nbsp;import com.sun.star.awt.XMenuListener;
+&nbsp;import com.sun.star.awt.XPopupMenu;
+&nbsp;import com.sun.star.beans.Property;
+&nbsp;import com.sun.star.beans.UnknownPropertyException;
+&nbsp;import com.sun.star.beans.XPropertySet;
+&nbsp;import com.sun.star.container.XIndexContainer;
+&nbsp;import com.sun.star.frame.XController;
+&nbsp;import com.sun.star.frame.XModel;
+&nbsp;import com.sun.star.lang.EventObject;
+&nbsp;import com.sun.star.lang.WrappedTargetException;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;import com.sun.star.lang.XMultiServiceFactory;
+&nbsp;import com.sun.star.text.XTextDocument;
+&nbsp;import com.sun.star.ui.ActionTriggerSeparatorType;
+&nbsp;import com.sun.star.ui.ContextMenuExecuteEvent;
+&nbsp;import com.sun.star.ui.ContextMenuInterceptorAction;
+&nbsp;import com.sun.star.ui.XContextMenuInterception;
+&nbsp;import com.sun.star.ui.XContextMenuInterceptor;
+&nbsp;import com.sun.star.uno.Any;
+&nbsp;import com.sun.star.uno.UnoRuntime;
+&nbsp;import com.sun.star.uno.XComponentContext;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class of menus adding dynamic components 
+&nbsp; * to header menu and to context menu
+&nbsp; * @since 5.0
+&nbsp; * @author Fred Kruse
+&nbsp; */
+<b class="nc">&nbsp;public class LanguageToolMenus {</b>
+&nbsp;  
+<b class="nc">&nbsp;  private static final ResourceBundle MESSAGES = JLanguageTool.getMessageBundle();</b>
+&nbsp;  private static final int SUBMENU_ID_DIFF = 21;
+&nbsp;
+&nbsp;  private static boolean debugMode;   //  should be false except for testing
+&nbsp;  private static boolean debugModeTm;  //  should be false except for testing
+<b class="nc">&nbsp;  private static boolean isRunning = false;</b>
+&nbsp;  
+&nbsp;  private XComponentContext xContext;
+&nbsp;  private XComponent xComponent;
+&nbsp;  private SingleDocument document;
+&nbsp;  private Configuration config;
+&nbsp;//  private boolean switchOff;
+&nbsp;  private boolean isRemote;
+&nbsp;  @SuppressWarnings(&quot;unused&quot;)
+&nbsp;  private LTHeadMenu ltHeadMenu;
+&nbsp;  @SuppressWarnings(&quot;unused&quot;)
+&nbsp;  private ContextMenuInterceptor ltContextMenu;
+&nbsp;
+<b class="nc">&nbsp;  LanguageToolMenus(XComponentContext xContext, XComponent xComponent, SingleDocument document, Configuration config) {</b>
+<b class="nc">&nbsp;    debugMode = OfficeTools.DEBUG_MODE_LM;</b>
+<b class="nc">&nbsp;    debugModeTm = OfficeTools.DEBUG_MODE_TM;</b>
+<b class="nc">&nbsp;    this.document = document;</b>
+<b class="nc">&nbsp;    this.xContext = xContext;</b>
+<b class="nc">&nbsp;    this.xComponent = xComponent;</b>
+<b class="nc">&nbsp;    setConfigValues(config);</b>
+<b class="nc">&nbsp;    if (document.getDocumentType() == DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;      ltHeadMenu = new LTHeadMenu(xComponent);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    ltContextMenu = new ContextMenuInterceptor(xComponent);</b>
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LanguageToolMenus initialised&quot;);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  void setConfigValues(Configuration config) {
+<b class="nc">&nbsp;    this.config = config;</b>
+&nbsp;//    switchOff = config.noBackgroundCheck();
+<b class="nc">&nbsp;    isRemote = config.doRemoteCheck();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  void removeListener() {
+<b class="nc">&nbsp;    ltHeadMenu.removeListener();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  void addListener() {
+<b class="nc">&nbsp;    ltHeadMenu.addListener();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Class to add or change some items of the LT head menu
+&nbsp;   */
+&nbsp;  private class LTHeadMenu implements XMenuListener {
+&nbsp;    // If anything on the position of LT menu is changed the following has to be changed
+&nbsp;    private static final String TOOLS_COMMAND = &quot;.uno:ToolsMenu&quot;;             //  Command to open tools menu
+&nbsp;    private static final String COMMAND_BEFORE_LT_MENU = &quot;.uno:LanguageMenu&quot;;   //  Command for Language Menu (LT menu is installed after)
+&nbsp;                                                      //  Command to Switch Off/On LT
+&nbsp;    private static final String LT_TOGGLE_BACKGROUND_CHECK_COMMAND = &quot;service:org.languagetool.openoffice.Main?toggleBackgroundCheck&quot;;   
+&nbsp;    private static final String LT_Options_COMMAND = &quot;service:org.languagetool.openoffice.Main?configure&quot;;   
+&nbsp;    private static final String LT_PROFILE_COMMAND = &quot;service:org.languagetool.openoffice.Main?profileChangeTo:&quot;;
+&nbsp;    private final static String LT_ACTIVATE_RULE = &quot;service:org.languagetool.openoffice.Main?activateRule_&quot;;
+&nbsp;    
+<b class="nc">&nbsp;    XPopupMenu ltMenu = null;</b>
+<b class="nc">&nbsp;    short toolsId = 0;</b>
+<b class="nc">&nbsp;    short ltId = 0;</b>
+<b class="nc">&nbsp;    short switchOffId = 0;</b>
+<b class="nc">&nbsp;    short switchOffPos = 0;</b>
+<b class="nc">&nbsp;    short nProfiles = 0;</b>
+<b class="nc">&nbsp;    private XPopupMenu toolsMenu = null;</b>
+<b class="nc">&nbsp;    private XPopupMenu xProfileMenu = null;</b>
+<b class="nc">&nbsp;    private XPopupMenu xActivateRuleMenu = null;</b>
+<b class="nc">&nbsp;    private List&lt;String&gt; definedProfiles = null;</b>
+<b class="nc">&nbsp;    private String currentProfile = null;</b>
+&nbsp;    
+<b class="nc">&nbsp;    public LTHeadMenu(XComponent xComponent) {</b>
+<b class="nc">&nbsp;      XMenuBar menubar = null;</b>
+<b class="nc">&nbsp;      menubar = OfficeTools.getMenuBar(xComponent);</b>
+<b class="nc">&nbsp;      if (menubar == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LanguageToolMenus: LTHeadMenu: Menubar is null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      for (short i = 0; i &lt; menubar.getItemCount(); i++) {</b>
+<b class="nc">&nbsp;        toolsId = menubar.getItemId(i);</b>
+<b class="nc">&nbsp;        String command = menubar.getCommand(toolsId);</b>
+<b class="nc">&nbsp;        if (TOOLS_COMMAND.equals(command)) {</b>
+<b class="nc">&nbsp;          toolsMenu = menubar.getPopupMenu(toolsId);</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (toolsMenu == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LanguageToolMenus: LTHeadMenu: Tools Menu is null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      for (short i = 0; i &lt; toolsMenu.getItemCount(); i++) {</b>
+<b class="nc">&nbsp;        String command = toolsMenu.getCommand(toolsMenu.getItemId(i));</b>
+<b class="nc">&nbsp;        if (COMMAND_BEFORE_LT_MENU.equals(command)) {</b>
+<b class="nc">&nbsp;          ltId = toolsMenu.getItemId((short) (i + 1));</b>
+<b class="nc">&nbsp;          ltMenu = toolsMenu.getPopupMenu(ltId);</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (ltMenu == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LanguageToolMenus: LTHeadMenu: LT Menu is null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+&nbsp;      
+<b class="nc">&nbsp;      for (short i = 0; i &lt; ltMenu.getItemCount(); i++) {</b>
+<b class="nc">&nbsp;        String command = ltMenu.getCommand(ltMenu.getItemId(i));</b>
+<b class="nc">&nbsp;        if (LT_Options_COMMAND.equals(command)) {</b>
+<b class="nc">&nbsp;          switchOffId = (short)101;</b>
+<b class="nc">&nbsp;          switchOffPos = (short)(i - 1);</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (switchOffId == 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LanguageToolMenus: LTHeadMenu: switchOffId not found&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+&nbsp;//      if (MESSAGES.getString(&quot;loMenuSwitchedOff&quot;).equals(ltMenu.getItemText(switchOffId))) {
+&nbsp;//        MessageHandler.printToLogFile(&quot;LanguageToolMenus: LTHeadMenu: LT menu already installed&quot;);
+&nbsp;//        return;
+&nbsp;//      } else {
+&nbsp;//        ltMenu.removeItem(switchOffPos, (short) 1);
+&nbsp;//        ltMenu.insertItem(switchOffId, MESSAGES.getString(&quot;loMenuSwitchedOff&quot;), MenuItemStyle.CHECKABLE, switchOffPos);
+&nbsp;//      }
+<b class="nc">&nbsp;      ltMenu.insertItem(switchOffId, MESSAGES.getString(&quot;loMenuEnableBackgroundCheck&quot;), (short)0, switchOffPos);</b>
+<b class="nc">&nbsp;      ltMenu.setCommand(switchOffId, LT_TOGGLE_BACKGROUND_CHECK_COMMAND);</b>
+<b class="nc">&nbsp;      toolsMenu.addMenuListener(this);</b>
+<b class="nc">&nbsp;      ltMenu.addMenuListener(this);</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LanguageToolMenus: LTHeadMenu: Menu listener set&quot;);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+&nbsp;    void removeListener() {
+<b class="nc">&nbsp;      toolsMenu.removeMenuListener(this);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    void addListener() {
+<b class="nc">&nbsp;      toolsMenu.addMenuListener(this);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Set the dynamic parts of the LT menu
+&nbsp;     * placed as submenu at the LO/OO tools menu
+&nbsp;     */
+&nbsp;    private void setLtMenu() {
+<b class="nc">&nbsp;      if (document.getMultiDocumentsHandler().isBackgroundCheckOff()) {</b>
+<b class="nc">&nbsp;        ltMenu.setItemText(switchOffId, MESSAGES.getString(&quot;loMenuEnableBackgroundCheck&quot;));</b>
+&nbsp;//        ltMenu.checkItem(switchOffId, true);
+&nbsp;      } else {
+<b class="nc">&nbsp;        ltMenu.setItemText(switchOffId, MESSAGES.getString(&quot;loMenuDisableBackgroundCheck&quot;));</b>
+&nbsp;//        ltMenu.checkItem(switchOffId, false);
+&nbsp;      }
+<b class="nc">&nbsp;      short profilesId = (short)(switchOffId + 10);</b>
+<b class="nc">&nbsp;      short profilesPos = (short)(switchOffPos + 2);</b>
+<b class="nc">&nbsp;      if (ltMenu.getItemId(profilesPos) != profilesId) {</b>
+<b class="nc">&nbsp;        setProfileMenu(profilesId, profilesPos);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int nProfileItems = setProfileItems();</b>
+<b class="nc">&nbsp;      setActivateRuleMenu((short)(switchOffPos + 3), (short)(switchOffId + 11), (short)(switchOffId + SUBMENU_ID_DIFF + nProfileItems));</b>
+&nbsp;    }
+&nbsp;      
+&nbsp;    /**
+&nbsp;     * Set the profile menu
+&nbsp;     * if there are more than one profiles defined at the LT configuration file
+&nbsp;     */
+&nbsp;    private void setProfileMenu(short profilesId, short profilesPos) {
+<b class="nc">&nbsp;      ltMenu.insertItem(profilesId, MESSAGES.getString(&quot;loMenuChangeProfiles&quot;), MenuItemStyle.AUTOCHECK, profilesPos);</b>
+<b class="nc">&nbsp;      xProfileMenu = OfficeTools.getPopupMenu(xContext);</b>
+<b class="nc">&nbsp;      if (xProfileMenu == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LanguageToolMenus: setProfileMenu: Profile menu == null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+&nbsp;      
+<b class="nc">&nbsp;      xProfileMenu.addMenuListener(this);</b>
+&nbsp;
+<b class="nc">&nbsp;      ltMenu.setPopupMenu(profilesId, xProfileMenu);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Set the items for different profiles 
+&nbsp;     * if there are more than one defined at the LT configuration file
+&nbsp;     */
+&nbsp;    private int setProfileItems() {
+<b class="nc">&nbsp;      currentProfile = config.getCurrentProfile();</b>
+<b class="nc">&nbsp;      definedProfiles = config.getDefinedProfiles();</b>
+<b class="nc">&nbsp;      definedProfiles.sort(null);</b>
+<b class="nc">&nbsp;      if (xProfileMenu != null) {</b>
+<b class="nc">&nbsp;        xProfileMenu.removeItem((short)0, xProfileMenu.getItemCount());</b>
+<b class="nc">&nbsp;        short nId = (short) (switchOffId + SUBMENU_ID_DIFF);</b>
+<b class="nc">&nbsp;        short nPos = 0;</b>
+<b class="nc">&nbsp;        xProfileMenu.insertItem(nId, MESSAGES.getString(&quot;guiUserProfile&quot;), (short) 0, nPos);</b>
+<b class="nc">&nbsp;        xProfileMenu.setCommand(nId, LT_PROFILE_COMMAND);</b>
+<b class="nc">&nbsp;        if (currentProfile == null || currentProfile.isEmpty()) {</b>
+<b class="nc">&nbsp;          xProfileMenu.enableItem(nId , false);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          xProfileMenu.enableItem(nId , true);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (definedProfiles != null) {</b>
+<b class="nc">&nbsp;          for (int i = 0; i &lt; definedProfiles.size(); i++) {</b>
+<b class="nc">&nbsp;            nId++;</b>
+<b class="nc">&nbsp;            nPos++;</b>
+<b class="nc">&nbsp;            xProfileMenu.insertItem(nId, definedProfiles.get(i), (short) 0, nPos);</b>
+<b class="nc">&nbsp;            xProfileMenu.setCommand(nId, LT_PROFILE_COMMAND + definedProfiles.get(i));</b>
+<b class="nc">&nbsp;            if (currentProfile != null &amp;&amp; currentProfile.equals(definedProfiles.get(i))) {</b>
+<b class="nc">&nbsp;              xProfileMenu.enableItem(nId , false);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              xProfileMenu.enableItem(nId , true);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return (definedProfiles == null ? 1 : definedProfiles.size() + 1);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Run the actions defined in the profile menu
+&nbsp;     */
+&nbsp;    private void runProfileAction(String profile) {
+<b class="nc">&nbsp;      List&lt;String&gt; definedProfiles = config.getDefinedProfiles();</b>
+<b class="nc">&nbsp;      if (profile != null &amp;&amp; (definedProfiles == null || !definedProfiles.contains(profile))) {</b>
+<b class="nc">&nbsp;        MessageHandler.showMessage(&quot;profile &#39;&quot; + profile + &quot;&#39; not found&quot;);</b>
+&nbsp;      } else {
+&nbsp;        try {
+<b class="nc">&nbsp;          List&lt;String&gt; saveProfiles = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;          saveProfiles.addAll(config.getDefinedProfiles());</b>
+<b class="nc">&nbsp;          config.initOptions();</b>
+<b class="nc">&nbsp;          config.loadConfiguration(profile == null ? &quot;&quot; : profile);</b>
+<b class="nc">&nbsp;          config.setCurrentProfile(profile);</b>
+<b class="nc">&nbsp;          config.addProfiles(saveProfiles);</b>
+<b class="nc">&nbsp;          config.saveConfiguration(document.getLanguage());</b>
+<b class="nc">&nbsp;          document.getMultiDocumentsHandler().resetConfiguration();</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;          MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Set Activate Rule Submenu
+&nbsp;     */
+&nbsp;    
+&nbsp;    private void setActivateRuleMenu(short pos, short id, short submenuStartId) {
+<b class="nc">&nbsp;      Map&lt;String, String&gt; deactivatedRulesMap = document.getMultiDocumentsHandler().getDisabledRulesMap(null);</b>
+<b class="nc">&nbsp;      if (!deactivatedRulesMap.isEmpty()) {</b>
+<b class="nc">&nbsp;        if (ltMenu.getItemId(pos) != id) {</b>
+<b class="nc">&nbsp;          ltMenu.insertItem(id, MESSAGES.getString(&quot;loContextMenuActivateRule&quot;), MenuItemStyle.AUTOCHECK, pos);</b>
+<b class="nc">&nbsp;          xActivateRuleMenu = OfficeTools.getPopupMenu(xContext);</b>
+<b class="nc">&nbsp;          if (xActivateRuleMenu == null) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;LanguageToolMenus: setActivateRuleMenu: activate rule menu == null&quot;);</b>
+&nbsp;            return;
+&nbsp;          }
+<b class="nc">&nbsp;          xActivateRuleMenu.addMenuListener(this);</b>
+<b class="nc">&nbsp;          ltMenu.setPopupMenu(id, xActivateRuleMenu);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        xActivateRuleMenu.removeItem((short) 0, xActivateRuleMenu.getItemCount());</b>
+<b class="nc">&nbsp;        short nId = submenuStartId;</b>
+<b class="nc">&nbsp;        short nPos = 0;</b>
+<b class="nc">&nbsp;        for (String ruleId : deactivatedRulesMap.keySet()) {</b>
+<b class="nc">&nbsp;          xActivateRuleMenu.insertItem(nId, deactivatedRulesMap.get(ruleId), (short) 0, nPos);</b>
+<b class="nc">&nbsp;          xActivateRuleMenu.setCommand(nId, LT_ACTIVATE_RULE + ruleId);</b>
+<b class="nc">&nbsp;          xActivateRuleMenu.enableItem(nId , true);</b>
+<b class="nc">&nbsp;          nId++;</b>
+<b class="nc">&nbsp;          nPos++;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;      } else if (xActivateRuleMenu != null) {</b>
+<b class="nc">&nbsp;        ltMenu.removeItem(pos, (short)1);</b>
+<b class="nc">&nbsp;        xActivateRuleMenu.removeItem((short) 0, xActivateRuleMenu.getItemCount());</b>
+<b class="nc">&nbsp;        xActivateRuleMenu = null;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void disposing(EventObject event) {
+<b class="nc">&nbsp;    }</b>
+&nbsp;    @Override
+&nbsp;    public void itemActivated(MenuEvent event) {
+<b class="nc">&nbsp;      if (event.MenuId == 0) {</b>
+<b class="nc">&nbsp;        setLtMenu();</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public void itemDeactivated(MenuEvent event) {
+<b class="nc">&nbsp;    }</b>
+&nbsp;    @Override
+&nbsp;    public void itemHighlighted(MenuEvent event) {
+<b class="nc">&nbsp;    }</b>
+&nbsp;    @Override
+&nbsp;    public void itemSelected(MenuEvent event) {
+&nbsp;      try {
+&nbsp;//        if (debugMode) {
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;LanguageToolMenus: setActivateRuleMenu: event id: &quot; + ((int)event.MenuId));</b>
+&nbsp;//        }
+<b class="nc">&nbsp;        if (event.MenuId == switchOffId) {</b>
+<b class="nc">&nbsp;          if (document.getMultiDocumentsHandler().toggleNoBackgroundCheck()) {</b>
+<b class="nc">&nbsp;            document.getMultiDocumentsHandler().resetCheck(); </b>
+&nbsp;          }
+<b class="nc">&nbsp;        } else if (event.MenuId == switchOffId + SUBMENU_ID_DIFF) {</b>
+<b class="nc">&nbsp;          runProfileAction(null);</b>
+<b class="nc">&nbsp;        } else if (event.MenuId &gt; switchOffId + SUBMENU_ID_DIFF &amp;&amp; event.MenuId &lt;= switchOffId + SUBMENU_ID_DIFF + definedProfiles.size()) {</b>
+<b class="nc">&nbsp;          runProfileAction(definedProfiles.get(event.MenuId - switchOffId - 22));</b>
+<b class="nc">&nbsp;        } else if (event.MenuId &gt; switchOffId + SUBMENU_ID_DIFF + definedProfiles.size()) {</b>
+<b class="nc">&nbsp;          Map&lt;String, String&gt; deactivatedRulesMap = document.getMultiDocumentsHandler().getDisabledRulesMap(null);</b>
+<b class="nc">&nbsp;          short j = (short)(switchOffId + SUBMENU_ID_DIFF + definedProfiles.size() + 1);</b>
+<b class="nc">&nbsp;          for (String ruleId : deactivatedRulesMap.keySet()) {</b>
+<b class="nc">&nbsp;            if(event.MenuId == j) {</b>
+<b class="nc">&nbsp;              if (debugMode) {</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;LanguageToolMenus: setActivateRuleMenu: activate rule: &quot; + ruleId);</b>
+&nbsp;              }
+<b class="nc">&nbsp;              document.getMultiDocumentsHandler().activateRule(ruleId);</b>
+&nbsp;              return;
+&nbsp;            }
+<b class="nc">&nbsp;            j++;</b>
+<b class="nc">&nbsp;          }</b>
+&nbsp;        }
+<b class="nc">&nbsp;      } catch (IOException e) {</b>
+<b class="nc">&nbsp;        MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * Class to add a LanguageTool Options item to the context menu
+&nbsp;   * since 4.6
+&nbsp;   */
+&nbsp;  private class ContextMenuInterceptor implements XContextMenuInterceptor {
+&nbsp;    
+&nbsp;    private final static String IGNORE_ONCE_URL = &quot;slot:201&quot;;
+&nbsp;    private final static String ADD_TO_DICTIONARY_2 = &quot;slot:2&quot;;
+&nbsp;    private final static String ADD_TO_DICTIONARY_3 = &quot;slot:3&quot;;
+&nbsp;    private final static String LT_OPTIONS_URL = &quot;service:org.languagetool.openoffice.Main?configure&quot;;
+&nbsp;    private final static String LT_IGNORE_ONCE = &quot;service:org.languagetool.openoffice.Main?ignoreOnce&quot;;
+&nbsp;    private final static String LT_DEACTIVATE_RULE = &quot;service:org.languagetool.openoffice.Main?deactivateRule&quot;;
+&nbsp;    private final static String LT_ACTIVATE_RULE = &quot;service:org.languagetool.openoffice.Main?activateRule_&quot;;
+&nbsp;    private final static String LT_REMOTE_HINT = &quot;service:org.languagetool.openoffice.Main?remoteHint&quot;;   
+&nbsp;    private final static String LT_RENEW_MARKUPS = &quot;service:org.languagetool.openoffice.Main?renewMarkups&quot;;
+&nbsp;    private final static String LT_ADD_TO_DICTIONARY = &quot;service:org.languagetool.openoffice.Main?addToDictionary_&quot;;
+&nbsp;    private final static String LT_CHECKDIALOG = &quot;service:org.languagetool.openoffice.Main?checkDialog&quot;;
+&nbsp;
+<b class="nc">&nbsp;    public ContextMenuInterceptor() {}</b>
+&nbsp;    
+<b class="nc">&nbsp;    public ContextMenuInterceptor(XComponent xComponent) {</b>
+&nbsp;      try {
+&nbsp;/*        
+&nbsp;        XTextDocument xTextDocument = OfficeTools.getCurrentDocument(xContext);
+&nbsp;        if (xTextDocument == null) {
+&nbsp;          MessageHandler.printToLogFile(&quot;LanguageToolMenus: ContextMenuInterceptor: xTextDocument == null&quot;);
+&nbsp;          return;
+&nbsp;        }
+&nbsp;        xTextDocument.getCurrentController();
+&nbsp;        XController xController = xTextDocument.getCurrentController();
+&nbsp;*/
+<b class="nc">&nbsp;        XModel xModel = UnoRuntime.queryInterface(XModel.class, xComponent);</b>
+<b class="nc">&nbsp;        if (xModel == null) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;LanguageToolMenus: ContextMenuInterceptor: XModel not found!&quot;);</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        XController xController = xModel.getCurrentController();</b>
+<b class="nc">&nbsp;        if (xController == null) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;LanguageToolMenus: ContextMenuInterceptor: xController == null&quot;);</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        XContextMenuInterception xContextMenuInterception = UnoRuntime.queryInterface(XContextMenuInterception.class, xController);</b>
+<b class="nc">&nbsp;        if (xContextMenuInterception == null) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;LanguageToolMenus: ContextMenuInterceptor: xContextMenuInterception == null&quot;);</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        ContextMenuInterceptor aContextMenuInterceptor = new ContextMenuInterceptor();</b>
+<b class="nc">&nbsp;        XContextMenuInterceptor xContextMenuInterceptor = </b>
+<b class="nc">&nbsp;            UnoRuntime.queryInterface(XContextMenuInterceptor.class, aContextMenuInterceptor);</b>
+<b class="nc">&nbsp;        if (xContextMenuInterceptor == null) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;LanguageToolMenus: ContextMenuInterceptor: xContextMenuInterceptor == null&quot;);</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        xContextMenuInterception.registerContextMenuInterceptor(xContextMenuInterceptor);</b>
+<b class="nc">&nbsp;      } catch (Throwable t) {</b>
+<b class="nc">&nbsp;        MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;  
+&nbsp;    /**
+&nbsp;     * Add LT items to context menu
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public ContextMenuInterceptorAction notifyContextMenuExecute(ContextMenuExecuteEvent aEvent) {
+&nbsp;      try {
+<b class="nc">&nbsp;        if (isRunning) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;LanguageToolMenus: notifyContextMenuExecute: no change in Menu&quot;);</b>
+<b class="nc">&nbsp;          return ContextMenuInterceptorAction.IGNORED;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        isRunning = true;</b>
+<b class="nc">&nbsp;        long startTime = 0;</b>
+<b class="nc">&nbsp;        if (debugModeTm) {</b>
+<b class="nc">&nbsp;          startTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Generate context menu started&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        XIndexContainer xContextMenu = aEvent.ActionTriggerContainer;</b>
+&nbsp;        
+<b class="nc">&nbsp;        if (document.getDocumentType() == DocumentType.IMPRESS) {</b>
+<b class="nc">&nbsp;          XMultiServiceFactory xMenuElementFactory = UnoRuntime.queryInterface(XMultiServiceFactory.class, xContextMenu);</b>
+<b class="nc">&nbsp;          XPropertySet xNewMenuEntry = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;              xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;          xNewMenuEntry.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loContextMenuGrammarCheck&quot;));</b>
+<b class="nc">&nbsp;          xNewMenuEntry.setPropertyValue(&quot;CommandURL&quot;, LT_CHECKDIALOG);</b>
+<b class="nc">&nbsp;          xContextMenu.insertByIndex(0, xNewMenuEntry);</b>
+&nbsp;
+<b class="nc">&nbsp;          XPropertySet xSeparator = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;              xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTriggerSeparator&quot;));</b>
+<b class="nc">&nbsp;          xSeparator.setPropertyValue(&quot;SeparatorType&quot;, ActionTriggerSeparatorType.LINE);</b>
+<b class="nc">&nbsp;          xContextMenu.insertByIndex(1, xSeparator);</b>
+<b class="nc">&nbsp;          isRunning = false;</b>
+<b class="nc">&nbsp;          return ContextMenuInterceptorAction.EXECUTE_MODIFIED;</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;        
+<b class="nc">&nbsp;        int count = xContextMenu.getCount();</b>
+&nbsp;        
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc">&nbsp;            Any a = (Any) xContextMenu.getByIndex(i);</b>
+<b class="nc">&nbsp;            XPropertySet props = (XPropertySet) a.getObject();</b>
+<b class="nc">&nbsp;            printProperties(props);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;        //  Add LT Options Item if a Grammar or Spell error was detected
+<b class="nc">&nbsp;        document.setMenuDocId();</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; count; i++) {</b>
+<b class="nc">&nbsp;          Any a = (Any) xContextMenu.getByIndex(i);</b>
+<b class="nc">&nbsp;          XPropertySet props = (XPropertySet) a.getObject();</b>
+<b class="nc">&nbsp;          String str = null;</b>
+<b class="nc">&nbsp;          if (props.getPropertySetInfo().hasPropertyByName(&quot;CommandURL&quot;)) {</b>
+<b class="nc">&nbsp;            str = props.getPropertyValue(&quot;CommandURL&quot;).toString();</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (str != null &amp;&amp; IGNORE_ONCE_URL.equals(str)) {</b>
+&nbsp;            int n;  
+<b class="nc">&nbsp;            for (n = i + 1; n &lt; count; n++) {</b>
+<b class="nc">&nbsp;              a = (Any) xContextMenu.getByIndex(n);</b>
+<b class="nc">&nbsp;              XPropertySet tmpProps = (XPropertySet) a.getObject();</b>
+<b class="nc">&nbsp;              if (tmpProps.getPropertySetInfo().hasPropertyByName(&quot;CommandURL&quot;)) {</b>
+<b class="nc">&nbsp;                str = tmpProps.getPropertyValue(&quot;CommandURL&quot;).toString();</b>
+&nbsp;              }
+<b class="nc">&nbsp;              if (ADD_TO_DICTIONARY_2.equals(str) || ADD_TO_DICTIONARY_3.equals(str)) {</b>
+<b class="nc">&nbsp;                ViewCursorTools viewCursor = new ViewCursorTools(xComponent);</b>
+<b class="nc">&nbsp;                String wrongWord = viewCursor.getViewCursorSelectedArea();</b>
+<b class="nc">&nbsp;                if (wrongWord != null &amp;&amp; !wrongWord.isEmpty()) {</b>
+<b class="nc">&nbsp;                  if (wrongWord.charAt(wrongWord.length() - 1) == &#39;.&#39;) {</b>
+<b class="nc">&nbsp;                    wrongWord= wrongWord.substring(0, wrongWord.length() - 1);</b>
+&nbsp;                  }
+<b class="nc">&nbsp;                  if (!wrongWord.isEmpty()) {</b>
+<b class="nc">&nbsp;                    MessageHandler.printToLogFile(&quot;wrong Word: &quot; + wrongWord);</b>
+<b class="nc">&nbsp;                    XMultiServiceFactory xMenuElementFactory = UnoRuntime.queryInterface(XMultiServiceFactory.class, xContextMenu);</b>
+<b class="nc">&nbsp;                    XIndexContainer xSubMenuContainer = (XIndexContainer)UnoRuntime.queryInterface(XIndexContainer.class,</b>
+<b class="nc">&nbsp;                        xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTriggerContainer&quot;));</b>
+<b class="nc">&nbsp;                    int j = 0;</b>
+<b class="nc">&nbsp;                    for (String dict : document.getMultiDocumentsHandler().getLtDictionary().getUserDictionaries(xContext)) {</b>
+<b class="nc">&nbsp;                      XPropertySet xNewSubMenuEntry = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;                          xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;                      xNewSubMenuEntry.setPropertyValue(&quot;Text&quot;, dict);</b>
+<b class="nc">&nbsp;                      xNewSubMenuEntry.setPropertyValue(&quot;CommandURL&quot;, LT_ADD_TO_DICTIONARY + dict + &quot;:&quot; + wrongWord);</b>
+<b class="nc">&nbsp;                      xSubMenuContainer.insertByIndex(j, xNewSubMenuEntry);</b>
+<b class="nc">&nbsp;                      j++;</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    XPropertySet xNewMenuEntry = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;                        xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;                    xNewMenuEntry.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loContextMenuAddToDictionary&quot;));</b>
+<b class="nc">&nbsp;                    xNewMenuEntry.setPropertyValue( &quot;SubContainer&quot;, (Object)xSubMenuContainer );</b>
+<b class="nc">&nbsp;                    xContextMenu.removeByIndex(n);</b>
+<b class="nc">&nbsp;                    xContextMenu.insertByIndex(n, xNewMenuEntry);</b>
+<b class="nc">&nbsp;                  }</b>
+&nbsp;                }
+&nbsp;                break;
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;            if (n &gt;= count) {</b>
+<b class="nc">&nbsp;              if (document.getCurrentNumberOfParagraph() &gt;= 0) {</b>
+<b class="nc">&nbsp;                props.setPropertyValue(&quot;CommandURL&quot;, LT_IGNORE_ONCE);</b>
+&nbsp;              }
+<b class="nc">&nbsp;              XMultiServiceFactory xMenuElementFactory = UnoRuntime.queryInterface(XMultiServiceFactory.class, xContextMenu);</b>
+&nbsp;
+<b class="nc">&nbsp;              XPropertySet xNewMenuEntry1 = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;                  xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;              xNewMenuEntry1.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loContextMenuDeactivateRule&quot;));</b>
+<b class="nc">&nbsp;              xNewMenuEntry1.setPropertyValue(&quot;CommandURL&quot;, LT_DEACTIVATE_RULE);</b>
+<b class="nc">&nbsp;              xContextMenu.insertByIndex(i + 2, xNewMenuEntry1);</b>
+&nbsp;              
+<b class="nc">&nbsp;              int nId = i + 4;</b>
+&nbsp;              
+<b class="nc">&nbsp;              Map&lt;String, String&gt; deactivatedRulesMap = document.getMultiDocumentsHandler().getDisabledRulesMap(null);</b>
+&nbsp;
+<b class="nc">&nbsp;              if (!deactivatedRulesMap.isEmpty()) {</b>
+<b class="nc">&nbsp;                XIndexContainer xSubMenuContainer = (XIndexContainer)UnoRuntime.queryInterface(XIndexContainer.class,</b>
+<b class="nc">&nbsp;                    xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTriggerContainer&quot;));</b>
+<b class="nc">&nbsp;                int j = 0;</b>
+<b class="nc">&nbsp;                for (String ruleId : deactivatedRulesMap.keySet()) {</b>
+<b class="nc">&nbsp;                  XPropertySet xNewSubMenuEntry = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;                      xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;                  xNewSubMenuEntry.setPropertyValue(&quot;Text&quot;, deactivatedRulesMap.get(ruleId));</b>
+<b class="nc">&nbsp;                  xNewSubMenuEntry.setPropertyValue(&quot;CommandURL&quot;, LT_ACTIVATE_RULE + ruleId);</b>
+<b class="nc">&nbsp;                  xSubMenuContainer.insertByIndex(j, xNewSubMenuEntry);</b>
+<b class="nc">&nbsp;                  j++;</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;                
+<b class="nc">&nbsp;                XPropertySet xNewMenuEntry3 = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;                    xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;                xNewMenuEntry3.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loContextMenuActivateRule&quot;));</b>
+<b class="nc">&nbsp;                xNewMenuEntry3.setPropertyValue( &quot;SubContainer&quot;, (Object)xSubMenuContainer );</b>
+<b class="nc">&nbsp;                xContextMenu.insertByIndex(i + 3, xNewMenuEntry3);</b>
+<b class="nc">&nbsp;                nId++;</b>
+&nbsp;              }
+&nbsp;              
+<b class="nc">&nbsp;              if (isRemote) {</b>
+<b class="nc">&nbsp;                XPropertySet xNewMenuEntry2 = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;                    xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;                xNewMenuEntry2.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loMenuRemoteInfo&quot;));</b>
+<b class="nc">&nbsp;                xNewMenuEntry2.setPropertyValue(&quot;CommandURL&quot;, LT_REMOTE_HINT);</b>
+<b class="nc">&nbsp;                xContextMenu.insertByIndex(nId, xNewMenuEntry2);</b>
+<b class="nc">&nbsp;                nId++;</b>
+&nbsp;              }
+&nbsp;              
+<b class="nc">&nbsp;              XPropertySet xNewMenuEntry4 = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;                  xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;              xNewMenuEntry4.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loContextMenuRenewMarkups&quot;));</b>
+<b class="nc">&nbsp;              xNewMenuEntry4.setPropertyValue(&quot;CommandURL&quot;, LT_RENEW_MARKUPS);</b>
+<b class="nc">&nbsp;              xContextMenu.insertByIndex(nId, xNewMenuEntry4);</b>
+<b class="nc">&nbsp;              nId++;</b>
+&nbsp;
+<b class="nc">&nbsp;              XPropertySet xNewMenuEntry = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;                  xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;              xNewMenuEntry.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loContextMenuOptions&quot;));</b>
+<b class="nc">&nbsp;              xNewMenuEntry.setPropertyValue(&quot;CommandURL&quot;, LT_OPTIONS_URL);</b>
+<b class="nc">&nbsp;              xContextMenu.insertByIndex(nId, xNewMenuEntry);</b>
+<b class="nc">&nbsp;              if (debugModeTm) {</b>
+<b class="nc">&nbsp;                long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;                if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;                  MessageHandler.printToLogFile(&quot;Time to generate context menu (grammar error): &quot; + runTime);</b>
+&nbsp;                }
+&nbsp;              }
+<b class="nc">&nbsp;              isRunning = false;</b>
+<b class="nc">&nbsp;              return ContextMenuInterceptorAction.EXECUTE_MODIFIED;</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;
+&nbsp;        //  Add LT Options Item for context menu without grammar error
+<b class="nc">&nbsp;        XMultiServiceFactory xMenuElementFactory = UnoRuntime.queryInterface(XMultiServiceFactory.class, xContextMenu);</b>
+<b class="nc">&nbsp;        XPropertySet xSeparator = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;            xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTriggerSeparator&quot;));</b>
+<b class="nc">&nbsp;        xSeparator.setPropertyValue(&quot;SeparatorType&quot;, ActionTriggerSeparatorType.LINE);</b>
+<b class="nc">&nbsp;        xContextMenu.insertByIndex(count, xSeparator);</b>
+&nbsp;        
+<b class="nc">&nbsp;        int nId = count + 1;</b>
+<b class="nc">&nbsp;        if (isRemote) {</b>
+<b class="nc">&nbsp;          XPropertySet xNewMenuEntry2 = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;              xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;          xNewMenuEntry2.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loMenuRemoteInfo&quot;));</b>
+<b class="nc">&nbsp;          xNewMenuEntry2.setPropertyValue(&quot;CommandURL&quot;, LT_REMOTE_HINT);</b>
+<b class="nc">&nbsp;          xContextMenu.insertByIndex(nId, xNewMenuEntry2);</b>
+<b class="nc">&nbsp;          nId++;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        XPropertySet xNewMenuEntry4 = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;            xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;        xNewMenuEntry4.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loContextMenuRenewMarkups&quot;));</b>
+<b class="nc">&nbsp;        xNewMenuEntry4.setPropertyValue(&quot;CommandURL&quot;, LT_RENEW_MARKUPS);</b>
+<b class="nc">&nbsp;        xContextMenu.insertByIndex(nId, xNewMenuEntry4);</b>
+<b class="nc">&nbsp;        nId++;</b>
+&nbsp;
+<b class="nc">&nbsp;        XPropertySet xNewMenuEntry = UnoRuntime.queryInterface(XPropertySet.class,</b>
+<b class="nc">&nbsp;            xMenuElementFactory.createInstance(&quot;com.sun.star.ui.ActionTrigger&quot;));</b>
+<b class="nc">&nbsp;        xNewMenuEntry.setPropertyValue(&quot;Text&quot;, MESSAGES.getString(&quot;loContextMenuOptions&quot;));</b>
+<b class="nc">&nbsp;        xNewMenuEntry.setPropertyValue(&quot;CommandURL&quot;, LT_OPTIONS_URL);</b>
+<b class="nc">&nbsp;        xContextMenu.insertByIndex(nId, xNewMenuEntry);</b>
+<b class="nc">&nbsp;        if (debugModeTm) {</b>
+<b class="nc">&nbsp;          long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;          if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Time to generate context menu (no grammar error): &quot; + runTime);</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        isRunning = false;</b>
+<b class="nc">&nbsp;        return ContextMenuInterceptorAction.EXECUTE_MODIFIED;</b>
+&nbsp;
+<b class="nc">&nbsp;      } catch (Throwable t) {</b>
+<b class="nc">&nbsp;        MessageHandler.printException(t);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      isRunning = false;</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LanguageToolMenus: notifyContextMenuExecute: no change in Menu&quot;);</b>
+<b class="nc">&nbsp;      return ContextMenuInterceptorAction.IGNORED;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Print properties in debug mode
+&nbsp;     */
+&nbsp;    private void printProperties(XPropertySet props) throws UnknownPropertyException, WrappedTargetException {
+<b class="nc">&nbsp;      Property[] propInfo = props.getPropertySetInfo().getProperties();</b>
+<b class="nc">&nbsp;      for (Property property : propInfo) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LanguageToolMenus: Property: Name: &quot; + property.Name + &quot;, Type: &quot; + property.Type);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (props.getPropertySetInfo().hasPropertyByName(&quot;Text&quot;)) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LanguageToolMenus: Property: Name: &quot; + props.getPropertyValue(&quot;Text&quot;));</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (props.getPropertySetInfo().hasPropertyByName(&quot;CommandURL&quot;)) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LanguageToolMenus: Property: CommandURL: &quot; + props.getPropertyValue(&quot;CommandURL&quot;));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;  }
+&nbsp;  
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

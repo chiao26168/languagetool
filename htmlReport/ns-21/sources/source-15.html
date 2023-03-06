@@ -1,0 +1,878 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ResultCache</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: ResultCache (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ResultCache</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/120)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/199)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ResultCache$CacheEntry</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ResultCache$SerialCacheEntry</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ResultCache$SerialProofreadingError</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/39)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ResultCache$SerialPropertyValue</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/36)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/154)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/281)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.io.Serializable;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.concurrent.locks.ReentrantReadWriteLock;
+&nbsp;
+&nbsp;import com.sun.star.beans.PropertyState;
+&nbsp;import com.sun.star.beans.PropertyValue;
+&nbsp;import com.sun.star.linguistic2.SingleProofreadingError;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class for storing and handle the LT results prepared to use in LO/OO
+&nbsp; *
+&nbsp; * @author Fred Kruse
+&nbsp; * @since 4.3
+&nbsp; */
+&nbsp;class ResultCache implements Serializable {
+&nbsp;
+&nbsp;  private static final long serialVersionUID = 2L;
+&nbsp;  private Map&lt;Integer, SerialCacheEntry&gt; entries;
+&nbsp;  
+<b class="nc">&nbsp;  private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();</b>
+&nbsp;  
+&nbsp;  ResultCache() {
+<b class="nc">&nbsp;    this(null);</b>
+&nbsp;  }
+&nbsp;
+<b class="nc">&nbsp;  public ResultCache(ResultCache cache) {</b>
+<b class="nc">&nbsp;    replace(cache);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get cache entry map
+&nbsp;   */
+&nbsp;  private Map&lt;Integer, SerialCacheEntry&gt; getMap() {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return new HashMap&lt;Integer, SerialCacheEntry&gt;(entries);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Replace the cache content
+&nbsp;   */
+&nbsp;  void replace(ResultCache cache) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (cache == null || cache.entries == null) {</b>
+<b class="nc">&nbsp;        entries = new HashMap&lt;&gt;();</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        entries = cache.getMap();</b>
+&nbsp;      }
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Remove all cache entries for a paragraph
+&nbsp;   */
+&nbsp;  void remove(int numberOfParagraph) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      entries.remove(numberOfParagraph);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Remove all cache entries between firstParagraph and lastParagraph
+&nbsp;   */
+&nbsp;  void removeRange(int firstParagraph, int lastParagraph) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      for (int i = firstParagraph; i &lt;= lastParagraph; i++) {</b>
+<b class="nc">&nbsp;        entries.remove(i);</b>
+&nbsp;      }
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Remove all cache entries between firstPara (included) and lastPara (excluded)
+&nbsp;   * shift all numberOfParagraph by &#39;shift&#39;
+&nbsp;   */
+&nbsp;  void removeAndShift(int firstParagraph, int lastParagraph, int oldSize, int newSize) {
+<b class="nc">&nbsp;    int shift = newSize - oldSize;</b>
+<b class="nc">&nbsp;    if (lastParagraph &lt; firstParagraph || shift == 0) {</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      Map&lt;Integer, SerialCacheEntry&gt; tmpEntries = entries;</b>
+<b class="nc">&nbsp;      entries = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;      if (shift &lt; 0) {</b>
+<b class="nc">&nbsp;        for (int i : tmpEntries.keySet()) {</b>
+<b class="nc">&nbsp;          if (i &gt;= firstParagraph - shift) {</b>
+<b class="nc">&nbsp;            entries.put(i + shift, tmpEntries.get(i));</b>
+<b class="nc">&nbsp;          } else if (i &lt; firstParagraph){</b>
+<b class="nc">&nbsp;            entries.put(i, tmpEntries.get(i));</b>
+&nbsp;          } 
+<b class="nc">&nbsp;        }</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        for (int i : tmpEntries.keySet()) {</b>
+<b class="nc">&nbsp;          if (i &gt;= lastParagraph &amp;&amp; i + shift &gt;= 0) {</b>
+<b class="nc">&nbsp;            entries.put(i + shift, tmpEntries.get(i));</b>
+<b class="nc">&nbsp;          } else if (i &lt; firstParagraph) {</b>
+<b class="nc">&nbsp;            entries.put(i, tmpEntries.get(i));</b>
+&nbsp;          } 
+<b class="nc">&nbsp;        }</b>
+&nbsp;      }
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * add or replace a cache entry
+&nbsp;   */
+&nbsp;  void put(int numberOfParagraph, List&lt;Integer&gt; nextSentencePositions, SingleProofreadingError[] errorArray) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      entries.put(numberOfParagraph, new SerialCacheEntry(nextSentencePositions, errorArray));</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * add or replace a cache entry for paragraph
+&nbsp;   */
+&nbsp;  void put(int numberOfParagraph, SingleProofreadingError[] errorArray) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      entries.put(numberOfParagraph, new SerialCacheEntry(null, errorArray));</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * add proof reading errors to a cache entry for paragraph
+&nbsp;   */
+&nbsp;  void add(int numberOfParagraph, SingleProofreadingError[] errorArray) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      SerialCacheEntry cacheEntry = entries.get(numberOfParagraph);</b>
+<b class="nc">&nbsp;      cacheEntry.addErrorArray(errorArray);</b>
+<b class="nc">&nbsp;      entries.put(numberOfParagraph, cacheEntry);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Remove all cache entries
+&nbsp;   */
+&nbsp;  void removeAll() {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      entries.clear();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get cache entry of paragraph
+&nbsp;   */
+&nbsp;  CacheEntry getCacheEntry(int numberOfParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      SerialCacheEntry entry = entries.get(numberOfParagraph);</b>
+<b class="nc">&nbsp;      return entry == null ? null : new CacheEntry(entry);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get cache entry of paragraph
+&nbsp;   */
+&nbsp;  SerialCacheEntry getSerialCacheEntry(int numberOfParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return entries.get(numberOfParagraph);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get Proofreading errors of on paragraph from cache
+&nbsp;   */
+&nbsp;  SingleProofreadingError[] getMatches(int numberOfParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      SerialCacheEntry entry = entries.get(numberOfParagraph);</b>
+<b class="nc">&nbsp;      if (entry == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return entry.getErrorArray();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get start sentence position from cache
+&nbsp;   */
+&nbsp;  int getStartSentencePosition(int numberOfParagraph, int sentencePosition) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      SerialCacheEntry entry = entries.get(numberOfParagraph);</b>
+<b class="nc">&nbsp;      if (entry == null) {</b>
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;Integer&gt; nextSentencePositions = entry.nextSentencePositions;</b>
+<b class="nc">&nbsp;      if (nextSentencePositions == null || nextSentencePositions.size() &lt; 2) {</b>
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int startPosition = 0;</b>
+<b class="nc">&nbsp;      for (int position : nextSentencePositions) {</b>
+<b class="nc">&nbsp;        if (position &gt;= sentencePosition) {</b>
+<b class="nc">&nbsp;          return position == sentencePosition ? position : startPosition;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        startPosition = position;</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return nextSentencePositions.get(nextSentencePositions.size() - 2);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get next sentence position from cache
+&nbsp;   */
+&nbsp;  int getNextSentencePosition(int numberOfParagraph, int sentencePosition) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      SerialCacheEntry entry = entries.get(numberOfParagraph);</b>
+<b class="nc">&nbsp;      if (entry == null) {</b>
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;Integer&gt; nextSentencePositions = entry.nextSentencePositions;</b>
+<b class="nc">&nbsp;      if (nextSentencePositions == null || nextSentencePositions.size() == 0) {</b>
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int position : nextSentencePositions) {</b>
+<b class="nc">&nbsp;        if (position &gt; sentencePosition) {</b>
+<b class="nc">&nbsp;          return position;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return nextSentencePositions.get(nextSentencePositions.size() - 1);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get Proofreading errors of sentence out of paragraph matches from cache
+&nbsp;   */
+&nbsp;  SingleProofreadingError[] getFromPara(int numberOfParagraph,
+&nbsp;                                        int startOfSentencePosition, int endOfSentencePosition) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      SerialCacheEntry entry = entries.get(numberOfParagraph);</b>
+<b class="nc">&nbsp;      if (entry == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;SingleProofreadingError&gt; errorList = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      for (SingleProofreadingError eArray : entry.getErrorArray()) {</b>
+<b class="nc">&nbsp;        if (eArray.nErrorStart &gt;= startOfSentencePosition &amp;&amp; eArray.nErrorStart &lt; endOfSentencePosition) {</b>
+<b class="nc">&nbsp;          errorList.add(eArray);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return errorList.toArray(new SingleProofreadingError[0]);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Compares to Entries
+&nbsp;   * true if the both entries are identically
+&nbsp;   */
+&nbsp;  static boolean areDifferentEntries(SerialCacheEntry newEntries, SerialCacheEntry oldEntries) {
+<b class="nc">&nbsp;    if (newEntries == null || oldEntries == null) {</b>
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    SingleProofreadingError[] oldErrorArray = oldEntries.getErrorArray();</b>
+<b class="nc">&nbsp;    SingleProofreadingError[] newErrorArray = newEntries.getErrorArray();</b>
+<b class="nc">&nbsp;    if (oldErrorArray == null || newErrorArray == null || oldErrorArray.length != newErrorArray.length) {</b>
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    for (SingleProofreadingError nError : newErrorArray) {</b>
+<b class="nc">&nbsp;      boolean found = false;</b>
+<b class="nc">&nbsp;      for (SingleProofreadingError oError : oldErrorArray) {</b>
+<b class="nc">&nbsp;        if (nError.nErrorStart == oError.nErrorStart &amp;&amp; nError.nErrorLength == oError.nErrorLength</b>
+<b class="nc">&nbsp;                &amp;&amp; nError.aRuleIdentifier.equals(oError.aRuleIdentifier)) {</b>
+<b class="nc">&nbsp;          found = true;</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (!found) {</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Compares a paragraph cache with another cache.
+&nbsp;   * Gives back a list of entries for every paragraph: true if the both entries are identically
+&nbsp;   */
+&nbsp;  List&lt;Integer&gt; differenceInCaches(ResultCache oldCache) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      List&lt;Integer&gt; differentParas = new ArrayList&lt;&gt;();</b>
+&nbsp;      SerialCacheEntry oEntry;
+&nbsp;      SerialCacheEntry nEntry;
+<b class="nc">&nbsp;      boolean isDifferent = true;</b>
+<b class="nc">&nbsp;      Set&lt;Integer&gt; entrySet = new HashSet&lt;&gt;(entries.keySet());</b>
+<b class="nc">&nbsp;      for (int nPara : entrySet) {</b>
+<b class="nc">&nbsp;        if (oldCache != null) {</b>
+<b class="nc">&nbsp;          nEntry = entries.get(nPara);</b>
+<b class="nc">&nbsp;          oEntry = oldCache.entries.get(nPara);</b>
+<b class="nc">&nbsp;          isDifferent = areDifferentEntries(nEntry, oEntry);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (isDifferent) {</b>
+<b class="nc">&nbsp;          differentParas.add(nPara);</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return differentParas;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Remove a special Proofreading error from cache
+&nbsp;   * Returns all changed paragraphs as list
+&nbsp;   */
+&nbsp;  List&lt;Integer&gt; removeRuleError(String ruleId) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      List&lt;Integer&gt; changed = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      Set&lt;Integer&gt; keySet = entries.keySet();</b>
+<b class="nc">&nbsp;      for (int n : keySet) {</b>
+<b class="nc">&nbsp;        SerialCacheEntry entry = entries.get(n);</b>
+<b class="nc">&nbsp;        SingleProofreadingError[] eArray = entry.getErrorArray();</b>
+<b class="nc">&nbsp;        int nErr = 0;</b>
+<b class="nc">&nbsp;        for (SingleProofreadingError sError : eArray) {</b>
+<b class="nc">&nbsp;          if (sError.aRuleIdentifier.equals(ruleId)) {</b>
+<b class="nc">&nbsp;            nErr++;</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        if (nErr &gt; 0) {</b>
+<b class="nc">&nbsp;          changed.add(n);</b>
+<b class="nc">&nbsp;          SingleProofreadingError[] newArray = new SingleProofreadingError[eArray.length - nErr];</b>
+<b class="nc">&nbsp;          for (int i = 0, j = 0; i &lt; eArray.length &amp;&amp; j &lt; newArray.length; i++) {</b>
+<b class="nc">&nbsp;            if (!eArray[i].aRuleIdentifier.equals(ruleId)) {</b>
+<b class="nc">&nbsp;              newArray[j] = eArray[i];</b>
+<b class="nc">&nbsp;              j++;</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          entries.put(n, new SerialCacheEntry(entry.nextSentencePositions, newArray));</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return changed;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get number of paragraphs stored in cache
+&nbsp;   */
+&nbsp;  int getNumberOfParas() {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return entries.size();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get number of entries
+&nbsp;   */
+&nbsp;  int getNumberOfEntries() {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return entries.size();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get number of matches
+&nbsp;   */
+&nbsp;  int getNumberOfMatches() {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      int number = 0;</b>
+<b class="nc">&nbsp;      for (int n : entries.keySet()) {</b>
+<b class="nc">&nbsp;        number += entries.get(n).errorArray.length;</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return number;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get an error from a position within a paragraph
+&nbsp;   * if there are more than one error at the position return the one which begins at second
+&nbsp;   * if there are more than one that begins at the same position return the one with the smallest size
+&nbsp;   */
+&nbsp;  SingleProofreadingError getErrorAtPosition(int numPara, int numChar) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      SerialCacheEntry entry = entries.get(numPara);</b>
+<b class="nc">&nbsp;      if (entry == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      SingleProofreadingError error = null;</b>
+<b class="nc">&nbsp;      for (SingleProofreadingError err : entry.getErrorArray()) {</b>
+<b class="nc">&nbsp;        if (numChar &gt;= err.nErrorStart &amp;&amp; numChar &lt;= err.nErrorStart + err.nErrorLength) {</b>
+<b class="nc">&nbsp;          if (error == null || error.nErrorStart &lt; err.nErrorStart</b>
+&nbsp;              || (error.nErrorStart == err.nErrorStart &amp;&amp; error.nErrorLength &gt; err.nErrorLength)) {
+<b class="nc">&nbsp;            error = err;</b>
+&nbsp;          } 
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return error;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Class of serializable cache entries
+&nbsp;   */
+&nbsp;  public static class CacheEntry {
+&nbsp;    SingleProofreadingError[] errorArray;
+<b class="nc">&nbsp;    List&lt;Integer&gt; nextSentencePositions = null;</b>
+&nbsp;
+<b class="nc">&nbsp;    CacheEntry(SerialCacheEntry entry) {</b>
+<b class="nc">&nbsp;      if (entry.nextSentencePositions != null) {</b>
+<b class="nc">&nbsp;        this.nextSentencePositions = new ArrayList&lt;Integer&gt;(entry.nextSentencePositions);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      this.errorArray = new SingleProofreadingError[entry.errorArray.length];</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; entry.errorArray.length; i++) {</b>
+<b class="nc">&nbsp;        this.errorArray[i] = entry.errorArray[i].toSingleProofreadingError();</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get an SingleProofreadingError array for one entry
+&nbsp;     */
+&nbsp;    SingleProofreadingError[] getErrorArray() {
+<b class="nc">&nbsp;      return errorArray;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;    
+&nbsp;  /**
+&nbsp;   * Class of serializable cache entries
+&nbsp;   */
+&nbsp;  private class SerialCacheEntry implements Serializable {
+&nbsp;    private static final long serialVersionUID = 2L;
+&nbsp;    SerialProofreadingError[] errorArray;
+<b class="nc">&nbsp;    List&lt;Integer&gt; nextSentencePositions = null;</b>
+&nbsp;
+<b class="nc">&nbsp;    SerialCacheEntry(List&lt;Integer&gt; nextSentencePositions, SingleProofreadingError[] sErrorArray) {</b>
+<b class="nc">&nbsp;      if (nextSentencePositions != null) {</b>
+<b class="nc">&nbsp;        this.nextSentencePositions = new ArrayList&lt;Integer&gt;(nextSentencePositions);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      this.errorArray = new SerialProofreadingError[sErrorArray.length];</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; sErrorArray.length; i++) {</b>
+<b class="nc">&nbsp;        this.errorArray[i] = new SerialProofreadingError(sErrorArray[i]);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    SerialCacheEntry(SerialCacheEntry entry) {</b>
+<b class="nc">&nbsp;      if (entry.nextSentencePositions != null) {</b>
+<b class="nc">&nbsp;        this.nextSentencePositions = new ArrayList&lt;Integer&gt;(entry.nextSentencePositions);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      this.errorArray = new SerialProofreadingError[entry.errorArray.length];</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; entry.errorArray.length; i++) {</b>
+<b class="nc">&nbsp;        this.errorArray[i] = new SerialProofreadingError(entry.errorArray[i]);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Get an SingleProofreadingError array for one entry
+&nbsp;     */
+&nbsp;    SingleProofreadingError[] getErrorArray() {
+<b class="nc">&nbsp;      SingleProofreadingError[] eArray = new SingleProofreadingError[errorArray.length];</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; errorArray.length; i++) {</b>
+<b class="nc">&nbsp;        eArray[i] = errorArray[i].toSingleProofreadingError();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return eArray;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Add an SingleProofreadingError array to an existing one
+&nbsp;     */
+&nbsp;    void addErrorArray(SingleProofreadingError[] errors) {
+<b class="nc">&nbsp;      if (errors == null || errors.length == 0) {</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      SerialProofreadingError newErrorArray[] = new SerialProofreadingError[errorArray.length + errors.length];</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; errorArray.length; i++) {</b>
+<b class="nc">&nbsp;        newErrorArray[i] = errorArray[i];</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = 0; i &lt; errors.length; i++) {</b>
+<b class="nc">&nbsp;        newErrorArray[errorArray.length + i] = new SerialProofreadingError(errors[i]);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Class of serializable proofreading errors
+&nbsp;   */
+&nbsp;  private class SerialProofreadingError implements Serializable {
+&nbsp;
+&nbsp;    private static final long serialVersionUID = 1L;
+&nbsp;    int nErrorStart;
+&nbsp;    int nErrorLength;
+&nbsp;    int nErrorType;
+&nbsp;    String aFullComment;
+&nbsp;    String aRuleIdentifier;
+&nbsp;    String aShortComment;
+&nbsp;    String[] aSuggestions;
+<b class="nc">&nbsp;    SerialPropertyValue[] aProperties = null;</b>
+&nbsp;    
+<b class="nc">&nbsp;    SerialProofreadingError(SingleProofreadingError error) {</b>
+<b class="nc">&nbsp;      nErrorStart = error.nErrorStart;</b>
+<b class="nc">&nbsp;      nErrorLength = error.nErrorLength;</b>
+<b class="nc">&nbsp;      nErrorType = error.nErrorType;</b>
+<b class="nc">&nbsp;      aFullComment = error.aFullComment;</b>
+<b class="nc">&nbsp;      aRuleIdentifier = error.aRuleIdentifier;</b>
+<b class="nc">&nbsp;      aShortComment = error.aShortComment;</b>
+<b class="nc">&nbsp;      aSuggestions = error.aSuggestions;</b>
+<b class="nc">&nbsp;      if (error.aProperties != null) {</b>
+<b class="nc">&nbsp;        aProperties = new SerialPropertyValue[error.aProperties.length];</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; error.aProperties.length; i++) {</b>
+<b class="nc">&nbsp;          aProperties[i] = new SerialPropertyValue(error.aProperties[i]);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    SerialProofreadingError(SerialProofreadingError error) {</b>
+<b class="nc">&nbsp;      nErrorStart = error.nErrorStart;</b>
+<b class="nc">&nbsp;      nErrorLength = error.nErrorLength;</b>
+<b class="nc">&nbsp;      nErrorType = error.nErrorType;</b>
+<b class="nc">&nbsp;      aFullComment = error.aFullComment;</b>
+<b class="nc">&nbsp;      aRuleIdentifier = error.aRuleIdentifier;</b>
+<b class="nc">&nbsp;      aShortComment = error.aShortComment;</b>
+<b class="nc">&nbsp;      aSuggestions = error.aSuggestions;</b>
+<b class="nc">&nbsp;      if (error.aProperties != null) {</b>
+<b class="nc">&nbsp;        aProperties = new SerialPropertyValue[error.aProperties.length];</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; error.aProperties.length; i++) {</b>
+<b class="nc">&nbsp;          aProperties[i] = new SerialPropertyValue(error.aProperties[i]);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+&nbsp;    SingleProofreadingError toSingleProofreadingError () {
+<b class="nc">&nbsp;      SingleProofreadingError error = new SingleProofreadingError();</b>
+<b class="nc">&nbsp;      error.nErrorStart = nErrorStart;</b>
+<b class="nc">&nbsp;      error.nErrorLength = nErrorLength;</b>
+<b class="nc">&nbsp;      error.nErrorType = nErrorType;</b>
+<b class="nc">&nbsp;      error.aFullComment = aFullComment;</b>
+<b class="nc">&nbsp;      error.aRuleIdentifier = aRuleIdentifier;</b>
+<b class="nc">&nbsp;      error.aShortComment = aShortComment;</b>
+<b class="nc">&nbsp;      error.aSuggestions = aSuggestions;</b>
+<b class="nc">&nbsp;      if (aProperties != null) {</b>
+<b class="nc">&nbsp;        error.aProperties = new PropertyValue[aProperties.length];</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; aProperties.length; i++) {</b>
+<b class="nc">&nbsp;          error.aProperties[i] = aProperties[i].toPropertyValue();</b>
+&nbsp;        }
+&nbsp;      } else {
+<b class="nc">&nbsp;        error.aProperties = null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return error;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Class of serializable property values
+&nbsp;   */
+&nbsp;  private class SerialPropertyValue implements Serializable {
+&nbsp;
+&nbsp;    private static final long serialVersionUID = 1L;
+&nbsp;    String name;
+&nbsp;    Object value;
+&nbsp;    
+<b class="nc">&nbsp;    SerialPropertyValue(PropertyValue properties) {</b>
+<b class="nc">&nbsp;      name = properties.Name;</b>
+<b class="nc">&nbsp;      value = properties.Value;</b>
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    SerialPropertyValue(SerialPropertyValue properties) {</b>
+<b class="nc">&nbsp;      name = properties.name;</b>
+<b class="nc">&nbsp;      value = properties.value;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    PropertyValue toPropertyValue() {
+<b class="nc">&nbsp;      PropertyValue properties = new PropertyValue();</b>
+<b class="nc">&nbsp;      properties.Name = name;</b>
+<b class="nc">&nbsp;      properties.Value = value;</b>
+<b class="nc">&nbsp;      properties.Handle = -1;</b>
+<b class="nc">&nbsp;      properties.State = PropertyState.DIRECT_VALUE;</b>
+<b class="nc">&nbsp;      return properties;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

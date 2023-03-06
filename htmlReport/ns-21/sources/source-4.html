@@ -1,0 +1,1117 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CheckRequestAnalysis</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: CheckRequestAnalysis (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CheckRequestAnalysis</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/418)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/444)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.gui.Configuration;
+&nbsp;import org.languagetool.openoffice.DocumentCache.ChangedRange;
+&nbsp;import org.languagetool.openoffice.DocumentCache.TextParagraph;
+&nbsp;import org.languagetool.openoffice.OfficeTools.DocumentType;
+&nbsp;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;import com.sun.star.text.XFlatParagraph;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class to analyze a LO/OO request for grammar check
+&nbsp; * Get the number of paragraph that has to be checked (-1 if paragraph could not be found)
+&nbsp; * Changes document cache, if text has be changed
+&nbsp; * Gives hint that the checked paragraph has changed
+&nbsp; * Shift result cache if lines have be inserted or deleted
+&nbsp; * Gives the range of paragraphs, which should be checked again after text has changed
+&nbsp; * @since 5.3
+&nbsp; * @author Fred Kruse
+&nbsp; */
+&nbsp;class CheckRequestAnalysis {
+&nbsp;  
+&nbsp;  private static int debugMode;                     //  should be 0 except for testing; 1 = low level; 2 = advanced level
+&nbsp;  private static boolean debugModeTm;               //  time measurement should be false except for testing
+&nbsp;  
+&nbsp;  private final int numParasToCheck;                //  current number of Paragraphs to be checked
+&nbsp;
+&nbsp;  private final XComponent xComponent;              //  XComponent of the open document
+&nbsp;  private final String docID;                       //  docID of the document
+&nbsp;  private final MultiDocumentsHandler mDocHandler;  //  handles the different documents loaded in LO/OO
+&nbsp;  private final SingleDocument singleDocument;      //  handles one document
+&nbsp;  private final List&lt;Integer&gt; minToCheckPara;       //  List of minimal to check paragraphs for different classes of text level rules
+&nbsp;  private final Language docLanguage;               //  docLanguage (usually the Language of the first paragraph)
+&nbsp;  private final Language fixedLanguage;             //  fixed language (by configuration); if null: use language of document (given by LO/OO)
+&nbsp;  private final boolean useQueue;                   //  true: use queue to check text level rules (given by configuration)
+&nbsp;  private final DocumentType docType;               //  save the type of document
+&nbsp;  private final int proofInfo;                      //  Information about proof request (supported by LO &gt; 6.4 otherwise: 0 == UNKNOWN)
+&nbsp;  private final DocumentCache docCache;             //  cache of paragraphs (only readable by parallel thread)
+&nbsp;  private final Map&lt;Integer, String&gt; changedParas;  //  Map of last changed paragraphs;
+&nbsp;  private final List&lt;ResultCache&gt; paragraphsCache;  //  Cache for matches of text rules
+&nbsp;
+&nbsp;  private FlatParagraphTools flatPara;              //  Save information for flat paragraphs (including iterator and iterator provider) for the single document
+&nbsp;  private ViewCursorTools viewCursor;               //  Get the view cursor for desktop
+&nbsp;  private int numLastVCPara;                        //  Save position of ViewCursor for the single documents
+&nbsp;  private int numLastFlPara;                        //  Save position of FlatParagraph for the single documents
+<b class="nc">&nbsp;  private DocumentCursorTools docCursor = null;     //  Save document cursor for the single document</b>
+<b class="nc">&nbsp;  private int changeFrom = 0;                       //  Change result cache from paragraph</b>
+<b class="nc">&nbsp;  private int changeTo = 0;                         //  Change result cache to paragraph</b>
+<b class="nc">&nbsp;  private boolean textIsChanged = false;            //  true: check number of paragraphs again</b>
+<b class="nc">&nbsp;  private int numParasToChange = -1;                //  Number of paragraphs to change for n-paragraph cache</b>
+&nbsp;  private int paraNum;                              //  Number of current checked paragraph
+&nbsp;
+&nbsp;  CheckRequestAnalysis(int numLastVCPara, int numLastFlPara, int proofInfo, int numParasToCheck, Language fixedLanguage, Language docLanguage,
+<b class="nc">&nbsp;      SingleDocument singleDocument, List&lt;ResultCache&gt; paragraphsCache, ViewCursorTools viewCursor, Map&lt;Integer, String&gt; changedParas) {</b>
+<b class="nc">&nbsp;    debugMode = OfficeTools.DEBUG_MODE_CR;</b>
+<b class="nc">&nbsp;    debugModeTm = OfficeTools.DEBUG_MODE_TM;</b>
+<b class="nc">&nbsp;    this.singleDocument = singleDocument;</b>
+<b class="nc">&nbsp;    this.viewCursor = viewCursor;</b>
+<b class="nc">&nbsp;    this.numLastVCPara = numLastVCPara;</b>
+<b class="nc">&nbsp;    this.numLastFlPara = numLastFlPara;</b>
+<b class="nc">&nbsp;    this.proofInfo = proofInfo;</b>
+<b class="nc">&nbsp;    this.paragraphsCache = paragraphsCache;</b>
+<b class="nc">&nbsp;    this.changedParas = changedParas;</b>
+<b class="nc">&nbsp;    this.fixedLanguage = fixedLanguage;</b>
+<b class="nc">&nbsp;    this.docLanguage = docLanguage;</b>
+<b class="nc">&nbsp;    mDocHandler = singleDocument.getMultiDocumentsHandler();</b>
+<b class="nc">&nbsp;    xComponent = singleDocument.getXComponent();</b>
+<b class="nc">&nbsp;    docID = singleDocument.getDocID();</b>
+<b class="nc">&nbsp;    docType = singleDocument.getDocumentType();</b>
+<b class="nc">&nbsp;    minToCheckPara = mDocHandler.getNumMinToCheckParas();</b>
+<b class="nc">&nbsp;    docCache = singleDocument.getDocumentCache();</b>
+<b class="nc">&nbsp;    flatPara = singleDocument.getFlatParagraphTools();</b>
+<b class="nc">&nbsp;    Configuration config = mDocHandler.getConfiguration();</b>
+<b class="nc">&nbsp;    this.numParasToCheck = mDocHandler.isTestMode() ? 0 : numParasToCheck;</b>
+<b class="nc">&nbsp;    useQueue = (numParasToCheck != 0 &amp;&amp; proofInfo != OfficeTools.PROOFINFO_GET_PROOFRESULT &amp;&amp; config.useTextLevelQueue());</b>
+<b class="nc">&nbsp;    for (int minPara : minToCheckPara) {</b>
+<b class="nc">&nbsp;      if (minPara &gt; numParasToChange) {</b>
+<b class="nc">&nbsp;        numParasToChange = minPara;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get number of paragraph from node index
+&nbsp;   */
+&nbsp;  int getNumberOfParagraphFromSortedTextId(int sortedTextId, int documentElementsCount, String paraText, Locale locale, int[] footnotePosition) {
+&nbsp;    //  test if doc cache has changed --&gt; actualize
+<b class="nc">&nbsp;    if (!docCache.isActual(documentElementsCount)) {</b>
+<b class="nc">&nbsp;      handleCacheChanges();</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalyzes: getNumberOfParagraphFromSortedTextId: cache actualized, documentElementsCount: &quot; + documentElementsCount);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    int paraNum = docCache.getFlatparagraphFromSortedTextId(sortedTextId);</b>
+&nbsp;    //  if number of paragraph &lt; 0 --&gt; actualize doc cache and try again
+<b class="nc">&nbsp;    if (paraNum &lt; 0) {</b>
+<b class="nc">&nbsp;      handleCacheChanges();</b>
+<b class="nc">&nbsp;      paraNum = docCache.getFlatparagraphFromSortedTextId(sortedTextId);</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalyzes: getNumberOfParagraphFromSortedTextId: paraNum &lt; 0 &quot; + </b>
+&nbsp;              &quot; --&gt; cache actualized, new paraNum: &quot; + paraNum);
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (paraNum &gt;= 0) {</b>
+&nbsp;      //  test if paragraph has changed --&gt; actualize all caches for single paragraph
+<b class="nc">&nbsp;      TextParagraph tPara = docCache.getNumberOfTextParagraph(paraNum);</b>
+<b class="nc">&nbsp;      if (docCursor == null) {</b>
+<b class="nc">&nbsp;        docCursor = new DocumentCursorTools(xComponent);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;Integer&gt; deletedChars = docCursor.getDeletedCharactersOfTextParagraph(tPara);</b>
+&nbsp;      
+<b class="nc">&nbsp;      if (!docCache.isEqual(paraNum, paraText, locale, deletedChars)) {</b>
+<b class="nc">&nbsp;        handleChangedPara(paraNum, paraText, locale, footnotePosition, deletedChars);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return paraNum;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get number of paragraph
+&nbsp;   */
+&nbsp;  int getNumberOfParagraph(int nPara, String chPara, Locale locale, int startPos, int[] footnotePositions) {
+<b class="nc">&nbsp;    paraNum = getParaPos(nPara, chPara, locale, startPos, footnotePositions);</b>
+<b class="nc">&nbsp;    if (isDisposed() || paraNum &gt;= docCache.size()) {</b>
+<b class="nc">&nbsp;      paraNum = -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return paraNum;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Actualize document cache and result cache for given paragraph number
+&nbsp;   */
+&nbsp;  void actualizeDocumentCache (int nPara, boolean isIntern) {
+<b class="nc">&nbsp;    if (isDisposed()) {</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    long startTime = 0;</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime = System.currentTimeMillis();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    setFlatParagraphTools(xComponent);</b>
+<b class="nc">&nbsp;    if (docCache.isEmpty()) {</b>
+<b class="nc">&nbsp;      docCursor = new DocumentCursorTools(xComponent);</b>
+<b class="nc">&nbsp;      docCache.refresh(singleDocument, LinguisticServices.getLocale(fixedLanguage), LinguisticServices.getLocale(docLanguage), xComponent, 1);</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: actualizeDocumentCache: resetAllParas (docCache is empty): new docCache.size: &quot; + docCache.size()</b>
+&nbsp;                + &quot;, docID: &quot; + docID + OfficeTools.LOG_LINE_BREAK);
+&nbsp;      }
+<b class="nc">&nbsp;      if (docCache.isEmpty()) {</b>
+&nbsp;        return;
+&nbsp;      }
+&nbsp;    } else {
+<b class="nc">&nbsp;      int nOldParas = docCache.size();</b>
+<b class="nc">&nbsp;      changesInNumberOfParagraph(false);</b>
+<b class="nc">&nbsp;      int numParas = docCache.size();</b>
+<b class="nc">&nbsp;      if (numParas &lt;= 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: actualizeDocumentCache: docCache error!&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      textIsChanged = true;</b>
+<b class="nc">&nbsp;      if (nOldParas != numParas) {</b>
+<b class="nc">&nbsp;        if (debugMode &gt; 1) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: actualizeDocumentCache: Number of Paragraphs has changed: old:&quot; +</b>
+&nbsp;              nOldParas + &quot;, new:&quot; + numParas);
+&nbsp;        }
+&nbsp;        return;
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    XFlatParagraph xFlatPara = flatPara.getFlatParagraphAt(nPara);</b>
+<b class="nc">&nbsp;    if (isDisposed() || xFlatPara == null) {</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    String chPara = xFlatPara.getText();</b>
+<b class="nc">&nbsp;    Locale docLocale = docLanguage == null ? null : LinguisticServices.getLocale(docLanguage);</b>
+<b class="nc">&nbsp;    Locale lastLocale = nPara &lt;= 0 ? null : docCache.getFlatParagraphLocale(nPara - 1);</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      Locale locale = FlatParagraphTools.getPrimaryParagraphLanguage(xFlatPara, 0, chPara.length(), docLocale, lastLocale, false);</b>
+<b class="nc">&nbsp;      if (docCursor == null) {</b>
+<b class="nc">&nbsp;        docCursor = new DocumentCursorTools(xComponent);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;Integer&gt; deletedChars = docCursor.getDeletedCharactersOfTextParagraph(docCache.getNumberOfTextParagraph(nPara));</b>
+<b class="nc">&nbsp;      if (!docCache.isEqual(nPara, chPara, locale, deletedChars)) {</b>
+<b class="nc">&nbsp;        if (debugMode &gt; 1) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;ICheckRequestAnalysis: actualizeDocumentCache: Paragraph has changed:\nold:&quot; </b>
+<b class="nc">&nbsp;              + chPara + &quot;\nnew:&quot; + docCache.getFlatParagraph(nPara));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        docCache.setFlatParagraph(nPara, chPara, locale);</b>
+<b class="nc">&nbsp;        removeResultCache(nPara);</b>
+<b class="nc">&nbsp;        singleDocument.removeIgnoredMatch(nPara, isIntern);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to actualize document cache: &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * correct the changes of document cache
+&nbsp;   * add incorrect paragraphs to check queue
+&nbsp;   * returns the first incorrectFlat paragraph number
+&nbsp;   * returns -1 if there is no change in document cache
+&nbsp;   *//*
+&nbsp;   *  TODO: Remove after Tests
+&nbsp;  int changesInDocumentCache () {
+&nbsp;    //  Return -1, if there is no initialized docCache
+&nbsp;    if (docCache.isEmpty() || isDisposed()) {
+&nbsp;      return -1;
+&nbsp;    }
+&nbsp;    DocumentCache oldDocCache = new DocumentCache(docCache);
+&nbsp;    //  Return -1, if there is no initialized docCache
+&nbsp;    if (isDisposed()) {
+&nbsp;      return -1;
+&nbsp;    }
+&nbsp;    setFlatParagraphTools(xComponent);
+&nbsp;    int nFirstPara = -1;
+&nbsp;    if (docCursor == null) {
+&nbsp;      docCursor = new DocumentCursorTools(xComponent);
+&nbsp;    }
+&nbsp;    docCache.refresh(docCursor, flatPara, docLanguage != null ? LinguisticServices.getLocale(docLanguage) : null, xComponent, 2);
+&nbsp;    if (docCache.isEmpty()) {
+&nbsp;      return -1;
+&nbsp;    }
+&nbsp;    if (!isDisposed() &amp;&amp; docCache.size() != oldDocCache.size()) {
+&nbsp;      int from = 0;
+&nbsp;      int to = 1;
+&nbsp;      // to prevent spontaneous recheck of nearly the whole text
+&nbsp;      // the change of text contents has to be checked first
+&nbsp;      // ignore headers and footers and the change of function inside of them
+&nbsp;      while (from &lt; docCache.size() &amp;&amp; from &lt; oldDocCache.size() 
+&nbsp;          &amp;&amp; (docCache.getNumberOfTextParagraph(from).type == DocumentCache.CURSOR_TYPE_HEADER_FOOTER
+&nbsp;          || docCache.getFlatParagraph(from).equals(oldDocCache.getFlatParagraph(from)))) {
+&nbsp;        from++;
+&nbsp;      }
+&nbsp;      boolean isTextChange = from &lt; docCache.size() &amp;&amp; from &lt; oldDocCache.size();
+&nbsp;      if (isTextChange) {
+&nbsp;        // if change in text is found check the number of text paragraphs which have changed
+&nbsp;        while (to &lt;= docCache.size() &amp;&amp; to &lt;= oldDocCache.size()
+&nbsp;            &amp;&amp; (docCache.getNumberOfTextParagraph(docCache.size() - to).type == DocumentCache.CURSOR_TYPE_HEADER_FOOTER
+&nbsp;            || docCache.getFlatParagraph(docCache.size() - to).equals(
+&nbsp;                    oldDocCache.getFlatParagraph(oldDocCache.size() - to)))) {
+&nbsp;          to++;
+&nbsp;        }
+&nbsp;        to = docCache.size() - to;
+&nbsp;        if (to &lt; 0) {
+&nbsp;          to = 0;
+&nbsp;        }
+&nbsp;      } else {
+&nbsp;        // if no change in text is found check the number of flat paragraphs which have changed
+&nbsp;        from = 0;
+&nbsp;        while (from &lt; docCache.size() &amp;&amp; from &lt; oldDocCache.size()
+&nbsp;            &amp;&amp; (docCache.getNumberOfTextParagraph(from).type != DocumentCache.CURSOR_TYPE_HEADER_FOOTER
+&nbsp;            || docCache.getFlatParagraph(from).equals(oldDocCache.getFlatParagraph(from)))) {
+&nbsp;          from++;
+&nbsp;        }
+&nbsp;        while (to &lt;= docCache.size() &amp;&amp; to &lt;= oldDocCache.size()
+&nbsp;            &amp;&amp; (docCache.getNumberOfTextParagraph(docCache.size() - to).type != DocumentCache.CURSOR_TYPE_HEADER_FOOTER
+&nbsp;            || docCache.getFlatParagraph(docCache.size() - to).equals(
+&nbsp;                    oldDocCache.getFlatParagraph(oldDocCache.size() - to)))) {
+&nbsp;          to++;
+&nbsp;        }
+&nbsp;        to = docCache.size() - to;
+&nbsp;      }
+&nbsp;      changeFrom = from - numParasToChange;
+&nbsp;      changeTo = to + numParasToChange + 1;
+&nbsp;      singleDocument.removeAndShiftIgnoredMatch(from, to, oldDocCache.size(), docCache.size());
+&nbsp;      if (debugMode &gt; 0) {
+&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: Changed paragraphs: from:&quot; + from + &quot;, to: &quot; + to);
+&nbsp;      }
+&nbsp;      for (ResultCache cache : paragraphsCache) {
+&nbsp;        cache.removeAndShift(from, to, docCache.size() - oldDocCache.size());
+&nbsp;      }
+&nbsp;      if (!isDisposed() &amp;&amp; useQueue &amp;&amp; isTextChange) {
+&nbsp;        if (debugMode &gt; 0) {
+&nbsp;          MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: Number of Paragraphs has changed: new: &quot; + docCache.size() 
+&nbsp;          + &quot;,  old: &quot; + oldDocCache.size()+ &quot;, docID: &quot; + docID);
+&nbsp;          if (to - from &gt; 1) {
+&nbsp;            MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: Number of Paragraphs has changed: Difference from &quot; + from + &quot; to &quot; + to);
+&nbsp;            MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: Old Cache size: &quot; + oldDocCache.size());
+&nbsp;            MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: new docCache(from): &#39;&quot; + docCache.getFlatParagraph(from) + &quot;&#39;&quot;);
+&nbsp;            if (from &lt; oldDocCache.size()) {
+&nbsp;              MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: old docCache(from): &#39;&quot; + oldDocCache.getFlatParagraph(from) + &quot;&#39;&quot;);
+&nbsp;            }
+&nbsp;            MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: new docCache(to): &#39;&quot; + docCache.getFlatParagraph(to) + &quot;&#39;&quot;);
+&nbsp;            if (to &lt; oldDocCache.size()) {
+&nbsp;              MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: old docCache(to): &#39;&quot; + oldDocCache.getFlatParagraph(to) + &quot;&#39;&quot;);
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;        for (int i = 0; i &lt; minToCheckPara.size(); i++) {
+&nbsp;          if (minToCheckPara.get(i) != 0 || nFirstPara &gt;= 0) {
+&nbsp;            for (int n = from; n &lt;= to; n++) {
+&nbsp;              singleDocument.addQueueEntry(n, i, minToCheckPara.get(i), docID, false, true);
+&nbsp;            }
+&nbsp;          } else {
+&nbsp;            nFirstPara = from;
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;      if (debugMode &gt; 0) {
+&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: Cache size changed: from = &quot; + from + &quot;; to = &quot; + to + &quot;; docID: &quot; + docID);
+&nbsp;      }
+&nbsp;    } else if (isDisposed() &amp;&amp; useQueue){
+&nbsp;      for (int n = 0; n &lt; docCache.size(); n++) {
+&nbsp;        int type = docCache.getNumberOfTextParagraph(n).type;
+&nbsp;        if (type != DocumentCache.CURSOR_TYPE_UNKNOWN &amp;&amp; !docCache.getFlatParagraph(n).equals(oldDocCache.getFlatParagraph(n))) {
+&nbsp;          for (int i = 0; i &lt; minToCheckPara.size(); i++) {
+&nbsp;            if (minToCheckPara.get(i) != 0 || nFirstPara &gt;= 0) {
+&nbsp;              singleDocument.addQueueEntry(n, i, minToCheckPara.get(i), docID, false, true);
+&nbsp;            } else {
+&nbsp;              nFirstPara = n;
+&nbsp;            }
+&nbsp;          }
+&nbsp;          if (debugMode &gt; 0) {
+&nbsp;            MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInDocumentCache: FlatParagraph(&quot; + n + &quot;) has changed; docID: &quot; + docID);
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;    return nFirstPara;
+&nbsp;  }
+&nbsp;*/  
+&nbsp;  /** 
+&nbsp;   * Get new initialized flat paragraph tools
+&nbsp;   */
+&nbsp;  FlatParagraphTools getFlatParagraphTools() {
+<b class="nc">&nbsp;    if (flatPara == null) {</b>
+<b class="nc">&nbsp;      flatPara = new FlatParagraphTools(xComponent);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return flatPara;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Get new initialized view cursor tools
+&nbsp;   */
+&nbsp;  ViewCursorTools getViewCursorTools() {
+<b class="nc">&nbsp;    return viewCursor;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Get new initialized document cursor tools
+&nbsp;   */
+&nbsp;  DocumentCursorTools getDocumentCursorTools() {
+<b class="nc">&nbsp;    return docCursor;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * Get last number of paragraph from view cursor
+&nbsp;   */
+&nbsp;  int getLastParaNumFromViewCursor() {
+<b class="nc">&nbsp;    return numLastVCPara;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Get last number of paragraph from flat paragraph
+&nbsp;   */
+&nbsp;  int getLastParaNumFromFlatParagraph() {
+<b class="nc">&nbsp;    return numLastFlPara;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** Get first paragraph to change
+&nbsp;   */
+&nbsp;  int getFirstParagraphToChange() {
+<b class="nc">&nbsp;    return changeFrom;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** Get last paragraph to change
+&nbsp;   */
+&nbsp;  int getLastParagraphToChange() {
+<b class="nc">&nbsp;    return changeTo;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** Text is changed
+&nbsp;   */
+&nbsp;  boolean textIsChanged() {
+<b class="nc">&nbsp;    return textIsChanged;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * Open new flat paragraph tools or initialize them again
+&nbsp;   */
+&nbsp;  private void setFlatParagraphTools(XComponent xComponent) {
+<b class="nc">&nbsp;    long startTime = 0;</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime = System.currentTimeMillis();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (flatPara == null) {</b>
+<b class="nc">&nbsp;      flatPara = new FlatParagraphTools(xComponent);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      flatPara.init();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to run setFlatParagraphTools: &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Search for Position of Paragraph
+&nbsp;   * gives Back the Position of flat paragraph / -1 if Paragraph can not be found
+&nbsp;   */
+&nbsp;  private int getParaPos(int nPara, String chPara, Locale locale, int startPos, int[] footnotePositions) {
+&nbsp;    
+<b class="nc">&nbsp;    if (isDisposed()) {</b>
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    long startTime = 0;</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime = System.currentTimeMillis();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaPos: PROOFINFO_GET_PROOFRESULT: analysis started&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (docType != DocumentType.WRITER &amp;&amp; docCache.isEmpty()) {</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaPos: start docCache.refresh&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      docCache.refresh(singleDocument, LinguisticServices.getLocale(fixedLanguage), LinguisticServices.getLocale(docLanguage), xComponent, 3);</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    if (nPara &gt;= 0) {</b>
+<b class="nc">&nbsp;      return nPara;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    if (numParasToCheck == 0 || xComponent == null) {</b>
+<b class="nc">&nbsp;      return -1;  //  check only the processed paragraph</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Initialization 
+<b class="nc">&nbsp;    docCursor = null;</b>
+<b class="nc">&nbsp;    if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaPos: start setFlatParagraphTools&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    setFlatParagraphTools(xComponent);</b>
+&nbsp;
+<b class="nc">&nbsp;    if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaPos: test docCache.isEmpty&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (docCache.isEmpty()) {</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaPos: get DocumentCursorTools&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      docCursor = new DocumentCursorTools(xComponent);</b>
+<b class="nc">&nbsp;      docCache.refresh(singleDocument, LinguisticServices.getLocale(fixedLanguage), LinguisticServices.getLocale(docLanguage), xComponent, 4);</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaPos: start docCache.refresh&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugMode &gt; 0 || proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaPos: resetAllParas (docCache is empty): new docCache.size: &quot; + docCache.size()</b>
+&nbsp;                + &quot;, docID: &quot; + docID + OfficeTools.LOG_LINE_BREAK);
+&nbsp;      }
+<b class="nc">&nbsp;      if (docCache.isEmpty()) {</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    if (debugMode &gt; 1) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaPos: proofInfo = &quot; + proofInfo);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to run getParaPos initialization: &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    if (proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaPos: start getParaFromViewCursorOrDialog&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return getParaFromViewCursorOrDialog(chPara, locale, footnotePositions);</b>
+&nbsp;    }
+&nbsp;    else {
+<b class="nc">&nbsp;      return getParaFromFlatparagraph(chPara, locale, startPos, footnotePositions);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Search for Position of Paragraph if reason for proof is mark paragraph or no proof info
+&nbsp;   * returns -1 if Paragraph can not be found
+&nbsp;   */
+&nbsp;  private int getParaFromFlatparagraph(String chPara, Locale locale, int startPos, int[] footnotePositions) {
+<b class="nc">&nbsp;    if (isDisposed() || docCache.isEmpty()) {</b>
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    long startTime = 0;</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime = System.currentTimeMillis();</b>
+&nbsp;    }
+&nbsp;    // try to get next position from last FlatParagraph position (for performance reasons)
+<b class="nc">&nbsp;    if (startPos != 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_MARK_PARAGRAPH) {</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromFlatparagraph: Number of Paragraph: &quot; + numLastFlPara </b>
+&nbsp;            + &quot;; startPos = &quot; + startPos
+&nbsp;            + &quot; (proofInfo == &quot; + OfficeTools.PROOFINFO_MARK_PARAGRAPH + &quot;)&quot; + OfficeTools.LOG_LINE_BREAK);
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to run getParaFromFlatparagraph(numLastFlPara, startPos &gt; 0): &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return numLastFlPara;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    int nPara = findNextParaPos(numLastFlPara, chPara, locale, startPos);</b>
+<b class="nc">&nbsp;    if (nPara &gt;= 0) {</b>
+<b class="nc">&nbsp;      numLastFlPara = nPara;</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromFlatparagraph: Number of Paragraph: &quot; + nPara </b>
+&nbsp;            + &quot;, start: &quot; + startPos + OfficeTools.LOG_LINE_BREAK);
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to run getParaFromFlatparagraph(numLastFlPara, startPos == 0): &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return nPara;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    // number of paragraphs has changed? --&gt; Update the internal information
+<b class="nc">&nbsp;    nPara = changesInNumberOfParagraph(true);</b>
+<b class="nc">&nbsp;    if (nPara &lt; 0) {</b>
+&nbsp;      //  problem with automatic iteration - try to get ViewCursor position
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to run getParaFromFlatparagraph(getParaFromViewCursorOrDialog 1): &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return getParaFromViewCursorOrDialog(chPara, locale, footnotePositions);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (isDisposed()) {</b>
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    TextParagraph nTPara = docCache.getNumberOfTextParagraph(nPara); </b>
+<b class="nc">&nbsp;    if (proofInfo == OfficeTools.PROOFINFO_MARK_PARAGRAPH) {</b>
+<b class="nc">&nbsp;      if (nTPara.type == DocumentCache.CURSOR_TYPE_UNKNOWN) {</b>
+<b class="nc">&nbsp;        if (debugModeTm) {</b>
+<b class="nc">&nbsp;          long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;          if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Time to run getParaFromFlatparagraph(getPosFromChangedPara 1): &quot; + runTime);</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        return getPosFromChangedPara(chPara, locale, nPara, footnotePositions);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (!isDisposed()) {</b>
+<b class="nc">&nbsp;      String curFlatParaText = flatPara.getCurrentParaText();</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromFlatparagraph: curFlatParaText: &quot; + curFlatParaText + OfficeTools.LOG_LINE_BREAK</b>
+<b class="nc">&nbsp;            + &quot;chPara: &quot; + chPara + OfficeTools.LOG_LINE_BREAK + &quot;getFlatParagraph: &quot; + docCache.getFlatParagraph(nPara) + OfficeTools.LOG_LINE_BREAK);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (proofInfo == OfficeTools.PROOFINFO_UNKNOWN) {</b>
+<b class="nc">&nbsp;        if (curFlatParaText != null &amp;&amp; !curFlatParaText.equals(chPara) &amp;&amp; curFlatParaText.equals(docCache.getFlatParagraph(nPara))) {</b>
+&nbsp;          //  wrong flat paragraph - try to get ViewCursor position
+<b class="nc">&nbsp;          if (debugModeTm) {</b>
+<b class="nc">&nbsp;            long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;            if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;Time to run getParaFromFlatparagraph(getParaFromViewCursorOrDialog 2): &quot; + runTime);</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          return getParaFromViewCursorOrDialog(chPara, locale, footnotePositions);</b>
+&nbsp;        }
+&nbsp;        //  test real flat paragraph rather then the one given by Proofreader - it could be changed meanwhile
+<b class="nc">&nbsp;        if (curFlatParaText != null) {</b>
+<b class="nc">&nbsp;          chPara = curFlatParaText;</b>
+&nbsp;        }
+&nbsp;      } else {
+<b class="nc">&nbsp;        if (curFlatParaText != null &amp;&amp; !curFlatParaText.equals(docCache.getFlatParagraph(nPara))) {</b>
+&nbsp;          //  wrong flat paragraph - try to get paragraph from cache
+<b class="nc">&nbsp;          int n = getParaFromDocCache(chPara, locale, nPara);</b>
+<b class="nc">&nbsp;          if (n &gt;= 0) {</b>
+<b class="nc">&nbsp;            numLastFlPara = n;</b>
+<b class="nc">&nbsp;            if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromFlatparagraph: From document cache: Number of Paragraph: &quot; + n </b>
+&nbsp;                  + &quot;, start: &quot; + startPos + OfficeTools.LOG_LINE_BREAK);
+&nbsp;            }
+<b class="nc">&nbsp;            textIsChanged = true;</b>
+<b class="nc">&nbsp;            if (debugModeTm) {</b>
+<b class="nc">&nbsp;              long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;              if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;Time to run getParaFromFlatparagraph: &quot; + runTime);</b>
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;            return n;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;    // find position from changed paragraph
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to run getParaFromFlatparagraph(getPosFromChangedPara 2): &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return getPosFromChangedPara(chPara, locale, nPara, footnotePositions);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * remove all cached matches for one paragraph
+&nbsp;   */
+&nbsp;  public void removeResultCache(int nPara) {
+<b class="nc">&nbsp;    if (!isDisposed()) {</b>
+<b class="nc">&nbsp;      for (ResultCache cache : paragraphsCache) {</b>
+<b class="nc">&nbsp;        cache.remove(nPara);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Is document disposed?
+&nbsp;   */
+&nbsp;  private boolean isDisposed() {
+<b class="nc">&nbsp;    return singleDocument.isDisposed();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get number of flat paragraph from document cache
+&nbsp;   * start with a known paragraph
+&nbsp;   * return -1 if fails
+&nbsp;   */
+&nbsp;  private int getParaFromDocCache(String chPara, Locale locale, int nStart) {
+<b class="nc">&nbsp;    if (!isDisposed()) {</b>
+<b class="nc">&nbsp;      for (int i = nStart; i &lt; docCache.size(); i++) {</b>
+<b class="nc">&nbsp;        if (docCache.isEqual(i, chPara, locale)) {</b>
+<b class="nc">&nbsp;          return i;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = nStart - 1; i &gt;= 0; i--) {</b>
+<b class="nc">&nbsp;        if (docCache.isEqual(i, chPara, locale)) {</b>
+<b class="nc">&nbsp;          return i;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return -1;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * Get the Position of Paragraph if result is ordered by right mouse click or spelling dialog
+&nbsp;   * returns -1 if it fails
+&nbsp;   */
+&nbsp;  private int getParaFromViewCursorOrDialog(String chParaWithFootnotes, Locale locale, int[] footnotePositions) {
+&nbsp;    // try to get ViewCursor position (proof initiated by mouse click)
+<b class="nc">&nbsp;    if (isDisposed() || !docCache.isFinished() || docCache.isEmpty()) {</b>
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    long startTime = 0;</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime = System.currentTimeMillis();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (viewCursor == null) {</b>
+<b class="nc">&nbsp;      viewCursor = new ViewCursorTools(xComponent);</b>
+&nbsp;    }
+&nbsp;    int nPara;
+<b class="nc">&nbsp;    String vcText = SingleCheck.removeFootnotes(viewCursor.getViewCursorParagraphText(), footnotePositions, null);</b>
+<b class="nc">&nbsp;    String chPara = SingleCheck.removeFootnotes(chParaWithFootnotes, footnotePositions, null);</b>
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromViewCursorOrDialog: vcText: &quot; + vcText);</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromViewCursorOrDialog: chPara: &quot; + chPara);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (chPara.equals(vcText)) {</b>
+<b class="nc">&nbsp;      TextParagraph tPara = viewCursor.getViewCursorParagraph();</b>
+<b class="nc">&nbsp;      if (tPara != null &amp;&amp; tPara.type != DocumentCache.CURSOR_TYPE_UNKNOWN) {</b>
+<b class="nc">&nbsp;        nPara = docCache.getFlatParagraphNumber(tPara);</b>
+<b class="nc">&nbsp;        numLastVCPara = nPara;</b>
+<b class="nc">&nbsp;        if (proofInfo == OfficeTools.PROOFINFO_MARK_PARAGRAPH) {</b>
+<b class="nc">&nbsp;          numLastFlPara = nPara;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if(!docCache.isEqual(nPara, chParaWithFootnotes, locale)) {</b>
+<b class="nc">&nbsp;          actualizeDocumentCache(nPara, false);</b>
+<b class="nc">&nbsp;          if (docCache.getFlatParagraph(nPara) == null || !DocumentCache.isEqualText(docCache.getFlatParagraph(nPara), chPara, footnotePositions)) {</b>
+<b class="nc">&nbsp;            if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromViewCursorOrDialog: cText != chPara: Number of Paragraph: &quot; + nPara);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (debugModeTm) {</b>
+<b class="nc">&nbsp;              long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;              if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;Time to run getParaFromViewCursorOrDialog: &quot; + runTime);</b>
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;            return -1;</b>
+&nbsp;          }
+<b class="nc">&nbsp;          textIsChanged = true;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromViewCursorOrDialog: Number of Paragraph: &quot; + nPara + OfficeTools.LOG_LINE_BREAK);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (debugModeTm) {</b>
+<b class="nc">&nbsp;          long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;          if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Time to run getParaFromViewCursorOrDialog: &quot; + runTime);</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        return nPara;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    // try to get next position from last ViewCursor position (proof per dialog box)
+<b class="nc">&nbsp;    if (numLastVCPara &gt;= docCache.size()) {</b>
+<b class="nc">&nbsp;      numLastVCPara = 0;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    nPara = getParaFromDocCache(chPara, locale, numLastVCPara);</b>
+<b class="nc">&nbsp;    if (nPara &gt;= 0) {</b>
+<b class="nc">&nbsp;      numLastVCPara = nPara;</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromViewCursorOrDialog: From DocCache: Number of Paragraph: &quot; + nPara + OfficeTools.LOG_LINE_BREAK);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to run getParaFromViewCursorOrDialog: &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    return nPara;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getParaFromViewCursorOrDialog: Paragraph not found: return -1&quot; + OfficeTools.LOG_LINE_BREAK);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to run getParaFromViewCursorOrDialog: &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return -1;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Handle the changed document cache
+&nbsp;   * adjust the result cache to changes
+&nbsp;   */
+&nbsp;  private boolean handleCacheChanges() {
+<b class="nc">&nbsp;    if (useQueue) {</b>
+<b class="nc">&nbsp;      mDocHandler.getTextLevelCheckQueue().interruptCheck(docID, true);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    ChangedRange changed = docCache.refreshAndCompare(singleDocument, LinguisticServices.getLocale(fixedLanguage), </b>
+<b class="nc">&nbsp;        LinguisticServices.getLocale(docLanguage), xComponent, 5);</b>
+<b class="nc">&nbsp;    if (changed == null || isDisposed()) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    changeFrom = changed.from - numParasToChange;</b>
+<b class="nc">&nbsp;    changeTo = changed.to + numParasToChange;</b>
+<b class="nc">&nbsp;    singleDocument.removeAndShiftIgnoredMatch(changed.from, changed.to, changed.oldSize, changed.newSize);</b>
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: handleCacheChanges: Changed paragraphs: from:&quot; + changed.from + &quot;, to: &quot; + changed.to);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if(!isDisposed()) {</b>
+<b class="nc">&nbsp;      for (ResultCache cache : paragraphsCache) {</b>
+<b class="nc">&nbsp;        cache.removeAndShift(changed.from, changed.to, changed.oldSize, changed.newSize);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (useQueue) {</b>
+<b class="nc">&nbsp;        if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: handleCacheChanges: Number of Paragraphs has changed: new: &quot; + changed.newSize </b>
+&nbsp;          + &quot;,  old: &quot; + changed.oldSize + &quot;, docID: &quot; + docID);
+<b class="nc">&nbsp;          if (changed.to - changed.from &gt; 1) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: handleCacheChanges: Number of Paragraphs has changed: Difference from &quot; </b>
+&nbsp;                + changed.from + &quot; to &quot; + changed.to);
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: handleCacheChanges: Old Cache size: &quot; + changed.oldSize);</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: handleCacheChanges: new docCache(from): &#39;&quot; </b>
+<b class="nc">&nbsp;                + docCache.getFlatParagraph(changed.from) + &quot;&#39;&quot;);</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        for (int i = 0; i &lt; minToCheckPara.size(); i++) {</b>
+<b class="nc">&nbsp;          if (minToCheckPara.get(i) != 0) {</b>
+<b class="nc">&nbsp;            if (changed.newSize - changed.oldSize &gt; 0) {</b>
+<b class="nc">&nbsp;              for (int n = changed.from; n &lt; changed.to; n++) {</b>
+<b class="nc">&nbsp;                singleDocument.addQueueEntry(n, i, minToCheckPara.get(i), docID, false, true);</b>
+&nbsp;              }
+<b class="nc">&nbsp;            } else if (changed.newSize - changed.oldSize &lt; 0) {</b>
+<b class="nc">&nbsp;              for (int n = changed.from; n &lt; changed.from + 1; n++) {</b>
+<b class="nc">&nbsp;                singleDocument.addQueueEntry(n, i, minToCheckPara.get(i), docID, false, true);</b>
+&nbsp;              }
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        mDocHandler.getTextLevelCheckQueue().wakeupQueue(docID);;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * correct the changes in number of paragraph (added or removed paragraphs)
+&nbsp;   * returns Flat paragraph number
+&nbsp;   * returns -1 if the tested paragraph should be tested for view cursor position
+&nbsp;   */
+&nbsp;  private int changesInNumberOfParagraph(boolean getCurNum) {
+&nbsp;    // Test if Size of allParas is correct; Reset if not
+<b class="nc">&nbsp;    long startTime = 0;</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime = System.currentTimeMillis();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (docCache.isEmpty() || isDisposed()) {</b>
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    setFlatParagraphTools(xComponent);</b>
+<b class="nc">&nbsp;    int nPara = 0;</b>
+<b class="nc">&nbsp;    long startTime1 = 0;</b>
+<b class="nc">&nbsp;    if (getCurNum) {</b>
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        startTime1 = System.currentTimeMillis();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      nPara = flatPara.getCurNumFlatParagraph();</b>
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime1;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to run changesInNumberOfParagraph (getCurNumFlatParagraph): &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (nPara &lt; 0) {</b>
+<b class="nc">&nbsp;        if (debugModeTm) {</b>
+<b class="nc">&nbsp;          long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;          if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Time to run changesInNumberOfParagraph (return -2): &quot; + runTime);</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        return -2;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (docCursor == null) {</b>
+<b class="nc">&nbsp;      docCursor = new DocumentCursorTools(xComponent);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime1 = System.currentTimeMillis();</b>
+&nbsp;    }
+&nbsp;//    boolean noChange = docCache.isEqualCacheSize(docCursor);
+<b class="nc">&nbsp;    int nFParas = flatPara.getNumberOfAllFlatPara();</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime1;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to run changesInNumberOfParagraph (docCache.isEqualCacheSize): &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (nFParas == docCache.size()) {</b>
+&nbsp;//    if (noChange) {
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to run changesInNumberOfParagraph (no change): &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return nPara;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInNumberOfParagraph: resetAllParas: docCache.size: &quot; + docCache.size() + &quot;, nPara: &quot; + nPara</b>
+&nbsp;              + &quot;, docID: &quot; + docID + OfficeTools.LOG_LINE_BREAK);
+&nbsp;    }
+<b class="nc">&nbsp;    if (isDisposed()) {</b>
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (!handleCacheChanges() || isDisposed()) {</b>
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: changesInNumberOfParagraph: Number FlatParagraphs: &quot; + docCache.size() + &quot;; docID: &quot; + docID);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (nPara &gt;= docCache.size()) {</b>
+<b class="nc">&nbsp;      nPara = flatPara.getCurNumFlatParagraph();</b>
+<b class="nc">&nbsp;      if (nPara &lt; 0 || nPara &gt;= docCache.size()) {</b>
+<b class="nc">&nbsp;        if (debugModeTm) {</b>
+<b class="nc">&nbsp;          long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;          if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Time to run changesInNumberOfParagraph (return -1): &quot; + runTime);</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (getCurNum) {</b>
+<b class="nc">&nbsp;      textIsChanged = true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to run changesInNumberOfParagraph (cache has changed): &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return nPara;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Handle caches for changed paragraph
+&nbsp;   */
+&nbsp;  private void handleChangedPara(int nPara, String chPara, Locale locale, int[] footnotePos, List&lt;Integer&gt; deletedChars) {
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: handleChangedPara: flat praragraph changed: nPara: &quot; + nPara + &quot;; docID: &quot; + docID</b>
+<b class="nc">&nbsp;              + &quot;; locale: isMultilingual: &quot; + docCache.isMultilingualFlatParagraph(nPara) </b>
+<b class="nc">&nbsp;              + &quot;; old: &quot; + OfficeTools.localeToString(docCache.getFlatParagraphLocale(nPara))</b>
+<b class="nc">&nbsp;              + &quot;; new: &quot; + OfficeTools.localeToString(locale) + OfficeTools.LOG_LINE_BREAK</b>
+<b class="nc">&nbsp;              + &quot;old: &quot; + docCache.getFlatParagraph(nPara) + OfficeTools.LOG_LINE_BREAK </b>
+&nbsp;              + &quot;new: &quot; + chPara + OfficeTools.LOG_LINE_BREAK);
+&nbsp;    }
+<b class="nc">&nbsp;    boolean checkOnlyPara = (docCache.getFlatParagraph(nPara).isEmpty() ? false : true);</b>
+<b class="nc">&nbsp;    docCache.setFlatParagraph(nPara, chPara, locale);</b>
+<b class="nc">&nbsp;    docCache.setFlatParagraphFootnotes(nPara, footnotePos);</b>
+<b class="nc">&nbsp;    docCache.setFlatParagraphDeletedCharacters(nPara, deletedChars);</b>
+<b class="nc">&nbsp;    if (useQueue) {</b>
+<b class="nc">&nbsp;      changedParas.put(nPara, chPara);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; minToCheckPara.size(); i++) {</b>
+<b class="nc">&nbsp;        paragraphsCache.get(i).remove(nPara);</b>
+<b class="nc">&nbsp;        if (minToCheckPara.get(i) &gt; 0) {</b>
+<b class="nc">&nbsp;          singleDocument.addQueueEntry(nPara, i, minToCheckPara.get(i), docID, checkOnlyPara, numLastFlPara &lt; 0 ? false : true);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    } else {
+<b class="nc">&nbsp;      for (ResultCache cache : paragraphsCache) {</b>
+<b class="nc">&nbsp;        cache.remove(nPara);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    textIsChanged = true;</b>
+<b class="nc">&nbsp;    changeFrom = nPara - numParasToChange;</b>
+<b class="nc">&nbsp;    changeTo = nPara + numParasToChange + 1;</b>
+<b class="nc">&nbsp;    singleDocument.removeIgnoredMatch(nPara, false);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * find position from changed paragraph
+&nbsp;   */
+&nbsp;  private int getPosFromChangedPara(String chPara, Locale locale, int nPara, int[] footnotePos) {
+<b class="nc">&nbsp;    if (docCache.isEmpty() || nPara &lt; 0 || isDisposed()) {</b>
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    long startTime = 0;</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime = System.currentTimeMillis();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    TextParagraph tPara = docCache.getNumberOfTextParagraph(nPara);</b>
+<b class="nc">&nbsp;    if (docCursor == null) {</b>
+<b class="nc">&nbsp;      docCursor = new DocumentCursorTools(xComponent);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    List&lt;Integer&gt; deletedChars = docCursor.getDeletedCharactersOfTextParagraph(tPara);</b>
+&nbsp;    
+<b class="nc">&nbsp;    if (!docCache.isEqual(nPara, chPara, locale, deletedChars)) {</b>
+<b class="nc">&nbsp;      handleChangedPara(nPara, chPara, locale, footnotePos, deletedChars);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CheckRequestAnalysis: getPosFromChangedPara: Number of Paragraph: &quot; + nPara + OfficeTools.LOG_LINE_BREAK);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    numLastFlPara = nPara;  //  Note: This is the number of flat paragraph</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to run getPosFromChangedPara: &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return nPara;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Heuristic try to find next position (automatic iteration)
+&nbsp;   * Is paragraph same, next not empty after or before   
+&nbsp;   */
+&nbsp;  private int findNextParaPos(int startPara, String paraStr, Locale locale, int startPos) {
+<b class="nc">&nbsp;    if (docCache.size() &lt; 1 || isDisposed()) {</b>
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (startPos &gt; 0 &amp;&amp; numLastFlPara &gt;= 0) {</b>
+<b class="nc">&nbsp;      if (startPara &gt;= 0 &amp;&amp; startPara &lt; docCache.size() &amp;&amp; docCache.isEqual(startPara, paraStr, locale)) {</b>
+<b class="nc">&nbsp;        return startPara;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } else if (startPos == 0) {</b>
+<b class="nc">&nbsp;      startPara = startPara &gt;= docCache.size() ? 0 : startPara + 1;</b>
+<b class="nc">&nbsp;      if (startPara &gt;= 0 &amp;&amp; startPara &lt; docCache.size() &amp;&amp; docCache.isEqual(startPara, paraStr, locale)) {</b>
+<b class="nc">&nbsp;        return startPara;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return -1; </b>
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,377 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Main</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: Main (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Main</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2005 Daniel Naber (http://www.danielnaber.de)
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import com.sun.star.lang.*;
+&nbsp;
+&nbsp;import com.sun.star.beans.PropertyValue;
+&nbsp;import com.sun.star.lib.uno.helper.Factory;
+&nbsp;import com.sun.star.lib.uno.helper.WeakBase;
+&nbsp;import com.sun.star.linguistic2.ProofreadingResult;
+&nbsp;import com.sun.star.linguistic2.XLinguServiceEventBroadcaster;
+&nbsp;import com.sun.star.linguistic2.XLinguServiceEventListener;
+&nbsp;import com.sun.star.linguistic2.XProofreader;
+&nbsp;import com.sun.star.registry.XRegistryKey;
+&nbsp;import com.sun.star.task.XJobExecutor;
+&nbsp;import com.sun.star.uno.XComponentContext;
+&nbsp;
+&nbsp;/**
+&nbsp; * LibreOffice/OpenOffice integration.
+&nbsp; *
+&nbsp; * @author Marcin Miłkowski, Fred Kruse
+&nbsp; */
+&nbsp;public class Main extends WeakBase implements XJobExecutor,
+&nbsp;    XServiceDisplayName, XServiceInfo, XProofreader,
+&nbsp;    XLinguServiceEventBroadcaster, XEventListener {
+&nbsp;
+&nbsp;  // Service name required by the OOo API &amp;&amp; our own name.
+<b class="nc">&nbsp;  private static final String[] SERVICE_NAMES = {</b>
+&nbsp;          &quot;com.sun.star.linguistic2.Proofreader&quot;,
+&nbsp;          OfficeTools.LT_SERVICE_NAME };
+&nbsp;
+&nbsp;  private XComponentContext xContext;
+&nbsp;  private MultiDocumentsHandler documents;
+&nbsp;
+<b class="nc">&nbsp;  public Main(XComponentContext xCompContext) {</b>
+<b class="nc">&nbsp;    changeContext(xCompContext);</b>
+<b class="nc">&nbsp;    documents = new MultiDocumentsHandler(xContext, this, this);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Changes the XComponentContext
+&nbsp;   */
+&nbsp;  void changeContext(XComponentContext xCompContext) {
+<b class="nc">&nbsp;    xContext = xCompContext;</b>
+<b class="nc">&nbsp;    if (documents != null) {</b>
+<b class="nc">&nbsp;      documents.setComponentContext(xCompContext);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Runs the grammar checker on paragraph text.
+&nbsp;   * interface: XProofreader
+&nbsp;   * @param docID document ID
+&nbsp;   * @param paraText paragraph text
+&nbsp;   * @param locale Locale the text Locale
+&nbsp;   * @param startOfSentencePos start of sentence position
+&nbsp;   * @param nSuggestedBehindEndOfSentencePosition end of sentence position
+&nbsp;   * @return ProofreadingResult containing the results of the check.
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public final ProofreadingResult doProofreading(String docID,
+&nbsp;      String paraText, Locale locale, int startOfSentencePos,
+&nbsp;      int nSuggestedBehindEndOfSentencePosition,
+&nbsp;      PropertyValue[] propertyValues) {
+<b class="nc">&nbsp;    return documents.doProofreading(docID, paraText, locale, startOfSentencePos, nSuggestedBehindEndOfSentencePosition, propertyValues);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * We leave spell checking to OpenOffice/LibreOffice.
+&nbsp;   * interface: XProofreader
+&nbsp;   * @return false
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public final boolean isSpellChecker() {
+<b class="nc">&nbsp;    return documents.isSpellChecker();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * @return An array of Locales supported by LT
+&nbsp;   * interface: XProofreader
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public final Locale[] getLocales() {
+<b class="nc">&nbsp;    return MultiDocumentsHandler.getLocales();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * @return true if LT supports the language of a given locale
+&nbsp;   * @param locale The Locale to check
+&nbsp;   * interface: XProofreader
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public final boolean hasLocale(Locale locale) {
+<b class="nc">&nbsp;    return documents.hasLocale(locale);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Add a listener that allow re-checking the document after changing the
+&nbsp;   * options in the configuration dialog box.
+&nbsp;   * interface: XLinguServiceEventBroadcaster
+&nbsp;   * @param eventListener the listener to be added
+&nbsp;   * @return true if listener is non-null and has been added, false otherwise
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public final boolean addLinguServiceEventListener(XLinguServiceEventListener eventListener) {
+<b class="nc">&nbsp;    return documents.addLinguServiceEventListener(eventListener);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Remove a listener from the event listeners list.
+&nbsp;   * interface: XLinguServiceEventBroadcaster
+&nbsp;   * @param eventListener the listener to be removed
+&nbsp;   * @return true if listener is non-null and has been removed, false otherwise
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public final boolean removeLinguServiceEventListener(XLinguServiceEventListener eventListener) {
+<b class="nc">&nbsp;    return documents.removeLinguServiceEventListener(eventListener);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get the names of supported services
+&nbsp;   * interface: XServiceInfo
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public String[] getSupportedServiceNames() {
+<b class="nc">&nbsp;    return getServiceNames();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get the LT service names
+&nbsp;   */
+&nbsp;  static String[] getServiceNames() {
+<b class="nc">&nbsp;    return SERVICE_NAMES;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Test if the service is supported by LT
+&nbsp;   * interface: XServiceInfo
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public boolean supportsService(String sServiceName) {
+<b class="nc">&nbsp;    for (String sName : SERVICE_NAMES) {</b>
+<b class="nc">&nbsp;      if (sServiceName.equals(sName)) {</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get the implementation name of the LT service
+&nbsp;   * interface: XServiceInfo
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public String getImplementationName() {
+<b class="nc">&nbsp;    return Main.class.getName();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get XSingleComponentFactory
+&nbsp;   * Default method called by LO/OO extensions
+&nbsp;   */
+&nbsp;  public static XSingleComponentFactory __getComponentFactory(String sImplName) {
+<b class="nc">&nbsp;    SingletonFactory xFactory = null;</b>
+<b class="nc">&nbsp;    if (sImplName.equals(Main.class.getName())) {</b>
+<b class="nc">&nbsp;      xFactory = new SingletonFactory();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return xFactory;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Write keys to registry
+&nbsp;   * Default method called by LO/OO extensions
+&nbsp;   */
+&nbsp;  public static boolean __writeRegistryServiceInfo(XRegistryKey regKey) {
+<b class="nc">&nbsp;    return Factory.writeRegistryServiceInfo(Main.class.getName(), Main.getServiceNames(), regKey);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Triggers a registered event
+&nbsp;   * interface: XJobExecutor
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public void trigger(String sEvent) {
+<b class="nc">&nbsp;    if (Thread.currentThread().getContextClassLoader() == null) {</b>
+<b class="nc">&nbsp;      Thread.currentThread().setContextClassLoader(Main.class.getClassLoader());</b>
+&nbsp;    }
+<b class="nc">&nbsp;    documents.trigger(sEvent);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Will throw exception instead of showing errors as dialogs - use only for test cases.
+&nbsp;   * @since 2.9
+&nbsp;   */
+&nbsp;  void setTestMode(boolean mode) {
+<b class="nc">&nbsp;    documents.setTestMode(mode);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Give back the MultiDocumentsHandler - use only for test cases.
+&nbsp;   * @since 5.3
+&nbsp;   */
+&nbsp;  MultiDocumentsHandler getMultiDocumentsHandler() {
+<b class="nc">&nbsp;    return documents;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Called when &quot;Ignore&quot; is selected e.g. in the context menu for an error.
+&nbsp;   * interface: XProofreader
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public void ignoreRule(String ruleId, Locale locale) {
+<b class="nc">&nbsp;    documents.ignoreRule(ruleId, locale);;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Called on rechecking the document - resets the ignore status for rules that
+&nbsp;   * was set in the spelling dialog box or in the context menu.
+&nbsp;   * 
+&nbsp;   * The rules disabled in the config dialog box are left as intact.
+&nbsp;   * interface: XProofreader
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public void resetIgnoreRules() {
+<b class="nc">&nbsp;    documents.resetIgnoreRules();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get the display name of the LT service
+&nbsp;   * Interface: XServiceDisplayName
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public String getServiceDisplayName(Locale locale) {
+<b class="nc">&nbsp;    return documents.getServiceDisplayName(locale);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Remove internal stored text if document disposes
+&nbsp;   * Interface: XEventListener
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public void disposing(EventObject source) {
+<b class="nc">&nbsp;    documents.disposing(source);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

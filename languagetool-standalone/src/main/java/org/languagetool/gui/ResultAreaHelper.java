@@ -293,8 +293,10 @@ class ResultAreaHelper implements LanguageToolListener, HyperlinkListener {
     }
     sb.append("<br>");
     if (deactivatedRuleCount == 0) {
+      System.out.println("null");
       return "";
     } else {
+      System.out.println(sb.toString());
       return sb.toString();
     }
   }
@@ -337,10 +339,12 @@ class ResultAreaHelper implements LanguageToolListener, HyperlinkListener {
     }
   }
 
-  private void handleRuleLinkClick(String uri) throws IOException {
+  public void handleRuleLinkClick(String uri) throws IOException {
     RuleLink ruleLink = RuleLink.getFromString(uri);
+    System.out.println(ruleLink);
     String ruleId = ruleLink.getId();
     if (uri.startsWith(DEACTIVATE_URL)) {
+      System.out.println(ruleId);
       ltSupport.disableRule(ruleId);
     } else {
       ltSupport.enableRule(ruleId);
@@ -348,5 +352,4 @@ class ResultAreaHelper implements LanguageToolListener, HyperlinkListener {
     ltSupport.getConfig().saveConfiguration(ltSupport.getLanguage());
     ltSupport.checkImmediately(this);
   }
-
 }

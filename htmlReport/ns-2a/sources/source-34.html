@@ -1,0 +1,1722 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ProhibitedCompoundRule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.rules.de</a>
+</div>
+
+<h1>Coverage Summary for Class: ProhibitedCompoundRule (org.languagetool.rules.de)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProhibitedCompoundRule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/104)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/148)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProhibitedCompoundRule$Pair</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProhibitedCompoundRule$SpecificIdRule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProhibitedCompoundRule$WeightedRuleMatch</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/104)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/168)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2018 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.rules.de;
+&nbsp;
+&nbsp;import com.hankcs.algorithm.AhoCorasickDoubleArrayTrie;
+&nbsp;import org.jetbrains.annotations.NotNull;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.languagetool.*;
+&nbsp;import org.languagetool.broker.ResourceDataBroker;
+&nbsp;import org.languagetool.language.GermanyGerman;
+&nbsp;import org.languagetool.languagemodel.BaseLanguageModel;
+&nbsp;import org.languagetool.languagemodel.LanguageModel;
+&nbsp;import org.languagetool.rules.*;
+&nbsp;import org.languagetool.tools.StringTools;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;import static org.languagetool.tools.StringTools.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * Find compounds that might be morphologically correct but are still probably wrong, like &#39;Lehrzeile&#39;.
+&nbsp; * @since 4.1
+&nbsp; */
+&nbsp;public class ProhibitedCompoundRule extends Rule {
+&nbsp;
+&nbsp;  /**
+&nbsp;   * @since 4.3
+&nbsp;   * @deprecated each pair has its own id since LT 5.1
+&nbsp;   */
+&nbsp;  public static final String RULE_ID = &quot;DE_PROHIBITED_COMPOUNDS&quot;;
+&nbsp;  // have objects static for better performance (rule gets initialized for every check)
+<b class="nc">&nbsp;  private static final List&lt;Pair&gt; lowercasePairs = Arrays.asList(</b>
+&nbsp;          // NOTE: words here must be all-lowercase
+&nbsp;          // NOTE: no need to add words from confusion_sets.txt, they will be used automatically (if starting with uppercase char)
+&nbsp;          new Pair(&quot;rate&quot;, &quot;Verhältnis zwischen zwei Größen&quot;, &quot;ratte&quot;, &quot;Nagetier&quot;),
+&nbsp;          new Pair(&quot;posten&quot;, &quot;Arbeitsplatz, Wachposten&quot;, &quot;posen&quot;, &quot;Pose: betonte Körperhaltung&quot;),
+&nbsp;          new Pair(&quot;himmel&quot;, &quot;Bereich über der Erde&quot;, &quot;hummel&quot;, &quot;Insekt&quot;),
+&nbsp;          new Pair(&quot;server&quot;, &quot;Computer&quot;, &quot;servier&quot;, &quot;zu &#39;servieren&#39;&quot;),
+&nbsp;          new Pair(&quot;ziege&quot;, &quot;Tier&quot;, &quot;ziegel&quot;, &quot;Ziegelstein&quot;),
+&nbsp;          new Pair(&quot;robe&quot;, &quot;Kleidungsstück&quot;, &quot;probe&quot;, &quot;Test, Kontrolle&quot;),
+&nbsp;          new Pair(&quot;mode&quot;, &quot;Kleidung&quot;, &quot;monde&quot;, &quot;Begleiter eines Planeten&quot;),
+&nbsp;          new Pair(&quot;eigen&quot;, &quot;&#39;selbst&#39;, z.B. &#39;Eigenzitat&#39;&quot;, &quot;eingen&quot;, &quot;Möglicher Tippfehler&quot;),
+&nbsp;          new Pair(&quot;stümpfe&quot;, &quot;Rest eines Körpergliedes&quot;, &quot;strümpfe&quot;, &quot;Bekleidungsstück für den Fuß&quot;),
+&nbsp;          new Pair(&quot;gelände&quot;, &quot;Gebiet&quot;, &quot;geländer&quot;, &quot;Konstruktion zum Festhalten entlang von Treppen&quot;),
+&nbsp;          new Pair(&quot;tropen&quot;, &quot;feuchtwarme Gebiete am Äquator&quot;, &quot;tropfen&quot;, &quot;kleine Menge Flüssigkeit&quot;),
+&nbsp;          new Pair(&quot;enge&quot;, &quot;Mangel an Platz&quot;, &quot;menge&quot;, &quot;Anzahl an Einheiten&quot;),
+&nbsp;          new Pair(&quot;ritt&quot;, &quot;Reiten&quot;, &quot;tritt&quot;, &quot;Aufsetzen eines Fußes&quot;),
+&nbsp;          new Pair(&quot;beine&quot;, &quot;Körperteil&quot;, &quot;biene&quot;, &quot;Insekt&quot;),
+&nbsp;          new Pair(&quot;rebe&quot;, &quot;Weinrebe&quot;, &quot;reibe&quot;, &quot;Küchenreibe&quot;),
+&nbsp;          new Pair(&quot;lande&quot;, null, &quot;landes&quot;, null),
+&nbsp;          new Pair(&quot;ass&quot;, &quot;Spielkarte&quot;, &quot;pass&quot;, &quot;Reisepass; Übergang durch ein Gebirge&quot;),
+&nbsp;          new Pair(&quot;türmer&quot;, &quot;Turmwächter&quot;, &quot;türme&quot;, &quot;Plural von &#39;Turm&#39; (Bauwerk)&quot;),
+&nbsp;          new Pair(&quot;soge&quot;, &quot;ziehende Strömungen&quot;, &quot;sorge&quot;, &quot;bedrückendes Gefühl&quot;),
+&nbsp;          new Pair(&quot;panne&quot;, &quot;technischer Defekt&quot;, &quot;spanne&quot;, &quot;Zeitraum&quot;),
+&nbsp;          new Pair(&quot;elfer&quot;, &quot;Elfmeter&quot;, &quot;helfer&quot;, &quot;Person, die hilft&quot;),
+&nbsp;          new Pair(&quot;bau&quot;, &quot;Bauwerk, Baustelle&quot;, &quot;baum&quot;, &quot;Pflanze&quot;),
+&nbsp;          new Pair(&quot;gase&quot;, &quot;Plural von &#39;Gas&#39; (Aggregatzustand)&quot;, &quot;gasse&quot;, &quot;kleine Straße&quot;),
+&nbsp;          new Pair(&quot;ekel&quot;, &quot;Abscheu&quot;, &quot;enkel&quot;, &quot;Kind eines eigenen Kindes&quot;),
+&nbsp;          new Pair(&quot;reis&quot;, &quot;Nahrungsmittel&quot;, &quot;reise&quot;, &quot;Ausflug/Fahrt&quot;),
+&nbsp;          new Pair(&quot;speichel&quot;, &quot;Körperflüssigkeit&quot;, &quot;speicher&quot;, &quot;Lager, Depot, Ablage&quot;),
+&nbsp;          new Pair(&quot;hüte&quot;, &quot;Kopfbedeckungen&quot;, &quot;häute&quot;, &quot;Plural von &#39;Haut&#39;&quot;),
+&nbsp;          new Pair(&quot;bach&quot;, &quot;kleiner Fluss&quot;, &quot;bauch&quot;, &quot;Teil des menschlichen Körpers&quot;),
+&nbsp;          new Pair(&quot;werbereich&quot;, null, &quot;erbereich&quot;, null),
+&nbsp;          new Pair(&quot;lage&quot;, &quot;Position&quot;, &quot;alge&quot;, &quot;im Wasser lebende Organismen&quot;),
+&nbsp;          new Pair(&quot;sphäre&quot;, &quot;Kugel&quot;, &quot;spähreh&quot;, null),
+&nbsp;          new Pair(&quot;schenke&quot;, &quot;Gastwirtschaft (auch: Schänke)&quot;, &quot;schenkel&quot;, &quot;Ober- und Unterschenkel&quot;),
+&nbsp;          new Pair(&quot;rune&quot;, &quot;Schriftzeichen der Germanen&quot;, &quot;runde&quot;, &quot;Rundstrecke&quot;),
+&nbsp;          new Pair(&quot;mai&quot;, &quot;Monat nach April&quot;, &quot;mail&quot;, &quot;E-Mail&quot;),
+&nbsp;          new Pair(&quot;pump&quot;, &quot;&#39;auf Pump&#39;: umgangssprachlich für &#39;auf Kredit&#39;&quot;, &quot;pumpe&quot;, &quot;Gerät zur Beförderung von Flüssigkeiten&quot;),
+&nbsp;          new Pair(&quot;mitte&quot;, &quot;zentral&quot;, &quot;mittel&quot;, &quot;Methode, um etwas zu erreichen&quot;),
+&nbsp;          new Pair(&quot;fein&quot;, &quot;feinkörnig, genau, gut&quot;, &quot;feind&quot;, &quot;Gegner&quot;),
+&nbsp;          new Pair(&quot;traum&quot;, &quot;Erleben während des Schlafes&quot;, &quot;trauma&quot;, &quot;Verletzung&quot;),
+&nbsp;          new Pair(&quot;name&quot;, &quot;Bezeichnung (z.B. &#39;Vorname&#39;)&quot;, &quot;nahme&quot;, &quot;zu &#39;nehmen&#39; (z.B. &#39;Teilnahme&#39;)&quot;),
+&nbsp;          new Pair(&quot;bart&quot;, &quot;Haarbewuchs im Gesicht&quot;, &quot;dart&quot;, &quot;Wurfpfeil&quot;),
+&nbsp;          new Pair(&quot;hart&quot;, &quot;fest&quot;, &quot;dart&quot;, &quot;Wurfpfeil&quot;),
+&nbsp;          new Pair(&quot;speiche&quot;, &quot;Verbindung zwischen Nabe und Felge beim Rad&quot;, &quot;speicher&quot;, &quot;Lagerraum&quot;),
+&nbsp;          new Pair(&quot;speichen&quot;, &quot;Verbindung zwischen Nabe und Felge beim Rad&quot;, &quot;speicher&quot;, &quot;Lagerraum&quot;),
+&nbsp;          new Pair(&quot;kart&quot;, &quot;Gokart (Fahrzeug)&quot;, &quot;karte&quot;, &quot;Fahrkarte, Postkarte, Landkarte, ...&quot;),
+&nbsp;          new Pair(&quot;karts&quot;, &quot;Kart = Gokart (Fahrzeug)&quot;, &quot;karte&quot;, &quot;Fahrkarte, Postkarte, Landkarte, ...&quot;),
+&nbsp;          new Pair(&quot;kurz&quot;, &quot;Gegenteil von &#39;lang&#39;&quot;, &quot;kur&quot;, &quot;medizinische Vorsorge und Rehabilitation&quot;),
+&nbsp;          new Pair(&quot;kiefer&quot;, &quot;knöcherner Teil des Schädels&quot;, &quot;kiefern&quot;, &quot;Kieferngewächse (Baum)&quot;),
+&nbsp;          new Pair(&quot;gel&quot;, &quot;dickflüssige Masse&quot;, &quot;geld&quot;, &quot;Zahlungsmittel&quot;),
+&nbsp;          new Pair(&quot;flucht&quot;, &quot;Entkommen, Fliehen&quot;, &quot;frucht&quot;, &quot;Ummantelung des Samens einer Pflanze&quot;),
+&nbsp;          new Pair(&quot;kamp&quot;, &quot;Flurname für ein Stück Land&quot;, &quot;kampf&quot;, &quot;Auseinandersetzung&quot;),
+&nbsp;          new Pair(&quot;obst&quot;, &quot;Frucht&quot;, &quot;ost&quot;, &quot;Himmelsrichtung&quot;),
+&nbsp;          new Pair(&quot;beeren&quot;, &quot;Früchte&quot;, &quot;bären&quot;, &quot;Raubtiere&quot;),
+&nbsp;          new Pair(&quot;laus&quot;, &quot;Insekt&quot;, &quot;lauf&quot;, &quot;Bewegungsart&quot;),
+&nbsp;          new Pair(&quot;läuse&quot;, &quot;Insekt&quot;, &quot;läufe&quot;, &quot;Bewegungsart&quot;),
+&nbsp;          new Pair(&quot;läusen&quot;, &quot;Insekt&quot;, &quot;läufen&quot;, &quot;Bewegungsart&quot;),
+&nbsp;          new Pair(&quot;ruck&quot;, &quot;plötzliche Bewegung&quot;, &quot;druck&quot;, &quot;Belastung&quot;),
+&nbsp;          new Pair(&quot;brüste&quot;, &quot;Plural von Brust&quot;, &quot;bürste&quot;, &quot;Gerät mit Borsten, z.B. zum Reinigen&quot;),
+&nbsp;          new Pair(&quot;attraktion&quot;, &quot;Sehenswürdigkeit&quot;, &quot;akttaktion&quot;, &quot;vermutlicher Tippfehler&quot;),
+&nbsp;          new Pair(&quot;nah&quot;, &quot;zu &#39;nah&#39; (wenig entfernt)&quot;, &quot;näh&quot;, &quot;zu &#39;nähen&#39; (mit einem Faden verbinden)&quot;),
+&nbsp;          new Pair(&quot;turn&quot;, &quot;zu &#39;turnen&#39;&quot;, &quot;turm&quot;, &quot;hohes Bauwerk&quot;),
+&nbsp;          new Pair(&quot;mit&quot;, &quot;Präposition&quot;, &quot;miet&quot;, &quot;zu &#39;Miete&#39; (Überlassung gegen Bezahlung)&quot;),
+&nbsp;          new Pair(&quot;bart&quot;, &quot;Behaarung im Gesicht&quot;, &quot;brat&quot;, &quot;zu &#39;braten&#39;, z.B. &#39;Bratkartoffel&#39;&quot;),
+&nbsp;          new Pair(&quot;uhr&quot;, &quot;Instrument zur Zeitmessung&quot;, &quot;ur&quot;, &quot;ursprünglich&quot;),
+&nbsp;          new Pair(&quot;abschluss&quot;, &quot;Ende&quot;, &quot;abschuss&quot;, &quot;Vorgang des Abschießens, z.B. mit einer Waffe&quot;),
+&nbsp;          new Pair(&quot;brache&quot;, &quot;verlassenes Grundstück&quot;, &quot;branche&quot;, &quot;Wirtschaftszweig&quot;),
+&nbsp;          new Pair(&quot;wieder&quot;, &quot;erneut, wiederholt, nochmal (Wiederholung, Wiedervorlage, ...)&quot;, &quot;wider&quot;, &quot;gegen, entgegen (Widerwille, Widerstand, Widerspruch, ...)&quot;),
+&nbsp;          new Pair(&quot;leer&quot;, &quot;ohne Inhalt&quot;, &quot;lehr&quot;, &quot;bezogen auf Ausbildung und Wissen&quot;),
+&nbsp;          new Pair(&quot;gewerbe&quot;, &quot;wirtschaftliche Tätigkeit&quot;, &quot;gewebe&quot;, &quot;gewebter Stoff; Verbund ähnlicher Zellen&quot;),
+&nbsp;          //new Pair(&quot;schuh&quot;, &quot;Fußbekleidung&quot;, &quot;schul&quot;, &quot;auf die Schule bezogen&quot;),  // tends to have false alarms
+&nbsp;          new Pair(&quot;klima&quot;, &quot;langfristige Wetterzustände&quot;, &quot;lima&quot;, &quot;Hauptstadt von Peru&quot;),
+&nbsp;          new Pair(&quot;modell&quot;, &quot;vereinfachtes Abbild der Wirklichkeit&quot;, &quot;model&quot;, &quot;Fotomodell&quot;),
+&nbsp;          new Pair(&quot;treppen&quot;, &quot;Folge von Stufen (Mehrzahl)&quot;, &quot;truppen&quot;, &quot;Armee oder Teil einer Armee (Mehrzahl)&quot;),
+&nbsp;          new Pair(&quot;häufigkeit&quot;, &quot;Anzahl von Ereignissen&quot;, &quot;häutigkeit&quot;, &quot;z.B. in Dunkelhäutigkeit&quot;),
+&nbsp;          new Pair(&quot;hin&quot;, &quot;in Richtung&quot;, &quot;hirn&quot;, &quot;Gehirn, Denkapparat&quot;),
+&nbsp;          new Pair(&quot;verklärung&quot;, &quot;Beschönigung, Darstellung in einem besseren Licht&quot;, &quot;erklärung&quot;, &quot;Darstellung, Erläuterung&quot;),
+&nbsp;          new Pair(&quot;spitze&quot;, &quot;spitzes Ende eines Gegenstandes&quot;, &quot;spritze&quot;, &quot;medizinisches Instrument zur Injektion&quot;),
+&nbsp;          new Pair(&quot;punk&quot;, &quot;Jugendkultur&quot;, &quot;punkt&quot;, &quot;Satzzeichen&quot;),
+&nbsp;          new Pair(&quot;reis&quot;, &quot;Nahrungsmittel&quot;, &quot;eis&quot;, &quot;gefrorenes Wasser&quot;),
+&nbsp;          new Pair(&quot;balkan&quot;, &quot;Region in Südosteuropa&quot;, &quot;balkon&quot;, &quot;Plattform, die aus einem Gebäude herausragt&quot;),
+&nbsp;          new Pair(&quot;haft&quot;, &quot;Freiheitsentzug&quot;, &quot;schaft&quot;, &quot;-schaft (Element zur Wortbildung)&quot;),
+&nbsp;          new Pair(&quot;stande&quot;, &quot;zu &#39;Stand&#39;&quot;, &quot;stange&quot;, &quot;länglicher Gegenstand&quot;)
+&nbsp;  );
+&nbsp;  private static LinguServices linguServices;
+<b class="nc">&nbsp;  private static final List&lt;String&gt; ignoreWords = Arrays.asList(&quot;Die&quot;, &quot;De&quot;);</b>
+<b class="nc">&nbsp;  private static final List&lt;String&gt; blacklistRegex = Arrays.asList(</b>
+&nbsp;    &quot;stromkreis&quot;,  // vs. reis/reise
+&nbsp;    &quot;Lande(basis|basen|region|gebiets?|gebieten?|regionen|betriebs?|betrieben?|offizieren?|bereichs?|bereichen?|einrichtung|einrichtungen|massen?|plans?|versuchs?|versuchen?)&quot;,  // vs. Landes
+&nbsp;    &quot;Model(vertrags?|verträgen?|erfahrung|erfahrungen|szene|welt)&quot;,
+&nbsp;    &quot;(Raum|Surf|Jazz|Herbst|Gymnastik|Normal)schuhen?&quot;,
+&nbsp;    &quot;preis&quot;,  // Getränkepreis etc.
+&nbsp;    &quot;reisähnlich(e|e[nmrs])?&quot;,
+&nbsp;    &quot;neugestartet(e|e[nmrs])?&quot;,
+&nbsp;    &quot;reisender&quot;,  // Ägyptenreisender etc.
+&nbsp;    &quot;[a-zöäüß]+sender&quot;,  // wg. sende/sender, z.B. bremsender, abzulassender
+&nbsp;    &quot;gra(ph|f)ische?&quot;,  // kosmografisch etc.
+&nbsp;    &quot;gra(ph|f)ische[rsnm]&quot;,  // kosmografischen etc.
+&nbsp;    &quot;gra(ph|f)s?$&quot;,  // Elektrokardiograph
+&nbsp;    &quot;gra(ph|f)en&quot;,  // Elektrokardiographen
+&nbsp;    &quot;gra(ph|f)in&quot;,  // Demographin/Demografin
+&nbsp;    &quot;gra(ph|f)ik&quot;,  // Kunstgrafik
+&nbsp;    &quot;gra(ph|f)ie&quot;,  // Geographie
+&nbsp;    &quot;Gra(ph|f)its?&quot;,   // Grafit/Graphit
+&nbsp;    &quot;.+gra(ph|f)its?&quot;   // ...grafit/graphit
+&nbsp;  );
+<b class="nc">&nbsp;  private static final Set&lt;String&gt; blacklist = new HashSet&lt;&gt;(Arrays.asList(</b>
+&nbsp;          &quot;Wildsymbol&quot;, &quot;Wildsymbole&quot;,
+&nbsp;          &quot;Küchenteller&quot;, &quot;Küchentellers&quot;, &quot;Küchentellern&quot;,
+&nbsp;          &quot;Miettage&quot;,
+&nbsp;          &quot;Waldbaden&quot;,
+&nbsp;          &quot;Verkaufszeile&quot;, &quot;Verkaufszeilen&quot;,
+&nbsp;          &quot;Mahnstrecke&quot;,
+&nbsp;          &quot;einspeichen&quot;,
+&nbsp;          &quot;Haupttasten&quot;,
+&nbsp;          &quot;Winterräder&quot;, &quot;Winterrädern&quot;,
+&nbsp;          &quot;Vertragsstart&quot;,
+&nbsp;          &quot;Vertragskonten&quot;,
+&nbsp;          &quot;Performen&quot;,
+&nbsp;          &quot;Bergratte&quot;, &quot;Bergratten&quot;,
+&nbsp;          &quot;Flussratte&quot;, &quot;Flussratten&quot;,
+&nbsp;          &quot;Hausrate&quot;, &quot;Hausraten&quot;,
+&nbsp;          &quot;Südposten&quot;,
+&nbsp;          &quot;Machtposen&quot;,
+&nbsp;          &quot;Elektroband&quot;, &quot;Elektrobands&quot;,
+&nbsp;          &quot;Reiterfahrung&quot;, &quot;Reiterfahrungen&quot;,
+&nbsp;          &quot;Dampfgerät&quot;, &quot;Dampfgeräte&quot;, &quot;Dampfgeräten&quot;,
+&nbsp;          &quot;Leeraufenthalt&quot;, &quot;Leeraufenthalten&quot;,
+&nbsp;          &quot;Mietform&quot;, &quot;Mietformen&quot;,
+&nbsp;          &quot;Schimmelns&quot;,
+&nbsp;          &quot;Oberhummel&quot;, &quot;Oberhummels&quot;,
+&nbsp;          &quot;Alpenhummel&quot;, &quot;Alpenhummeln&quot;,
+&nbsp;          &quot;Futterrecht&quot;, &quot;Futterrechts&quot;,
+&nbsp;          &quot;Waschtasche&quot;, &quot;Waschtaschen&quot;,
+&nbsp;          &quot;Fiebersaft&quot;, &quot;Fiebersafts&quot;,
+&nbsp;          &quot;Kundenreise&quot;, &quot;Kundenreisen&quot;,
+&nbsp;          &quot;Gelseite&quot;, &quot;Gelseiten&quot;,
+&nbsp;          &quot;Kartenmeister&quot;, &quot;Kartenmeisters&quot;,
+&nbsp;          &quot;Polarzelle&quot;, &quot;Polarzellen&quot;,
+&nbsp;          &quot;Serverplatte&quot;,
+&nbsp;          &quot;Serverplatten&quot;,
+&nbsp;          &quot;annähmst&quot;,
+&nbsp;          &quot;annähmt&quot;,
+&nbsp;          &quot;auslobst&quot;,
+&nbsp;          &quot;benähmst&quot;,
+&nbsp;          &quot;benähmt&quot;,
+&nbsp;          &quot;bestrichst&quot;,
+&nbsp;          &quot;bestricht&quot;,
+&nbsp;          &quot;Trendgericht&quot;,  // vs. bericht
+&nbsp;          &quot;Balkonfront&quot;,  // vs. Balkan
+&nbsp;          &quot;Balkonbereich&quot;,  // vs. Balkan
+&nbsp;          &quot;Anlaufleistung&quot;,  // vs. Ablauf
+&nbsp;          &quot;Haushaltstuch&quot;,  // vs. buch
+&nbsp;          &quot;Arztdiagnose&quot;,  // vs. Art
+&nbsp;          &quot;Wickelbereich&quot;,  // vs. Winkel
+&nbsp;          &quot;Trassenkonflikt&quot;,  // vs. Rassen
+&nbsp;          &quot;Trassenkonflikte&quot;,  // vs. Rassen
+&nbsp;          &quot;befüllende&quot;,  // vs. fallend
+&nbsp;          &quot;Echsenauge&quot;,  // vs. Ochsen
+&nbsp;          &quot;Echsenaugen&quot;,  // vs. Ochsen
+&nbsp;          &quot;Lackpulver&quot;,  // vs. Back
+&nbsp;          &quot;Lackpulvers&quot;,  // vs. Back
+&nbsp;          &quot;Mikrolage&quot;,  // vs. alge
+&nbsp;          &quot;Mikrolagen&quot;,  // vs. algen
+&nbsp;          &quot;Sichtnutzer&quot;,  // vs. Nicht
+&nbsp;          &quot;Sichtnutzers&quot;,  // vs. Nicht
+&nbsp;          &quot;Sichtnutzern&quot;,  // vs. Nicht
+&nbsp;          &quot;Jugendrad&quot;,  // vs. rat
+&nbsp;          &quot;Jugendrads&quot;,  // vs. rat
+&nbsp;          &quot;Lizenzname&quot;,  // vs. nahme
+&nbsp;          &quot;Lizenznamen&quot;,  // vs. nahme
+&nbsp;          &quot;Rhein-Nahe&quot;,  // vs. Nähe
+&nbsp;          &quot;Geleinlage&quot;,  // vs. Geld
+&nbsp;          &quot;Geleinlagen&quot;,  // vs. Geld
+&nbsp;          &quot;Leerbestände&quot;,  // vs. Lehr
+&nbsp;          &quot;Rechnungszeile&quot;,  // vs. ziele
+&nbsp;          &quot;Speichenschutz&quot;,  // vs. Speichern
+&nbsp;          &quot;Notfunk&quot;,  // vs. Rot
+&nbsp;          &quot;Notfunks&quot;,  // vs. Rot
+&nbsp;          &quot;Leerteile&quot;,  // vs. Lehr
+&nbsp;          &quot;Leerteilen&quot;,  // vs. Lehr
+&nbsp;          &quot;Leerteils&quot;,  // vs. Lehr
+&nbsp;          &quot;Mietdiskussion&quot;,  // vs. Mit
+&nbsp;          &quot;Mietdiskussionen&quot;,  // vs. Mit
+&nbsp;          &quot;Mietverwalter&quot;,  // vs. Mit
+&nbsp;          &quot;Mietverwaltern&quot;,  // vs. Mit
+&nbsp;          &quot;Mietverwalters&quot;,  // vs. Mit
+&nbsp;          &quot;Handfilter&quot;,  // vs. Sand
+&nbsp;          &quot;Handfiltern&quot;,  // vs. Sand
+&nbsp;          &quot;Handfilters&quot;,  // vs. Sand
+&nbsp;          &quot;Fellpartie&quot;,  // vs. Fels
+&nbsp;          &quot;Fellpartien&quot;,  // vs. Fels
+&nbsp;          &quot;Reservesitz&quot;,  // vs. satz
+&nbsp;          &quot;Energiekonten&quot;,  // vs. kosten
+&nbsp;          &quot;Steingelände&quot;,  // vs. geländer
+&nbsp;          &quot;Marktengen&quot;,  // vs. menge
+&nbsp;          &quot;Stromernte&quot;,  // vs. Stroh
+&nbsp;          &quot;Stromernten&quot;,  // vs. Stroh
+&nbsp;          &quot;Plastikspitze&quot;,  // vs. Spritze
+&nbsp;          &quot;Plastikspitzen&quot;,  // vs. Spritze
+&nbsp;          &quot;Speichenmuster&quot;,  // vs. Speicher
+&nbsp;          &quot;Ticketverlauf&quot;,  // vs. verkauf
+&nbsp;          &quot;Ticketverlaufs&quot;,  // vs. verkauf
+&nbsp;          &quot;Immobilienwelt&quot;,  // vs. wert
+&nbsp;          &quot;Rheinruhr&quot;,  // vs. ohr (eigentlich &quot;Rhein-Ruhr&quot;)
+&nbsp;          &quot;Turmbewegung&quot;,  // vs. Turn
+&nbsp;          &quot;Turmbewegungen&quot;,  // vs. Turn
+&nbsp;          &quot;Turmwart&quot;,  // vs. Turn
+&nbsp;          &quot;Turmwarts&quot;,  // vs. Turn
+&nbsp;          &quot;Reisblatt&quot;,  // vs. Kreis
+&nbsp;          &quot;Reisblatts&quot;,  // vs. Kreis
+&nbsp;          &quot;Reisblätter&quot;,  // vs. Kreis
+&nbsp;          &quot;Reisblättern&quot;,  // vs. Kreis
+&nbsp;          &quot;Reisgetränk&quot;,  // vs. Eis
+&nbsp;          &quot;Reisgetränks&quot;,  // vs. Eis
+&nbsp;          &quot;Reisgetränke&quot;,  // vs. Eis
+&nbsp;          &quot;Reisgetränken&quot;,  // vs. Eis
+&nbsp;          &quot;Reiszwecke&quot;,  // vs. Reise -- handled by speller
+&nbsp;          &quot;Reiszwecken&quot;,  // vs. Reise -- handled by speller
+&nbsp;          &quot;Bankangabe&quot;,  // vs. band
+&nbsp;          &quot;Bankangaben&quot;,  // vs. band
+&nbsp;          &quot;Lehrbecken&quot;,  // vs. ecken
+&nbsp;          &quot;Strohseide&quot;,  // vs. seile
+&nbsp;          &quot;Filtermaschine&quot;,  // vs. Folter
+&nbsp;          &quot;Filtermaschinen&quot;,  // vs. Folter
+&nbsp;          &quot;Kenncode&quot;,  // vs. ode
+&nbsp;          &quot;Kenncodes&quot;,  // vs. ode
+&nbsp;          &quot;Sicherheitshalt&quot;,  // vs. haft
+&nbsp;          &quot;Sicherheitshalts&quot;,  // vs. haft
+&nbsp;          &quot;Sicherheitshalte&quot;,  // vs. haft
+&nbsp;          &quot;Wandschalter&quot;,  // vs. hand
+&nbsp;          &quot;Wandschalters&quot;,  // vs. hand
+&nbsp;          &quot;Wildgericht&quot;,  // vs. wald
+&nbsp;          &quot;Wildgerichte&quot;,  // vs. wald
+&nbsp;          &quot;Haltungskonzept&quot;,  // vs. haft
+&nbsp;          &quot;Schenkelbiene&quot;,  // vs. beine
+&nbsp;          &quot;Schenkelbienen&quot;,  // vs. beine
+&nbsp;          &quot;Felsenbiene&quot;,  // vs. beine
+&nbsp;          &quot;Felsenbienen&quot;,  // vs. beine
+&nbsp;          &quot;Killerbiene&quot;,  // vs. beine
+&nbsp;          &quot;Killerbienen&quot;,  // vs. beine
+&nbsp;          &quot;Investitionsbetrug&quot;,  // vs. betrag
+&nbsp;          &quot;Investitionsbetruges&quot;,  // vs. betrag
+&nbsp;          &quot;Investitionsbetrugs&quot;,  // vs. betrag
+&nbsp;          &quot;Luftwert&quot;,  // vs. Lust
+&nbsp;          &quot;Luftwerte&quot;,  // vs. Lust
+&nbsp;          &quot;Luftwerts&quot;,  // vs. Lust
+&nbsp;          &quot;Luftwertes&quot;,  // vs. Lust
+&nbsp;          &quot;Luftwerten&quot;,  // vs. Lust
+&nbsp;          &quot;Gegenschall&quot;,  // vs. schale
+&nbsp;          &quot;Kontenvorgänge&quot;,  // vs. Kosten
+&nbsp;          &quot;Militärbunker&quot;,  // vs. funker
+&nbsp;          &quot;Gemüseboxen&quot;,  // vs. boden
+&nbsp;          &quot;Suchwunsch&quot;,  // vs. Buch
+&nbsp;          &quot;Pflanzerden&quot;,  // vs. enden
+&nbsp;          &quot;Kriegsflucht&quot;, // vs. frucht
+&nbsp;          &quot;Reisekabel&quot;,  // vs. fabel
+&nbsp;          &quot;Schutzboxen&quot;,
+&nbsp;          &quot;Wandbeschichtung&quot;,  // vs. Band
+&nbsp;          &quot;Maschinenbrand&quot;,  // vs. bank
+&nbsp;          &quot;Badehilfe&quot;,  // vs. Lade
+&nbsp;          &quot;Badehilfen&quot;,  // vs. Lade
+&nbsp;          &quot;Backprogramm&quot;,  // vs. Pack
+&nbsp;          &quot;Backprogramme&quot;,
+&nbsp;          &quot;Backprogrammen&quot;,
+&nbsp;          &quot;Backfunktion&quot;,
+&nbsp;          &quot;Backleistung&quot;,
+&nbsp;          &quot;Winterblues&quot;,
+&nbsp;          &quot;Klickverbindung&quot;,
+&nbsp;          &quot;Klickverbindungen&quot;,
+&nbsp;          &quot;Traumschuhe&quot;,  // vs Schule
+&nbsp;          &quot;Traumschuhen&quot;,  // vs Schule
+&nbsp;          &quot;Schulware&quot;,  // vs Schuh
+&nbsp;          &quot;Schulwaren&quot;,  // vs krisen
+&nbsp;          &quot;Konzernkreisen&quot;,  // vs krisen
+&nbsp;          &quot;Strandmotiv&quot;,  // vs stand
+&nbsp;          &quot;Strandmotive&quot;,  // vs stand
+&nbsp;          &quot;Strandmotiven&quot;,  // vs stand
+&nbsp;          &quot;Tiersammelstelle&quot;,  // vs eier
+&nbsp;          &quot;Tiersammelstellen&quot;,  // vs eier
+&nbsp;          &quot;Verkaufserlebnis&quot;,  // vs verlauf
+&nbsp;          &quot;Eisgenuss&quot;,  // vs ess
+&nbsp;          &quot;Oberhardt&quot;,  // vs eber
+&nbsp;          &quot;Hundebett&quot;,  // vs fett
+&nbsp;          &quot;Artengesetz&quot;,  // vs arm
+&nbsp;          &quot;Mietpartner&quot;,  // vs mit
+&nbsp;          &quot;Mietpartners&quot;,  // vs mit
+&nbsp;          &quot;Mietpartnern&quot;,  // vs mit
+&nbsp;          &quot;Mieterlebnis&quot;,  // vs mit
+&nbsp;          &quot;Paketkasten&quot;,  // vs karten
+&nbsp;          &quot;Ausnahmefirmen&quot;,  // vs formen
+&nbsp;          &quot;Schreibraten&quot;,  // vs bart
+&nbsp;          &quot;Treppentransport&quot;,  // vs truppen
+&nbsp;          &quot;Treppentransports&quot;,  // vs truppen
+&nbsp;          &quot;Treppentransporte&quot;,  // vs truppen
+&nbsp;          &quot;Treppentransporten&quot;,  // vs truppen
+&nbsp;          &quot;Familienvillen&quot;,  // vs willen
+&nbsp;          &quot;Kampweg&quot;,  // vs kampf
+&nbsp;          &quot;Kampwegs&quot;,  // vs kampf
+&nbsp;          &quot;Werbemodel&quot;,  // vs modell
+&nbsp;          &quot;Werbemodels&quot;,  // vs modell
+&nbsp;          &quot;Schuhreinigung&quot;,  // vs schul
+&nbsp;          &quot;Luftrad&quot;,  // vs rat
+&nbsp;          &quot;Luftrads&quot;,  // vs rat
+&nbsp;          &quot;Waschgel&quot;,  // vs geld
+&nbsp;          &quot;Waschgels&quot;,  // vs geld
+&nbsp;          &quot;Absatzzeile&quot;,  // vs ziele
+&nbsp;          &quot;Absatzzeilen&quot;,  // vs ziele
+&nbsp;          &quot;Standardzeile&quot;,  // vs ziele
+&nbsp;          &quot;Standardzeilen&quot;,  // vs ziele
+&nbsp;          &quot;Reisspezialität&quot;,  // vs eis
+&nbsp;          &quot;Reisspezialitäten&quot;,  // vs eis
+&nbsp;          &quot;Kommunikationsgewerbe&quot;,  // vs gewebe
+&nbsp;          &quot;Kunststoffgewerbe&quot;,  // vs gewebe
+&nbsp;          &quot;Obstring&quot;,  // vs ost
+&nbsp;          &quot;Obstringen&quot;,  // vs ost
+&nbsp;          &quot;Mietinformation&quot;,  // vs mit
+&nbsp;          &quot;Mietinformationen&quot;,  // vs mit
+&nbsp;          &quot;Bergtrasse&quot;,  // vs rasse
+&nbsp;          &quot;Privatprofil&quot;,  // vs profit
+&nbsp;          &quot;Spezialölen&quot;,  // vs öfen
+&nbsp;          &quot;Ladedock&quot;,  // vs deck
+&nbsp;          &quot;Ladedocks&quot;,  // vs deck
+&nbsp;          &quot;Fahrtenregler&quot;,  // vs segler
+&nbsp;          &quot;Fahrtenreglern&quot;,  // vs segler
+&nbsp;          &quot;Fahrtenreglers&quot;,  // vs segler
+&nbsp;          &quot;Körperakne&quot;,  // vs akte
+&nbsp;          &quot;Mitarbeiterakte&quot;,  // vs aktie
+&nbsp;          &quot;Mitarbeiterakten&quot;,  // vs aktien
+&nbsp;          &quot;Frontschaden&quot;,  // vs frost
+&nbsp;          &quot;Testgebühr&quot;,  // vs fest
+&nbsp;          &quot;Testgebühren&quot;,  // vs fest
+&nbsp;          &quot;Energiegeld&quot;,  // vs feld
+&nbsp;          &quot;Kontaktermittlung&quot;,  // vs vermittlung
+&nbsp;          &quot;Flutnacht&quot;,  // vs blut
+&nbsp;          &quot;Salztank&quot;,  // vs bank
+&nbsp;          &quot;Kursformat&quot;,  // vs kurz
+&nbsp;          &quot;Kursformate&quot;,  // vs kurz
+&nbsp;          &quot;Kursformaten&quot;,  // vs kurz
+&nbsp;          &quot;Kursseite&quot;,  // vs kurz
+&nbsp;          &quot;Kursseiten&quot;,  // vs kurz
+&nbsp;          &quot;Ladekarte&quot;,  // vs lage
+&nbsp;          &quot;Ladekarten&quot;,  // vs lage
+&nbsp;          &quot;Schneehose&quot;,  // vs hase
+&nbsp;          &quot;Schneehosen&quot;,  // vs hase
+&nbsp;          &quot;Außendusche&quot;,  // vs augen
+&nbsp;          &quot;Außenduschen&quot;,  // vs augen
+&nbsp;          &quot;Nachbauteile&quot;,  // vs bar
+&nbsp;          &quot;Nachbauteilen&quot;,  // vs bar
+&nbsp;          &quot;Außenbar&quot;,  // vs bau
+&nbsp;          &quot;Modelfigur&quot;,  // vs modell
+&nbsp;          &quot;Kurzangebot&quot;,  // vs kur
+&nbsp;          &quot;Kurzangebote&quot;,  // vs kur
+&nbsp;          &quot;Kurzangeboten&quot;,  // vs kur
+&nbsp;          &quot;Verschwörungsideologe&quot;,  // vs ideologie
+&nbsp;          &quot;Verschwörungsideologen&quot;,  // vs ideologie
+&nbsp;          &quot;Maklerkollege&quot;,  // vs maler
+&nbsp;          &quot;Maklerkollegen&quot;,  // vs maler
+&nbsp;          &quot;Suppenköche&quot;,  // vs küche
+&nbsp;          &quot;Suppenköchen&quot;,  // vs küche
+&nbsp;          &quot;Schulköche&quot;,  // vs küche
+&nbsp;          &quot;Schulköchen&quot;,  // vs küche
+&nbsp;          &quot;Privatköche&quot;,  // vs küche
+&nbsp;          &quot;Privatköchen&quot;,  // vs küche
+&nbsp;          &quot;Mannschaftsköche&quot;,  // vs küche
+&nbsp;          &quot;Mannschaftsköchen&quot;,  // vs küche
+&nbsp;          &quot;Gourmetköche&quot;,  // vs küche
+&nbsp;          &quot;Gourmetköchen&quot;,  // vs küche
+&nbsp;          &quot;Fischköche&quot;,  // vs küche
+&nbsp;          &quot;Fischköchen&quot;,  // vs küche
+&nbsp;          &quot;Gefängnisköche&quot;,  // vs küche
+&nbsp;          &quot;Gefängnisköchen&quot;,  // vs küche
+&nbsp;          &quot;Chemieexperte&quot;,  // vs exporte
+&nbsp;          &quot;Devisenexperte&quot;,  // vs exporte
+&nbsp;          &quot;Mietinteressent&quot;,  // vs Mit
+&nbsp;          &quot;Mietinteressenten&quot;,  // vs Mit
+&nbsp;          &quot;Mietinteressentin&quot;,  // vs Mit
+&nbsp;          &quot;Mietinteressentinnen&quot;,  // vs Mit
+&nbsp;          &quot;Gruppenunterkunft&quot;,  // vs Truppe
+&nbsp;          &quot;Gruppenunterkünfte&quot;,  // vs Truppe
+&nbsp;          &quot;Gruppenunterkünften&quot;,  // vs Truppe
+&nbsp;          &quot;Fischturm&quot;,  // vs Misch
+&nbsp;          &quot;Wandtaster&quot;,  // vs Hand
+&nbsp;          &quot;Rauchsalz&quot;,  // vs satz
+&nbsp;          &quot;Miettag&quot;,  // vs Mit
+&nbsp;          &quot;Mietrechnung&quot;,  // vs Mit
+&nbsp;          &quot;Grundgas&quot;,  // vs Glas
+&nbsp;          &quot;Mahlstufe&quot;,  // vs Wahl
+&nbsp;          &quot;Mahlstufen&quot;,  // vs Wahl
+&nbsp;          &quot;Mahlprogramm&quot;,  // vs Wahl
+&nbsp;          &quot;Mahlprogramme&quot;,  // vs Wahl
+&nbsp;          &quot;Mahlprogrammen&quot;,  // vs Wahl
+&nbsp;          &quot;umparken&quot;,  // vs packen
+&nbsp;          &quot;Fabrikgasse&quot;,  // vs gase
+&nbsp;          &quot;Dachreinigung&quot;,  // vs Nach
+&nbsp;          &quot;Dachreinigungen&quot;,  // vs Nach
+&nbsp;          &quot;Geisterspiel&quot;,  // vs Meister
+&nbsp;          &quot;Geisterspiels&quot;,  // vs Meister
+&nbsp;          &quot;Geisterspiele&quot;,  // vs Meister
+&nbsp;          &quot;Geisterspielen&quot;,  // vs Meister
+&nbsp;          &quot;gehostet&quot;,  // vs hort
+&nbsp;          &quot;gehostete&quot;,  // vs hort
+&nbsp;          &quot;gehostetes&quot;,  // vs hort
+&nbsp;          &quot;gehosteten&quot;,  // vs hort
+&nbsp;          &quot;gehostetes&quot;,  // vs hort
+&nbsp;          &quot;gehosteter&quot;,  // vs hort
+&nbsp;          &quot;gehostetem&quot;,  // vs hort
+&nbsp;          &quot;Felltyp&quot;,  // vs Zell
+&nbsp;          &quot;Felltyps&quot;,  // vs Zell
+&nbsp;          &quot;Gemüsehaus&quot;,  // vs baus
+&nbsp;          &quot;Ladepark&quot;,  // vs Bade
+&nbsp;          &quot;Ladeparks&quot;,  // vs Bade
+&nbsp;          &quot;Autoexperte&quot;,  // vs exporte
+&nbsp;          &quot;Autoexperten&quot;,  // vs exporte
+&nbsp;          &quot;Basiskonten&quot;,  // vs kosten
+&nbsp;          &quot;Onlinekonten&quot;,  // vs kosten
+&nbsp;          &quot;Druckmodell&quot;,  // vs model/modell
+&nbsp;          &quot;Druckmodells&quot;,  // vs model/modell
+&nbsp;          &quot;Druckmodelle&quot;,  // vs model/modell
+&nbsp;          &quot;Druckmodellen&quot;,  // vs model/modell
+&nbsp;          &quot;Modelleben&quot;,  // vs model/modell
+&nbsp;          &quot;Modellebens&quot;,  // vs model/modell
+&nbsp;          &quot;Porzellanmarke&quot;,  // vs markt/marke
+&nbsp;          &quot;Porzellanmarken&quot;,  // vs markt/marke
+&nbsp;          &quot;Abtauvorgang&quot;,  // vs bau/tau
+&nbsp;          &quot;Abtauvorgangs&quot;,  // vs bau/tau
+&nbsp;          &quot;Abtauvorgänge&quot;,  // vs bau/tau
+&nbsp;          &quot;Abtauvorgängen&quot;,  // vs bau/tau
+&nbsp;          &quot;Kurzantrag&quot;,  // vs kur
+&nbsp;          &quot;Kurzanträge&quot;,  // vs kur
+&nbsp;          &quot;Kurzanträgen&quot;,  // vs kur
+&nbsp;          &quot;Hundeschuhe&quot;,  // vs schule
+&nbsp;          &quot;Hundeschuhen&quot;,  // vs schule
+&nbsp;          &quot;Testerinnen&quot;,  // vs text
+&nbsp;          &quot;Wirtschaftspreises&quot;,  // vs kreises
+&nbsp;          &quot;Schlüsselkreise&quot;,  // vs preisen
+&nbsp;          &quot;Bundespreisen&quot;,  // vs kreisen
+&nbsp;          &quot;Terminsuche&quot;,  // vs sache
+&nbsp;          &quot;Suchposition&quot;,  // vs sach
+&nbsp;          &quot;Mietersache&quot;,  // vs suche
+&nbsp;          &quot;Textprüfungen&quot;,  // vs test
+&nbsp;          &quot;Abteilungszahlen&quot;,  // vs wahlen
+&nbsp;          &quot;Batteriewahl&quot;,  // vs zahl
+&nbsp;          &quot;Zahlrhythmus&quot;,  // vs wahl
+&nbsp;          &quot;Zahldatum&quot;,  // vs wahl
+&nbsp;          &quot;Auszahlphase&quot;,  // vs wahl
+&nbsp;          &quot;Auszahlmethode&quot;,  // vs wahl
+&nbsp;          &quot;Zahlprozess&quot;,  // vs wahl
+&nbsp;          &quot;Protestzahlen&quot;,  // vs wahlen
+&nbsp;          &quot;Leserwahlen&quot;,  // vs zahlen
+&nbsp;          &quot;Publikumswahl&quot;,  // vs zahl
+&nbsp;          &quot;Händlerwahl&quot;,  // vs zahl
+&nbsp;          &quot;Wettbetrag&quot;,  // vs wert
+&nbsp;          &quot;Wettguthaben&quot;,  // vs wert
+&nbsp;          &quot;Wettannahme&quot;,  // vs wert
+&nbsp;          &quot;Wettkonto&quot;,  // vs wert
+&nbsp;          &quot;Wettguthaben&quot;,  // vs wert
+&nbsp;          &quot;Wettguthabens&quot;,  // vs wert
+&nbsp;          &quot;Wettsteuern&quot;,  // vs wert
+&nbsp;          &quot;Wettoptionen&quot;,  // vs wert
+&nbsp;          &quot;Testhaushalt&quot;,  // vs rest
+&nbsp;          &quot;Testkapazität&quot;,  // vs rest
+&nbsp;          &quot;Testfamilie&quot;,  // vs rest
+&nbsp;          &quot;Testkapazitäten&quot;,  // vs rest
+&nbsp;          &quot;Testbeobachtung&quot;,  // vs text
+&nbsp;          &quot;Testproduktionen&quot;,  // vs text
+&nbsp;          &quot;Produkttest&quot;,  // vs rest
+&nbsp;          &quot;Produkttesten&quot;,  // vs rest
+&nbsp;          &quot;Produkttext&quot;,  // vs test
+&nbsp;          &quot;Textkampagnen&quot;,  // vs test
+&nbsp;          &quot;Texting&quot;,  // vs testing
+&nbsp;          &quot;Testfelds&quot;,  // vs text
+&nbsp;          &quot;Testnachweis&quot;,  // vs text
+&nbsp;          &quot;Testbeiträge&quot;,  // vs text
+&nbsp;          &quot;Testbeiträgen&quot;,  // vs text
+&nbsp;          &quot;Verkaufstext&quot;,  // vs test
+&nbsp;          &quot;Bewerbungsfrage&quot;,  // vs bewertung
+&nbsp;          &quot;Bewerbungstag&quot;,  // vs bewertung
+&nbsp;          &quot;Bestätigungstext&quot;,  // vs test
+&nbsp;          &quot;Bewerbungsprozess&quot;,  // vs bewertung
+&nbsp;          &quot;Bewerbungsprozesse&quot;,  // vs bewertung
+&nbsp;          &quot;Bewertungsmanagement&quot;,  // vs bewerbung
+&nbsp;          &quot;Bewertungsdossier&quot;,  // vs bewerbung
+&nbsp;          &quot;Bewerbungsnote&quot;,  // vs bewertung
+&nbsp;          &quot;Bewerbungskennziffer&quot;,  // vs bewertung
+&nbsp;          &quot;Online-Bewertung&quot;,  // vs bewerbung
+&nbsp;          &quot;Schuhmodell&quot;,  // vs schul
+&nbsp;          &quot;Schuhmodells&quot;,  // vs schul
+&nbsp;          &quot;Bürgertest&quot;,  // vs fest
+&nbsp;          &quot;Testzelt&quot;,  // vs fest
+&nbsp;          &quot;Testgelegenheit&quot;,  // vs fest
+&nbsp;          &quot;Testbestellung&quot;,  // vs fest
+&nbsp;          &quot;Aufklärungsseiten&quot;,  // vs zeiten
+&nbsp;          &quot;Verkaufsseiten&quot;,  // vs zeiten
+&nbsp;          &quot;Morgenseiten&quot;,  // vs zeiten
+&nbsp;          &quot;Bedürfnisseiten&quot;,  // vs zeiten
+&nbsp;          &quot;Kehrzeiten&quot;,  // vs seiten
+&nbsp;          &quot;Lernseiten&quot;,  // vs zeiten
+&nbsp;          &quot;Suchstatistik&quot;,  // vs buch
+&nbsp;          &quot;Kassenlösung&quot;,  // vs klasse
+&nbsp;          &quot;Kassenchef&quot;,  // vs klasse
+&nbsp;          &quot;Kassenmanagement&quot;,  // vs klasse
+&nbsp;          &quot;Kassenbesetzung&quot;,  // vs klasse
+&nbsp;          &quot;Stundenkonten&quot;,  // vs kosten
+&nbsp;          &quot;Werbekonten&quot;,  // vs kosten
+&nbsp;          &quot;Kontensicherung&quot;,  // vs kosten
+&nbsp;          &quot;Extrakonten&quot;,  // vs kosten
+&nbsp;          &quot;Servicekonten&quot;,  // vs kosten
+&nbsp;          &quot;Lichtmodi&quot;,  // vs sicht
+&nbsp;          &quot;Frontlicht&quot;,  // vs sicht
+&nbsp;          &quot;sichtgeschützter&quot;,  // vs licht
+&nbsp;          &quot;Sichtproben&quot;,  // vs licht
+&nbsp;          &quot;Mietschein&quot;,  // vs mit
+&nbsp;          &quot;Miethilfen&quot;,  // vs mit
+&nbsp;          &quot;Mietberater&quot;,  // vs mit
+&nbsp;          &quot;Mietstrom&quot;,  // vs mit
+&nbsp;          &quot;Fitnessmarke&quot;,  // vs markt
+&nbsp;          &quot;Kameramarke&quot;,  // vs markt
+&nbsp;          &quot;Gewürzmarke&quot;,  // vs markt
+&nbsp;          &quot;Paketmarke&quot;,  // vs markt
+&nbsp;          &quot;Standregal&quot;,  // vs strand
+&nbsp;          &quot;Standordnung&quot;,  // vs strand
+&nbsp;          &quot;Zahnkorrekturen&quot;,  // vs bahn
+&nbsp;          &quot;Infektionslage&quot;,  // vs tage
+&nbsp;          &quot;Strandtage&quot;,  // vs lage
+&nbsp;          &quot;Schweinebach&quot;,  // vs Schweinebauch
+&nbsp;          &quot;Schweinebaches&quot;,  // vs Schweinebauches
+&nbsp;          &quot;Wellenbach&quot;,  // vs Wellenbauch
+&nbsp;          &quot;Kesselbauches&quot;,  // vs Kesselbaches
+&nbsp;          &quot;Froschbach&quot;,  // vs Froschbauch
+&nbsp;          &quot;Bachregion&quot;,  // vs Bauchregion
+&nbsp;          &quot;Bachregionen&quot;,  // vs Bauchregionen
+&nbsp;          &quot;Flugtaxen&quot;,  // vs Flugtagen
+&nbsp;          &quot;Fahrerkanzel&quot;,  // vs Führerkanzel
+&nbsp;          &quot;Wehrchef&quot;,  // vs Lehrchef
+&nbsp;          &quot;Lichtkunstwerk&quot;,  // vs Dichtkunstwerk
+&nbsp;          &quot;Infektionslage&quot;,  // vs Infektionstage
+&nbsp;          &quot;Teilspiegel&quot;,  // vs Heilspiegel
+&nbsp;          &quot;Preiseseite&quot;,  // vs Presseseite
+&nbsp;          &quot;Teamfahrers&quot;,  // vs Teamführers
+&nbsp;          &quot;Supportzeiten&quot;,  // vs Supportseiten
+&nbsp;          &quot;Schwabenweg&quot;,
+&nbsp;          &quot;Datenspende&quot;,
+&nbsp;          &quot;Datenspenden&quot;,
+&nbsp;          &quot;Designermaske&quot;,
+&nbsp;          &quot;Designermasken&quot;,
+&nbsp;          &quot;Herdenschutz&quot;,
+&nbsp;          &quot;Maskendisziplin&quot;,
+&nbsp;          &quot;Maskenmode&quot;,
+&nbsp;          &quot;Maskenmoden&quot;,
+&nbsp;          &quot;Maskenmoral&quot;,
+&nbsp;          &quot;Impfvorrang&quot;,
+&nbsp;          &quot;Volksmaske&quot;,
+&nbsp;          &quot;Volksmasken&quot;,
+&nbsp;          &quot;Testmeilen&quot;,  // vs Testteilen
+&nbsp;          &quot;Hauptstrand&quot;,  // vs Hauptstand
+&nbsp;          &quot;Hauptstrands&quot;,
+&nbsp;          &quot;Hauptstrandes&quot;,
+&nbsp;          &quot;Hüttenschuhe&quot;,
+&nbsp;          &quot;Hüttenschuhen&quot;,
+&nbsp;          &quot;Hüttenschuhs&quot;,
+&nbsp;          &quot;Mietbedingung&quot;,
+&nbsp;          &quot;Mietbedingungen&quot;,
+&nbsp;          &quot;Modeltyp&quot;,
+&nbsp;          &quot;Modeltyps&quot;,
+&nbsp;          &quot;Modeltypen&quot;,
+&nbsp;          &quot;Musikversand&quot;,
+&nbsp;          &quot;Musikversands&quot;,
+&nbsp;          &quot;Musikversandes&quot;,
+&nbsp;          &quot;Paragrafzeichen&quot;,
+&nbsp;          &quot;Paragrafzeichens&quot;,
+&nbsp;          &quot;Pflanzenmarkt&quot;,
+&nbsp;          &quot;Pflanzenmarkts&quot;,
+&nbsp;          &quot;Pflanzenmarktes&quot;,
+&nbsp;          &quot;Privatstrand&quot;,
+&nbsp;          &quot;Privatstrands&quot;,
+&nbsp;          &quot;Privatstrände&quot;,
+&nbsp;          &quot;Privatstränden&quot;,
+&nbsp;          &quot;Privatstrandes&quot;,
+&nbsp;          &quot;Reisessig&quot;,
+&nbsp;          &quot;Reisessigs&quot;,
+&nbsp;          &quot;Reiswein&quot;,
+&nbsp;          &quot;Reisweins&quot;,
+&nbsp;          &quot;Reisweine&quot;,
+&nbsp;          &quot;Schuhabteilung&quot;,
+&nbsp;          &quot;Schuhabteilungen&quot;,
+&nbsp;          &quot;Schulfirma&quot;,
+&nbsp;          &quot;Schulfirmen&quot;,
+&nbsp;          &quot;Schulmagazin&quot;,
+&nbsp;          &quot;Schulmagazins&quot;,
+&nbsp;          &quot;Schulmagazinen&quot;,
+&nbsp;          &quot;Schulmagazinen&quot;,
+&nbsp;          &quot;Segelschuhe&quot;,
+&nbsp;          &quot;Segelschuhen&quot;,
+&nbsp;          &quot;Spitzenhaus&quot;,
+&nbsp;          &quot;Spitzenhauses&quot;,
+&nbsp;          &quot;Spitzenhäuser&quot;,
+&nbsp;          &quot;Spitzenhäusern&quot;,
+&nbsp;          &quot;Standgebläse&quot;,
+&nbsp;          &quot;Standgebläsen&quot;,
+&nbsp;          &quot;Standgebläses&quot;,
+&nbsp;          &quot;Standstreifen&quot;,
+&nbsp;          &quot;Standstreifens&quot;,
+&nbsp;          &quot;Strandfigur&quot;,
+&nbsp;          &quot;Strandfoto&quot;,
+&nbsp;          &quot;Strandfotos&quot;,
+&nbsp;          &quot;Strandkonzert&quot;,
+&nbsp;          &quot;Strandkonzerts&quot;,
+&nbsp;          &quot;Strandkonzertes&quot;,
+&nbsp;          &quot;Strandkonzerte&quot;,
+&nbsp;          &quot;Strandkonzerten&quot;,
+&nbsp;          &quot;Strandverlust&quot;,
+&nbsp;          &quot;Strandverluste&quot;,
+&nbsp;          &quot;Strandverlusten&quot;,
+&nbsp;          &quot;Tierversand&quot;,
+&nbsp;          &quot;Tierversands&quot;,
+&nbsp;          &quot;Treppenart&quot;,
+&nbsp;          &quot;Treppenarten&quot;,
+&nbsp;          &quot;Winterflucht&quot;,
+&nbsp;          &quot;Nachtmitte&quot;,  // vs. Nachtmittel
+&nbsp;          &quot;Gemeindemitte&quot;, // vs. Gemeindemittel
+&nbsp;          &quot;Feinbeurteilung&quot;,  // vs. Feindbeurteilung
+&nbsp;          &quot;Bremssand&quot;,
+&nbsp;          &quot;Bratform&quot;,
+&nbsp;          &quot;Devisenspritze&quot;,
+&nbsp;          &quot;Einkaufszielen&quot;,
+&nbsp;          &quot;einnähmt&quot;,
+&nbsp;          &quot;hinübernähmen&quot;,
+&nbsp;          &quot;maschinennäher&quot;,
+&nbsp;          &quot;zentrumsnäher&quot;,
+&nbsp;          &quot;Einzelversandes&quot;,
+&nbsp;          &quot;Eisbällchen&quot;,
+&nbsp;          &quot;Eisenbahnrades&quot;,
+&nbsp;          &quot;Eisläufer&quot;,
+&nbsp;          &quot;Eisläufern&quot;,
+&nbsp;          &quot;Eisläufers&quot;,
+&nbsp;          &quot;Fachversand&quot;,
+&nbsp;          &quot;Fachversandes&quot;,
+&nbsp;          &quot;Feinwahrnehmung&quot;,
+&nbsp;          &quot;Feinwahrnehmungen&quot;,
+&nbsp;          &quot;Fluchtkapsel&quot;,
+&nbsp;          &quot;Fluchtkapseln&quot;,
+&nbsp;          &quot;Fluchtschiffe&quot;,
+&nbsp;          &quot;Fluchtschiffes&quot;,
+&nbsp;          &quot;Fluchtschiffs&quot;,
+&nbsp;          &quot;Fluchtschiffen&quot;,
+&nbsp;          &quot;Flügeltreppe&quot;,
+&nbsp;          &quot;Flügeltreppen&quot;,
+&nbsp;          &quot;Fruchtspiel&quot;,
+&nbsp;          &quot;Gletschersand&quot;,
+&nbsp;          &quot;Gletschersands&quot;,
+&nbsp;          &quot;Gletschersandes&quot;,
+&nbsp;          &quot;Grafem&quot;,
+&nbsp;          &quot;Grafems&quot;,
+&nbsp;          &quot;Grafeme&quot;,
+&nbsp;          &quot;Grafemen&quot;,
+&nbsp;          &quot;grafitgrau&quot;,
+&nbsp;          &quot;grafithaltig&quot;,
+&nbsp;          &quot;grafithaltige&quot;,
+&nbsp;          &quot;grafithaltiger&quot;,
+&nbsp;          &quot;grafithaltigen&quot;,
+&nbsp;          &quot;grafithaltigem&quot;,
+&nbsp;          &quot;grafithaltiges&quot;,
+&nbsp;          &quot;grafithaltigeren&quot;,
+&nbsp;          &quot;grafithaltigerem&quot;,
+&nbsp;          &quot;Reitschuhe&quot;,
+&nbsp;          &quot;Reitschuhen&quot;,
+&nbsp;          &quot;Nordbalkon&quot;,
+&nbsp;          &quot;Ostbalkon&quot;,
+&nbsp;          &quot;Südbalkon&quot;,
+&nbsp;          &quot;Westbalkon&quot;,
+&nbsp;          &quot;Zahngel&quot;,
+&nbsp;          &quot;Reinigungsgel&quot;,
+&nbsp;          &quot;Schutzname&quot;,
+&nbsp;          &quot;Schutznamen&quot;,
+&nbsp;          &quot;Gebrauchsname&quot;,
+&nbsp;          &quot;Gebrauchsnamen&quot;,
+&nbsp;          &quot;Erbname&quot;,
+&nbsp;          &quot;Erbnamen&quot;,
+&nbsp;          &quot;Datenname&quot;,
+&nbsp;          &quot;Datennamen&quot;,
+&nbsp;          &quot;Geldnahme&quot;,
+&nbsp;          &quot;Geldnahmen&quot;,
+&nbsp;          &quot;Kreispokal&quot;,
+&nbsp;          &quot;Gründertag&quot;,
+&nbsp;          &quot;Korrekturlösung&quot;,
+&nbsp;          &quot;Regelschreiber&quot;,
+&nbsp;          &quot;Glasreinigern&quot;,
+&nbsp;          &quot;Holzstele&quot;,
+&nbsp;          &quot;Brandschutz&quot;,
+&nbsp;          &quot;Testbahn&quot;,
+&nbsp;          &quot;Testbahnen&quot;,
+&nbsp;          &quot;Startglocke&quot;,
+&nbsp;          &quot;Startglocken&quot;,
+&nbsp;          &quot;Ladepunkte&quot;,
+&nbsp;          &quot;Kinderpreise&quot;,
+&nbsp;          &quot;Kinderpreisen&quot;,
+&nbsp;          &quot;Belegungsoptionen&quot;,
+&nbsp;          &quot;Brandgebiete&quot;,
+&nbsp;          &quot;Brandgebieten&quot;,
+&nbsp;          &quot;Innenfell&quot;,
+&nbsp;          &quot;Innenfelle&quot;,
+&nbsp;          &quot;Batteriepreis&quot;,
+&nbsp;          &quot;Alltagsschuhe&quot;,
+&nbsp;          &quot;Alltagsschuhen&quot;,
+&nbsp;          &quot;Arbeiterschuhe&quot;,
+&nbsp;          &quot;Arbeiterschuhen&quot;,
+&nbsp;          &quot;Bartvogel&quot;,
+&nbsp;          &quot;Abschiedsmail&quot;,
+&nbsp;          &quot;Abschiedsmails&quot;,
+&nbsp;          &quot;Wohnindex&quot;,
+&nbsp;          &quot;Entwicklungsstudio&quot;,
+&nbsp;          &quot;Ermittlungsgesetz&quot;,
+&nbsp;          &quot;Lindeverfahren&quot;,
+&nbsp;          &quot;Stromspender&quot;,
+&nbsp;          &quot;Turmverlag&quot;,  // eigtl. Turm-Verlag, muss hier als Ausnahme aber so stehen
+&nbsp;          &quot;Bäckerlunge&quot;,
+&nbsp;          &quot;Reisbeutel&quot;,
+&nbsp;          &quot;Reisbeuteln&quot;,
+&nbsp;          &quot;Reisbeutels&quot;,
+&nbsp;          &quot;Fellnase&quot;,
+&nbsp;          &quot;Fellnasen&quot;,
+&nbsp;          &quot;Kletterwald&quot;,
+&nbsp;          &quot;Kletterwalds&quot;,
+&nbsp;          &quot;Lusthöhle&quot;,
+&nbsp;          &quot;Lusthöhlen&quot;,
+&nbsp;          &quot;Abschlagswert&quot;,
+&nbsp;          &quot;Schuhfach&quot;,
+&nbsp;          &quot;Schuhfächer&quot;,
+&nbsp;          &quot;Spülkanüle&quot;,
+&nbsp;          &quot;Spülkanülen&quot;,
+&nbsp;          &quot;Tankkosten&quot;,
+&nbsp;          &quot;Hangout&quot;,
+&nbsp;          &quot;Hangouts&quot;,
+&nbsp;          &quot;Kassenloser&quot;,
+&nbsp;          &quot;kassenloser&quot;,
+&nbsp;          &quot;Reisnadel&quot;,
+&nbsp;          &quot;Reisnadeln&quot;,
+&nbsp;          &quot;stielloses&quot;,
+&nbsp;          &quot;stielloser&quot;,
+&nbsp;          &quot;stiellosen&quot;,
+&nbsp;          &quot;Beiratsregelung&quot;,
+&nbsp;          &quot;Beiratsregelungen&quot;,
+&nbsp;          &quot;Kreiskongress&quot;,
+&nbsp;          &quot;Lagekosten&quot;,
+&nbsp;          &quot;hineinfeiern&quot;,
+&nbsp;          &quot;Maskenhersteller&quot;, // vs Marken
+&nbsp;          &quot;Wabendesign&quot;,
+&nbsp;          &quot;Maskenherstellers&quot;,
+&nbsp;          &quot;Maskenherstellern&quot;,
+&nbsp;          &quot;Firmenvokabular&quot;,
+&nbsp;          &quot;Maskenproduktion&quot;,
+&nbsp;          &quot;Maskenpflicht&quot;,
+&nbsp;          &quot;Nachmiete&quot;,
+&nbsp;          &quot;Ringseil&quot;,
+&nbsp;          &quot;Ringseilen&quot;,
+&nbsp;          &quot;Jagdschule&quot;,
+&nbsp;          &quot;Tachograf&quot;,
+&nbsp;          &quot;Tachografs&quot;,
+&nbsp;          &quot;Tachografen&quot;,
+&nbsp;          &quot;Grafitpulver&quot;,
+&nbsp;          &quot;Grafitmine&quot;,
+&nbsp;          &quot;Grafitminen&quot;,
+&nbsp;          &quot;Nesselstraße&quot;,
+&nbsp;          &quot;Reitsachen&quot;,
+&nbsp;          &quot;Mehrfachabrechnung&quot;,
+&nbsp;          &quot;Stuhlrolle&quot;,
+&nbsp;          &quot;Stuhlrollen&quot;,
+&nbsp;          &quot;neugestartet&quot;,
+&nbsp;          &quot;Vertragskonto&quot;,
+&nbsp;          &quot;Männerding&quot;,
+&nbsp;          &quot;Restwoche&quot;,
+&nbsp;          &quot;Startpakete&quot;, // vs Rakete
+&nbsp;          &quot;Startpaketen&quot;, // vs Rakete
+&nbsp;          &quot;Suchintention&quot;, // vs Sach
+&nbsp;          &quot;Wettglück&quot;, // vs Welt
+&nbsp;          &quot;Wettprogramm&quot;, // vs Welt
+&nbsp;          &quot;Wettprogramme&quot;, // vs Welt
+&nbsp;          &quot;Zählerwechsel&quot;,
+&nbsp;          &quot;Zählerwechsels&quot;,
+&nbsp;          &quot;Nährstoffleitungen&quot;,  // vs ...leistungen
+&nbsp;          &quot;Verhandlungskreise&quot;,
+&nbsp;          &quot;Verhandlungskreisen&quot;,
+&nbsp;          &quot;Mietsuchenden&quot;,
+&nbsp;          &quot;Mietsuchende&quot;,
+&nbsp;          &quot;Mietsuchender&quot;,
+&nbsp;          &quot;Autoboss&quot;,
+&nbsp;          &quot;Autobossen&quot;,
+&nbsp;          &quot;Testmonat&quot;,
+&nbsp;          &quot;Testmonats&quot;,
+&nbsp;          &quot;Testmonate&quot;,
+&nbsp;          &quot;Naturseife&quot;,
+&nbsp;          &quot;Naturseifen&quot;,
+&nbsp;          &quot;Ankerkraut&quot;, // Firmenname (Lebensmittel)
+&nbsp;          &quot;Ankerkrauts&quot;,
+&nbsp;          &quot;Bewerbungstool&quot;,
+&nbsp;          &quot;Bewerbungstools&quot;,
+&nbsp;          &quot;Elektromarke&quot;,
+&nbsp;          &quot;Elektromarken&quot;,
+&nbsp;          &quot;Ankerkraut&quot;,
+&nbsp;          &quot;Testuser&quot;,
+&nbsp;          &quot;Testangeboten&quot;,
+&nbsp;          &quot;Testangebots&quot;,
+&nbsp;          &quot;Testangebotes&quot;,
+&nbsp;          &quot;verkeimt&quot;,
+&nbsp;          &quot;verkeimte&quot;,
+&nbsp;          &quot;verkeimter&quot;,
+&nbsp;          &quot;verkeimtes&quot;,
+&nbsp;          &quot;verkeimten&quot;,
+&nbsp;          &quot;verkeimtem&quot;,
+&nbsp;          &quot;Flugscham&quot;, // vs. Flugschau
+&nbsp;          &quot;Kurseinführung&quot;,
+&nbsp;          &quot;Januar-Miete&quot;,
+&nbsp;          &quot;Februar-Miete&quot;,
+&nbsp;          &quot;März-Miete&quot;,
+&nbsp;          &quot;April-Miete&quot;,
+&nbsp;          &quot;Mai-Miete&quot;,
+&nbsp;          &quot;Juni-Miete&quot;,
+&nbsp;          &quot;Juli-Miete&quot;,
+&nbsp;          &quot;August-Miete&quot;,
+&nbsp;          &quot;September-Miete&quot;,
+&nbsp;          &quot;Oktober-Miete&quot;,
+&nbsp;          &quot;November-Miete&quot;,
+&nbsp;          &quot;Dezember-Miete&quot;,
+&nbsp;          &quot;Suchindices&quot;,
+&nbsp;          &quot;Kirchenfreizeit&quot;,
+&nbsp;          &quot;Kirchenfreizeiten&quot;,
+&nbsp;          &quot;Erklärbär&quot;,
+&nbsp;          &quot;Wettart&quot;,
+&nbsp;          &quot;Wettarten&quot;,
+&nbsp;          &quot;Einzelwette&quot;,
+&nbsp;          &quot;Einzelwetten&quot;,
+&nbsp;          &quot;Artikelzeile&quot;,
+&nbsp;          &quot;Artikelzeilen&quot;,
+&nbsp;          &quot;Echtgeld&quot;,
+&nbsp;          &quot;Kartenansicht&quot;,
+&nbsp;          &quot;Kartenansichten&quot;,
+&nbsp;          &quot;Systemwette&quot;,
+&nbsp;          &quot;Systemwetten&quot;,
+&nbsp;          &quot;Dachzelt&quot;,
+&nbsp;          &quot;Dachzelte&quot;,
+&nbsp;          &quot;Badeloch&quot;,
+&nbsp;          &quot;Bonusaktion&quot;,
+&nbsp;          &quot;Bonusaktionen&quot;,
+&nbsp;          &quot;Projektannahme&quot;,
+&nbsp;          &quot;Pollenbelastung&quot;,
+&nbsp;          &quot;Fastenfenster&quot;,
+&nbsp;          &quot;Bauchtasche&quot;,
+&nbsp;          &quot;Bauchtaschen&quot;,
+&nbsp;          &quot;Zahloption&quot;,
+&nbsp;          &quot;Zahloptionen&quot;,
+&nbsp;          &quot;Zeckenschutz&quot;,
+&nbsp;          &quot;Vertragskonto&quot;,
+&nbsp;          &quot;Zeichengrenze&quot;,
+&nbsp;          &quot;Zeichengrenzen&quot;,
+&nbsp;          &quot;Kartontasche&quot;,
+&nbsp;          &quot;Kartontaschen&quot;,
+&nbsp;          &quot;Mietbestätigung&quot;,
+&nbsp;          &quot;Mietbestätigungen&quot;,
+&nbsp;          &quot;Tunnelzelt&quot;,
+&nbsp;          &quot;Tunnelzelts&quot;,
+&nbsp;          &quot;Tunnelzelte&quot;,
+&nbsp;          &quot;Dichtleistung&quot;,
+&nbsp;          &quot;Dichtleistungen&quot;,
+&nbsp;          &quot;Testkonto&quot;,
+&nbsp;          &quot;Testkontos&quot;,
+&nbsp;          &quot;Konzernnummer&quot;,
+&nbsp;          &quot;Konzernnummern&quot;,
+&nbsp;          &quot;Vertragsstunde&quot;,
+&nbsp;          &quot;Vertragsstunden&quot;,
+&nbsp;          &quot;Zaunträger&quot;,
+&nbsp;          &quot;Zaunträgern&quot;,
+&nbsp;          &quot;Zaunträgers&quot;,
+&nbsp;          &quot;Hallenschuh&quot;,
+&nbsp;          &quot;Hallenschuhs&quot;,
+&nbsp;          &quot;Hallenschuhe&quot;,
+&nbsp;          &quot;Rekrutierungsausgabe&quot;,
+&nbsp;          &quot;Rekrutierungsausgaben&quot;,
+&nbsp;          &quot;geruchsfreies&quot;,
+&nbsp;          &quot;Tafelfolie&quot;,
+&nbsp;          &quot;Gartenservice&quot;,
+&nbsp;          &quot;Gartenservices&quot;,
+&nbsp;          &quot;Rollgerüste&quot;,
+&nbsp;          &quot;Rollgerüsten&quot;,
+&nbsp;          &quot;Grasabfall&quot;,
+&nbsp;          &quot;Grasabfällen&quot;,
+&nbsp;          &quot;Ketogrippe&quot;,
+&nbsp;          &quot;Gerätehülle&quot;,
+&nbsp;          &quot;kaltweiß&quot;,
+&nbsp;          &quot;Maskenbefreiung&quot;,
+&nbsp;          &quot;Lusttropfen&quot;,
+&nbsp;          &quot;Kundenstimme&quot;,
+&nbsp;          &quot;Deichschafen&quot;,
+&nbsp;          &quot;Industriehefe&quot;,
+&nbsp;          &quot;Freizeitschuhe&quot;,
+&nbsp;          &quot;Freizeitschuhen&quot;,
+&nbsp;          &quot;Trainingsschuhe&quot;,
+&nbsp;          &quot;Trainingsschuhen&quot;,
+&nbsp;          &quot;Schuhblatt&quot;,
+&nbsp;          &quot;Nachbacken&quot;,
+&nbsp;          &quot;Wassermelder&quot;,
+&nbsp;          &quot;Schutzsegen&quot;,
+&nbsp;          &quot;Fischversteigerung&quot;,
+&nbsp;          &quot;Fischversteigerungen&quot;,
+&nbsp;          &quot;Konfigurationsteile&quot;,
+&nbsp;          &quot;Konfigurationsteilen&quot;,
+&nbsp;          &quot;Wasserbauch&quot;,
+&nbsp;          &quot;Wasserbauchs&quot;,
+&nbsp;          &quot;Stadtrad&quot;,
+&nbsp;          &quot;Stadtrads&quot;,
+&nbsp;          &quot;Seniorenrad&quot;,
+&nbsp;          &quot;Seniorenrads&quot;,
+&nbsp;          &quot;Bodenplane&quot;,
+&nbsp;          &quot;Schwimmschuhe&quot;,
+&nbsp;          &quot;Familienstrand&quot;,
+&nbsp;          &quot;versiegelbaren&quot;,
+&nbsp;          &quot;Überraschungsfeier&quot;,
+&nbsp;          &quot;Überraschungsfeiern&quot;,
+&nbsp;          &quot;ballseitig&quot;,
+&nbsp;          &quot;Genussgarten&quot;,
+&nbsp;          &quot;Genussgartens&quot;,
+&nbsp;          &quot;Edelsteingarten&quot;,
+&nbsp;          &quot;Edelsteingartens&quot;,
+&nbsp;          &quot;Insektengarten&quot;,
+&nbsp;          &quot;Insektengartens&quot;,
+&nbsp;          &quot;Klimakurs&quot;,
+&nbsp;          &quot;Klimakurses&quot;,
+&nbsp;          &quot;Kursperioden&quot;,
+&nbsp;          &quot;Musikreise&quot;,
+&nbsp;          &quot;Musikreisen&quot;,
+&nbsp;          &quot;Ziegenhof&quot;,
+&nbsp;          &quot;Ziegenhofs&quot;,
+&nbsp;          &quot;Außendecke&quot;,
+&nbsp;          &quot;Außendecken&quot;,
+&nbsp;          &quot;Bewegungsbarriere&quot;,
+&nbsp;          &quot;Bewegungsbarrieren&quot;,
+&nbsp;          &quot;Gerichtsantrag&quot;,
+&nbsp;          &quot;Gerichtsantrags&quot;,
+&nbsp;          &quot;Gerichtsanträge&quot;,
+&nbsp;          &quot;Spezialwette&quot;,
+&nbsp;          &quot;Spezialwetten&quot;,
+&nbsp;          &quot;Geldmagnet&quot;,
+&nbsp;          &quot;Testartikel&quot;,
+&nbsp;          &quot;Testartikeln&quot;,
+&nbsp;          &quot;Testartikels&quot;,
+&nbsp;          &quot;folierte&quot;,
+&nbsp;          &quot;foliert&quot;,
+&nbsp;          &quot;folierten&quot;,
+&nbsp;          &quot;foliertes&quot;,
+&nbsp;          &quot;foliertem&quot;,
+&nbsp;          &quot;Implementierungsvorgaben&quot;,
+&nbsp;          &quot;Bücherzelle&quot;,
+&nbsp;          &quot;Bücherzellen&quot;,
+&nbsp;          &quot;Cuttermesser&quot;,
+&nbsp;          &quot;Cuttermessern&quot;,
+&nbsp;          &quot;Cuttermessers&quot;,
+&nbsp;          &quot;Kabelsammlung&quot;,
+&nbsp;          &quot;Kabelsammlungen&quot;,
+&nbsp;          &quot;Schleifschwamm&quot;,
+&nbsp;          &quot;Schleifschwamms&quot;,
+&nbsp;          &quot;Schleifschwämme&quot;,
+&nbsp;          &quot;Teemarke&quot;,
+&nbsp;          &quot;Teemarken&quot;,
+&nbsp;          &quot;Vorzelt&quot;,
+&nbsp;          &quot;Vorzelte&quot;,
+&nbsp;          &quot;Supportleitung&quot;, // vs leistung
+&nbsp;          &quot;Kursname&quot;,
+&nbsp;          &quot;Schmucksorte&quot;,
+&nbsp;          &quot;Schmucksorten&quot;,
+&nbsp;          &quot;Farbsorte&quot;,
+&nbsp;          &quot;Farbsorten&quot;,
+&nbsp;          &quot;Donaublick&quot;,
+&nbsp;          &quot;Rundhals&quot;,
+&nbsp;          &quot;Trittschutz&quot;,
+&nbsp;          &quot;Laufhaus&quot;,
+&nbsp;          &quot;Wickeltasche&quot;,
+&nbsp;          &quot;Bayernliga&quot;,
+&nbsp;          &quot;Badsanierung&quot;,
+&nbsp;          &quot;Laufbereitschaft&quot;,
+&nbsp;          &quot;Geschenkkarten&quot;,
+&nbsp;          &quot;Landesklasse&quot;,
+&nbsp;          &quot;Firmenlauf&quot;,
+&nbsp;          &quot;Satzverlust&quot;,
+&nbsp;          &quot;Satzgewinn&quot;,
+&nbsp;          &quot;Monatslinsen&quot;,
+&nbsp;          &quot;Tageslinsen&quot;,
+&nbsp;          &quot;Sexstellung&quot;,
+&nbsp;          &quot;Traumbad&quot;,
+&nbsp;          &quot;Schlafsystem&quot;,
+&nbsp;          &quot;Startspieler&quot;,
+&nbsp;          &quot;Tabellenrang&quot;,
+&nbsp;          &quot;Heimerfolg&quot;,
+&nbsp;          &quot;Dachboxen&quot;,
+&nbsp;          &quot;Videotest&quot;,
+&nbsp;          &quot;Zugbindung&quot;,
+&nbsp;          &quot;Badplanung&quot;,
+&nbsp;          &quot;Badschrank&quot;,
+&nbsp;          &quot;Reiturlaub&quot;,
+&nbsp;          &quot;Zeittraining&quot;,
+&nbsp;          &quot;Dichtungssatz&quot;,
+&nbsp;          &quot;Wettbörsen&quot;,
+&nbsp;          &quot;Bildungspaket&quot;,
+&nbsp;          &quot;anklickst&quot;,
+&nbsp;          &quot;Frauenlauf&quot;,
+&nbsp;          &quot;Problemhaut&quot;,
+&nbsp;          &quot;Absperrpfosten&quot;,
+&nbsp;          &quot;Regenhülle&quot;,
+&nbsp;          &quot;Satzball&quot;,
+&nbsp;          &quot;Auswärtsfahrt&quot;,
+&nbsp;          &quot;Dichtsatz&quot;,
+&nbsp;          &quot;Nutzungserlebnis&quot;,
+&nbsp;          &quot;Saumabschluss&quot;,
+&nbsp;          &quot;Rundengewinn&quot;,
+&nbsp;          &quot;Haussteuerung&quot;,
+&nbsp;          &quot;Unterfederung&quot;,
+&nbsp;          &quot;Sterneküche&quot;,
+&nbsp;          &quot;Wickeltaschen&quot;,
+&nbsp;          &quot;Jahreslinsen&quot;,
+&nbsp;          &quot;Blutmond&quot;,
+&nbsp;          &quot;Badeplattform&quot;,
+&nbsp;          &quot;Wettquote&quot;,
+&nbsp;          &quot;Haarmaske&quot;,
+&nbsp;          &quot;Schlussgang&quot;,
+&nbsp;          &quot;Damengrößen&quot;,
+&nbsp;          &quot;Hautanalyse&quot;,
+&nbsp;          &quot;Außenkamera&quot;,
+&nbsp;          &quot;Kuscheldecken&quot;,
+&nbsp;          &quot;Feinhefe&quot;,
+&nbsp;          &quot;Radstation&quot;,
+&nbsp;          &quot;Satzbälle&quot;,
+&nbsp;          &quot;gelinkter&quot;,
+&nbsp;          &quot;Nacktbild&quot;,
+&nbsp;          &quot;Bücherbär&quot;,
+&nbsp;          &quot;Winzerhof&quot;,
+&nbsp;          &quot;Laufhäuser&quot;,
+&nbsp;          &quot;Verbandsklasse&quot;,
+&nbsp;          &quot;Rennrunde&quot;,
+&nbsp;          &quot;Luftmasche&quot;,
+&nbsp;          &quot;Suchfiltern&quot;,
+&nbsp;          &quot;Wohndecke&quot;,
+&nbsp;          &quot;bespaßt&quot;,
+&nbsp;          &quot;Endrohren&quot;,
+&nbsp;          &quot;ablutschte&quot;,
+&nbsp;          &quot;Waldkatzen&quot;,
+&nbsp;          &quot;Sicherheitsweste&quot;,
+&nbsp;          &quot;Gelbsperre&quot;,
+&nbsp;          &quot;Kopfdichtung&quot;,
+&nbsp;          &quot;Wurfzelt&quot;,
+&nbsp;          &quot;Gemeinschaftskarten&quot;,
+&nbsp;          &quot;Kornkreis&quot;,
+&nbsp;          &quot;Bronzerang&quot;,
+&nbsp;          &quot;Fensterfolien&quot;,
+&nbsp;          &quot;einköpfen&quot;,
+&nbsp;          &quot;Einkaufsnacht&quot;,
+&nbsp;          &quot;Reiserad&quot;,
+&nbsp;          &quot;Leistungsspange&quot;,
+&nbsp;          &quot;Ladepunkten&quot;,
+&nbsp;          &quot;Breitbänder&quot;,
+&nbsp;          &quot;Wochenplaner&quot;,
+&nbsp;          &quot;Leserunden&quot;,
+&nbsp;          &quot;Königsleiten&quot;,
+&nbsp;          &quot;Hochlader&quot;,
+&nbsp;          &quot;Lauferlebnis&quot;,
+&nbsp;          &quot;Radstrecken&quot;,
+&nbsp;          &quot;Kinderlauf&quot;,
+&nbsp;          &quot;Bettsystem&quot;,
+&nbsp;          &quot;Reifentests&quot;,
+&nbsp;          &quot;Fettleder&quot;,
+&nbsp;          &quot;Bildungsstreik&quot;,
+&nbsp;          &quot;Satzrückstand&quot;,
+&nbsp;          &quot;Bürstenköpfe&quot;,
+&nbsp;          &quot;Werbegesicht&quot;,
+&nbsp;          &quot;Bassreflex&quot;,
+&nbsp;          &quot;Postrock&quot;,
+&nbsp;          &quot;gelaserten&quot;,
+&nbsp;          &quot;Ohrbügel&quot;,
+&nbsp;          &quot;Bestweite&quot;,
+&nbsp;          &quot;Golfschuhe&quot;,
+&nbsp;          &quot;Genussreise&quot;,
+&nbsp;          &quot;Barkultur&quot;,
+&nbsp;          &quot;Ladepunkt&quot;,
+&nbsp;          &quot;Sportreifen&quot;,
+&nbsp;          &quot;Begleitdamen&quot;,
+&nbsp;          &quot;Tauchgebiet&quot;,
+&nbsp;          &quot;Stadttouren&quot;,
+&nbsp;          &quot;vermixen&quot;,
+&nbsp;          &quot;Suchvorschläge&quot;,
+&nbsp;          &quot;Damenmodell&quot;,
+&nbsp;          &quot;Putzkittel&quot;,
+&nbsp;          &quot;Eistees&quot;,
+&nbsp;          &quot;Begleitdame&quot;,
+&nbsp;          &quot;Frontmanns&quot;,
+&nbsp;          &quot;Katzenbett&quot;,
+&nbsp;          &quot;Pizzaöfen&quot;,
+&nbsp;          &quot;Sitzerhöhungen&quot;,
+&nbsp;          &quot;Golfkurse&quot;,
+&nbsp;          &quot;Ventilkappen&quot;,
+&nbsp;          &quot;Kinderuhr&quot;,
+&nbsp;          &quot;Bachblüte&quot;,
+&nbsp;          &quot;rockigem&quot;,
+&nbsp;          &quot;Kinderpreis&quot;,
+&nbsp;          &quot;Massivhauses&quot;,
+&nbsp;          &quot;Golfstar&quot;,
+&nbsp;          &quot;Herstellerwertung&quot;,
+&nbsp;          &quot;Herznoten&quot;,
+&nbsp;          &quot;Geldklammer&quot;,
+&nbsp;          &quot;Einzelkatze&quot;,
+&nbsp;          &quot;Fellwechsels&quot;,
+&nbsp;          &quot;Duftreis&quot;,
+&nbsp;          &quot;Jugendpokal&quot;,
+&nbsp;          &quot;Werbelüge&quot;,
+&nbsp;          &quot;Superzoom&quot;,
+&nbsp;          &quot;Inselpark&quot;,
+&nbsp;          &quot;Golfschuh&quot;,
+&nbsp;          &quot;Schuhwahl&quot;,
+&nbsp;          &quot;Schwingtor&quot;,
+&nbsp;          &quot;Sexabenteuern&quot;,
+&nbsp;          &quot;Insektenhaus&quot;,
+&nbsp;          &quot;Ramschniveau&quot;,
+&nbsp;          &quot;Verbrenners&quot;,
+&nbsp;          &quot;Doppelklingen&quot;,
+&nbsp;          &quot;Clubkonzert&quot;,
+&nbsp;          &quot;pullert&quot;,
+&nbsp;          &quot;Meisterchor&quot;,
+&nbsp;          &quot;Bienenfarm&quot;,
+&nbsp;          &quot;Windknoten&quot;,
+&nbsp;          &quot;Videoarten&quot;, // vs Videokarten
+&nbsp;          &quot;Textartikel&quot;, // vs Textpartikel
+&nbsp;          &quot;Textartikels&quot;, // vs Textpartikels
+&nbsp;          &quot;Textartikeln&quot;, // vs Textpartikeln
+&nbsp;          &quot;Feuchtmann&quot;, //name
+&nbsp;          &quot;Fachlektüre&quot;,
+&nbsp;          &quot;Fachlektüren&quot;,
+&nbsp;          &quot;Lustkugel&quot;,
+&nbsp;          &quot;Lustkugeln&quot;,
+&nbsp;          &quot;Tankbeleg&quot;, // vs Bankbeleg
+&nbsp;          &quot;Tankbelegs&quot;, // vs Bankbelegs
+&nbsp;          &quot;Tankbeleges&quot;, // vs Bankbeleges
+&nbsp;          &quot;Tankbelege&quot;, // vs Bankbelege
+&nbsp;          &quot;Tankbelegen&quot;, // vs Bankbelegen
+&nbsp;          &quot;Kamelart&quot;, // vs. Kabelart
+&nbsp;          &quot;Kamelarten&quot;, // vs. Kabelarten
+&nbsp;          &quot;Bayern-Präsident&quot;, // vs Bauernpräsident
+&nbsp;          &quot;Bayern-Präsidenten&quot;, // vs Bauernpräsident
+&nbsp;          &quot;Bundessprechern&quot;, // vs Bundessprecherin
+&nbsp;          &quot;Netzsuche&quot;, // vs Netztuche (?)
+&nbsp;          &quot;Beileger&quot;, // vs Beilager
+&nbsp;          &quot;Beilegers&quot;, // vs Beilagers
+&nbsp;          &quot;Beilegern&quot;, // vs Beilagern
+&nbsp;          &quot;Sexangelegenheit&quot;, // vs Seeangelegenheit
+&nbsp;          &quot;Sexangelegenheiten&quot;, // vs Seeangelegenheiten
+&nbsp;          &quot;Mobilfunkmarke&quot;, // vs Mobilfunkmarkt
+&nbsp;          &quot;Schulball&quot;, // vs Schulfall
+&nbsp;          &quot;Schulballs&quot;, // vs Schulfalls
+&nbsp;          &quot;Aluminiumzölle&quot;, // vs Aluminiumzelle
+&nbsp;          &quot;Aluminiumzöllen&quot;, // vs Aluminiumzellen
+&nbsp;          &quot;Herz-Ass&quot;, // vs Herzast
+&nbsp;          &quot;Herzass&quot;, // vs Herzast
+&nbsp;          &quot;Fleischmagen&quot;, // vs Fleischtagen
+&nbsp;          &quot;marktdurchdringend&quot;, // vs markdurchdringend
+&nbsp;          &quot;marktdurchdringende&quot;,
+&nbsp;          &quot;marktdurchdringendes&quot;,
+&nbsp;          &quot;marktdurchdringender&quot;,
+&nbsp;          &quot;marktdurchdringenden&quot;,
+&nbsp;          &quot;marktdurchdringendem&quot;,
+&nbsp;          &quot;Zukunftsbaum&quot;, // vs raum
+&nbsp;          &quot;Zukunftsbaums&quot;, // vs raum
+&nbsp;          &quot;Zukunftsbaumes&quot;, // vs raum
+&nbsp;          &quot;Rasenwurzel&quot;, // vs nasen
+&nbsp;          &quot;Rasenwurzeln&quot;, // vs nasen
+&nbsp;          &quot;Wandlungskapital&quot;, // vs Handlungskapital
+&nbsp;          &quot;Wandlungskapitals&quot;, // vs Handlungskapital
+&nbsp;          &quot;Themenboxen&quot;, // vs bogen
+&nbsp;          &quot;Superyacht&quot;, // vs macht
+&nbsp;          &quot;Testbestellung&quot;, // vs fest
+&nbsp;          &quot;Testbestellungen&quot;, // vs fest
+&nbsp;          &quot;Reisbeilage&quot;, // vs Reise
+&nbsp;          &quot;Reisbeilagen&quot; // vs Reise
+&nbsp;  ));
+&nbsp;
+&nbsp;  // have per-class static list of these and reference that in instance
+&nbsp;  // -&gt; avoid loading word list for every instance, but allow variations in subclasses
+&nbsp;  protected AhoCorasickDoubleArrayTrie&lt;String&gt; ahoCorasickDoubleArrayTrie;
+&nbsp;  protected Map&lt;String, List&lt;Pair&gt;&gt; pairMap;
+&nbsp;
+&nbsp;  private static final AhoCorasickDoubleArrayTrie&lt;String&gt; prohibitedCompoundRuleSearcher;
+&nbsp;  private static final Map&lt;String, List&lt;Pair&gt;&gt; prohibitedCompoundRulePairMap;
+&nbsp;
+&nbsp;  static {
+<b class="nc">&nbsp;    List&lt;Pair&gt; pairs = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    Map&lt;String, List&lt;Pair&gt;&gt; pairMap = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    addUpperCaseVariants(pairs);</b>
+<b class="nc">&nbsp;    addItemsFromConfusionSets(pairs, &quot;/de/confusion_sets.txt&quot;, true);</b>
+<b class="nc">&nbsp;    prohibitedCompoundRuleSearcher = setupAhoCorasickSearch(pairs, pairMap);</b>
+<b class="nc">&nbsp;    prohibitedCompoundRulePairMap = pairMap;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void addAllCaseVariants(List&lt;Pair&gt; candidatePairs, Pair lcPair) {
+<b class="nc">&nbsp;    candidatePairs.add(new Pair(lcPair.part1, lcPair.part1Desc, lcPair.part2, lcPair.part2Desc));</b>
+<b class="nc">&nbsp;    String ucPart1 = uppercaseFirstChar(lcPair.part1);</b>
+<b class="nc">&nbsp;    String ucPart2 = uppercaseFirstChar(lcPair.part2);</b>
+<b class="nc">&nbsp;    if (!lcPair.part1.equals(ucPart1) || !lcPair.part2.equals(ucPart2)) {</b>
+<b class="nc">&nbsp;      candidatePairs.add(new Pair(ucPart1, lcPair.part1Desc, ucPart2, lcPair.part2Desc));</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  private static void addUpperCaseVariants(List&lt;Pair&gt; pairs) {
+<b class="nc">&nbsp;    for (Pair lcPair : lowercasePairs) {</b>
+<b class="nc">&nbsp;      if (startsWithUppercase(lcPair.part1)) {</b>
+<b class="nc">&nbsp;        throw new IllegalArgumentException(&quot;Use all-lowercase word in &quot; + ProhibitedCompoundRule.class + &quot;: &quot; + lcPair.part1);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (startsWithUppercase(lcPair.part2)) {</b>
+<b class="nc">&nbsp;        throw new IllegalArgumentException(&quot;Use all-lowercase word in &quot; + ProhibitedCompoundRule.class + &quot;: &quot; + lcPair.part2);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      addAllCaseVariants(pairs, lcPair);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  protected static void addItemsFromConfusionSets(List&lt;Pair&gt; pairs, String confusionSetsFile, boolean isUpperCase) {
+&nbsp;    try {
+<b class="nc">&nbsp;      ResourceDataBroker dataBroker = JLanguageTool.getDataBroker();</b>
+<b class="nc">&nbsp;      try (InputStream confusionSetStream = dataBroker.getFromResourceDirAsStream(confusionSetsFile)) {</b>
+<b class="nc">&nbsp;        ConfusionSetLoader loader = new ConfusionSetLoader(GermanyGerman.INSTANCE);</b>
+<b class="nc">&nbsp;        Map&lt;String, List&lt;ConfusionPair&gt;&gt; confusionPairs = loader.loadConfusionPairs(confusionSetStream);</b>
+<b class="nc">&nbsp;        for (Map.Entry&lt;String, List&lt;ConfusionPair&gt;&gt; entry : confusionPairs.entrySet()) {</b>
+<b class="nc">&nbsp;          for (ConfusionPair pair : entry.getValue()) {</b>
+<b class="nc">&nbsp;            boolean allUpper = pair.getTerms().stream().allMatch(k -&gt; startsWithUppercase(k.getString()) &amp;&amp; !ignoreWords.contains(k.getString()));</b>
+<b class="nc">&nbsp;            if (allUpper || !isUpperCase) {</b>
+<b class="nc">&nbsp;              List&lt;ConfusionString&gt; cSet = pair.getTerms();</b>
+<b class="nc">&nbsp;              if (cSet.size() != 2) {</b>
+<b class="nc">&nbsp;                throw new RuntimeException(&quot;Got confusion set with != 2 items: &quot; + cSet);</b>
+&nbsp;              }
+<b class="nc">&nbsp;              Iterator&lt;ConfusionString&gt; it = cSet.iterator();</b>
+<b class="nc">&nbsp;              ConfusionString part1 = it.next();</b>
+<b class="nc">&nbsp;              ConfusionString part2 = it.next();</b>
+<b class="nc">&nbsp;              pairs.add(new Pair(part1.getString(), part1.getDescription(), part2.getString(), part2.getDescription()));</b>
+<b class="nc">&nbsp;              if (isUpperCase) {</b>
+<b class="nc">&nbsp;                pairs.add(new Pair(lowercaseFirstChar(part1.getString()), part1.getDescription(), lowercaseFirstChar(part2.getString()), part2.getDescription()));</b>
+&nbsp;              } else {
+<b class="nc">&nbsp;                pairs.add(new Pair(uppercaseFirstChar(part1.getString()), part1.getDescription(), uppercaseFirstChar(part2.getString()), part2.getDescription()));</b>
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;          }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;    } catch (IOException e) {</b>
+<b class="nc">&nbsp;      throw new RuntimeException(e);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  protected static AhoCorasickDoubleArrayTrie&lt;String&gt; setupAhoCorasickSearch(List&lt;Pair&gt; pairs, Map&lt;String, List&lt;Pair&gt;&gt; pairMap) {
+<b class="nc">&nbsp;    TreeMap&lt;String, String&gt; map = new TreeMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (Pair pair : pairs) {</b>
+<b class="nc">&nbsp;      map.put(pair.part1, pair.part1);</b>
+<b class="nc">&nbsp;      map.put(pair.part2, pair.part2);</b>
+&nbsp;
+<b class="nc">&nbsp;      pairMap.putIfAbsent(pair.part1, new LinkedList&lt;&gt;());</b>
+<b class="nc">&nbsp;      pairMap.putIfAbsent(pair.part2, new LinkedList&lt;&gt;());</b>
+<b class="nc">&nbsp;      pairMap.get(pair.part1).add(pair);</b>
+<b class="nc">&nbsp;      pairMap.get(pair.part2).add(pair);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;    // Build an AhoCorasickDoubleArrayTrie
+<b class="nc">&nbsp;    AhoCorasickDoubleArrayTrie&lt;String&gt; ahoCorasickDoubleArrayTrie = new AhoCorasickDoubleArrayTrie&lt;&gt;();</b>
+<b class="nc">&nbsp;    ahoCorasickDoubleArrayTrie.build(map);</b>
+<b class="nc">&nbsp;    return ahoCorasickDoubleArrayTrie;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private final BaseLanguageModel lm;
+<b class="nc">&nbsp;  private Pair confusionPair = null; // specify single pair for evaluation</b>
+&nbsp;
+&nbsp;  public ProhibitedCompoundRule(ResourceBundle messages, LanguageModel lm, UserConfig userConfig) {
+<b class="nc">&nbsp;    super(messages);</b>
+<b class="nc">&nbsp;    this.lm = (BaseLanguageModel) Objects.requireNonNull(lm);</b>
+<b class="nc">&nbsp;    super.setCategory(Categories.TYPOS.getCategory(messages));</b>
+<b class="nc">&nbsp;    this.ahoCorasickDoubleArrayTrie = prohibitedCompoundRuleSearcher;</b>
+<b class="nc">&nbsp;    this.pairMap = prohibitedCompoundRulePairMap;</b>
+<b class="nc">&nbsp;    linguServices = userConfig != null ? userConfig.getLinguServices() : null;</b>
+<b class="nc">&nbsp;    addExamplePair(Example.wrong(&quot;Da steht eine &lt;marker&gt;Lehrzeile&lt;/marker&gt; zu viel.&quot;),</b>
+<b class="nc">&nbsp;                   Example.fixed(&quot;Da steht eine &lt;marker&gt;Leerzeile&lt;/marker&gt; zu viel.&quot;));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getId() {
+<b class="nc">&nbsp;    return RULE_ID;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getDescription() {
+<b class="nc">&nbsp;    return &quot;Markiert wahrscheinlich falsche Komposita wie &#39;Lehrzeile&#39;, wenn &#39;Leerzeile&#39; häufiger vorkommt.&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public RuleMatch[] match(AnalyzedSentence sentence) throws IOException {
+<b class="nc">&nbsp;    List&lt;RuleMatch&gt; ruleMatches = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    AnalyzedTokenReadings prevReadings = null;</b>
+<b class="nc">&nbsp;    for (AnalyzedTokenReadings readings : sentence.getTokensWithoutWhitespace()) {</b>
+<b class="nc">&nbsp;      String tmpWord = readings.getToken();</b>
+<b class="nc">&nbsp;      if (prevReadings != null &amp;&amp; prevReadings.hasAnyPartialPosTag(&quot;EIG:&quot;) &amp;&amp; StringTools.startsWithUppercase(tmpWord) &amp;&amp;</b>
+<b class="nc">&nbsp;        (readings.hasAnyPartialPosTag(&quot;EIG:&quot;) || readings.isPosTagUnknown())) {</b>
+&nbsp;        // assume name, e.g. &quot;Bianca Baalhorn&quot; (avoid: Baalhorn =&gt; Ballhorn)
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (prevReadings != null &amp;&amp; prevReadings.getToken().matches(&quot;Herrn?|Frau&quot;)) {</b>
+&nbsp;        // assume name, e.g. &quot;Herr Eiswert&quot; (avoid: Eiswert -&gt; Eiswelt)
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;String&gt; wordsParts = new ArrayList&lt;&gt;(Arrays.asList(tmpWord.split(&quot;-&quot;)));</b>
+<b class="nc">&nbsp;      int partsStartPos = 0;</b>
+<b class="nc">&nbsp;      for (String wordPart : wordsParts) {</b>
+<b class="nc">&nbsp;        partsStartPos = getMatches(sentence, ruleMatches, readings, partsStartPos, wordPart, 0);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      String noHyphens = removeHyphensAndAdaptCase(tmpWord);</b>
+<b class="nc">&nbsp;      if (noHyphens != null) {</b>
+<b class="nc">&nbsp;        getMatches(sentence, ruleMatches, readings, 0, noHyphens, tmpWord.length()-noHyphens.length());</b>
+&nbsp;      }
+<b class="nc">&nbsp;      prevReadings = readings;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return toRuleMatchArray(ruleMatches);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private static boolean isMisspelled(String word) {
+<b class="nc">&nbsp;    if (linguServices == null) {</b>
+<b class="nc">&nbsp;      return GermanyGerman.INSTANCE.getDefaultSpellingRule().isMisspelled(word);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return !linguServices.isCorrectSpell(word, GermanyGerman.INSTANCE);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private int getMatches(AnalyzedSentence sentence, List&lt;RuleMatch&gt; ruleMatches, AnalyzedTokenReadings readings, int partsStartPos, String wordPart, int toPosCorrection) {
+&nbsp;    /* optimizations:
+&nbsp;     only nouns can be compounds
+&nbsp;     all parts are at least 3 characters long -&gt; words must have at least 6 characters
+&nbsp;    */
+<b class="nc">&nbsp;    if ((readings.isTagged() &amp;&amp; !readings.hasPartialPosTag(&quot;SUB&quot;)) &amp;&amp; !readings.hasPosTagStartingWith(&quot;EIG:&quot;) || wordPart.length() &lt;= 6) {  // EIG: e.g. &quot;Obstdeutschland&quot; -&gt; &quot;Ostdeutschland&quot;</b>
+<b class="nc">&nbsp;      partsStartPos += wordPart.length() + 1;</b>
+<b class="nc">&nbsp;      return partsStartPos;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    List&lt;Pair&gt; candidatePairs = new ArrayList&lt;&gt;();</b>
+&nbsp;    // ignore other pair when confusionPair is set (-&gt; running for evaluation)
+&nbsp;
+<b class="nc">&nbsp;    if (confusionPair == null) {</b>
+<b class="nc">&nbsp;      List&lt;AhoCorasickDoubleArrayTrie.Hit&lt;String&gt;&gt; wordList = ahoCorasickDoubleArrayTrie.parseText(wordPart);</b>
+&nbsp;      // might get duplicates, but since we only ever allow one match per word it doesn&#39;t matter
+<b class="nc">&nbsp;      for (AhoCorasickDoubleArrayTrie.Hit&lt;String&gt; hit : wordList) {</b>
+<b class="nc">&nbsp;        List&lt;Pair&gt; pair = pairMap.get(hit.value);</b>
+<b class="nc">&nbsp;        if (pair != null) {</b>
+<b class="nc">&nbsp;          candidatePairs.addAll(pair);</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;    } else {</b>
+<b class="nc">&nbsp;      addAllCaseVariants(candidatePairs, confusionPair);</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    List&lt;WeightedRuleMatch&gt; weightedMatches = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (Pair pair : candidatePairs) {</b>
+<b class="nc">&nbsp;      String variant = null;</b>
+<b class="nc">&nbsp;      if (wordPart.contains(pair.part1)) {</b>
+<b class="nc">&nbsp;        variant = wordPart.replaceFirst(pair.part1, pair.part2);</b>
+<b class="nc">&nbsp;      } else if (wordPart.contains(pair.part2)) {</b>
+<b class="nc">&nbsp;        variant = wordPart.replaceFirst(pair.part2, pair.part1);</b>
+&nbsp;      }
+&nbsp;      //System.out.println(word + &quot; &lt;&gt; &quot; + variant);
+<b class="nc">&nbsp;      if (variant == null) {</b>
+<b class="nc">&nbsp;        partsStartPos += wordPart.length() + 1;</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      long wordCount = lm.getCount(wordPart);</b>
+<b class="nc">&nbsp;      long variantCount = lm.getCount(variant);</b>
+&nbsp;      //float factor = variantCount / (float)Math.max(wordCount, 1);
+&nbsp;      //System.out.println(&quot;word: &quot; + wordPart + &quot; (&quot; + wordCount + &quot;), variant: &quot; + variant + &quot; (&quot; + variantCount + &quot;), factor: &quot; + factor + &quot;, pair: &quot; + pair);
+&nbsp;
+<b class="nc">&nbsp;      if (variantCount &gt; getThreshold() &amp;&amp; wordCount == 0 &amp;&amp; !blacklist.contains(wordPart) &amp;&amp; !isMisspelled(variant) &amp;&amp;</b>
+<b class="nc">&nbsp;          blacklistRegex.stream().noneMatch(k -&gt; wordPart.matches(&quot;.*&quot; + k + &quot;.*&quot;))) {</b>
+&nbsp;        String msg;
+<b class="nc">&nbsp;        if (pair.part1Desc != null &amp;&amp; pair.part2Desc != null) {</b>
+<b class="nc">&nbsp;          msg = &quot;Möglicher Tippfehler. &quot; + uppercaseFirstChar(pair.part1) + &quot;: &quot; + pair.part1Desc + &quot;, &quot; + uppercaseFirstChar(pair.part2) + &quot;: &quot; + pair.part2Desc;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          msg = &quot;Möglicher Tippfehler: &quot; + pair.part1 + &quot;/&quot; + pair.part2;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        int fromPos = readings.getStartPos() + partsStartPos;</b>
+<b class="nc">&nbsp;        int toPos = fromPos + wordPart.length() + toPosCorrection;</b>
+<b class="nc">&nbsp;        String id = getId() + &quot;_&quot; + cleanId(pair.part1) + &quot;_&quot; + cleanId(pair.part2);</b>
+<b class="nc">&nbsp;        SpecificIdRule idRule = new SpecificIdRule(id, pair.part1, pair.part2, messages, isPremium(), getTags());</b>
+<b class="nc">&nbsp;        RuleMatch match = new RuleMatch(idRule, sentence, fromPos, toPos, msg);</b>
+<b class="nc">&nbsp;        match.setSuggestedReplacement(variant);</b>
+<b class="nc">&nbsp;        weightedMatches.add(new WeightedRuleMatch(variantCount, match));</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (weightedMatches.size() &gt; 0) {</b>
+<b class="nc">&nbsp;      Collections.sort(weightedMatches);  // sort by most popular alternative</b>
+<b class="nc">&nbsp;      ruleMatches.add(weightedMatches.get(0).match);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    partsStartPos += wordPart.length() + 1;</b>
+<b class="nc">&nbsp;    return partsStartPos;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  int getThreshold() {
+<b class="nc">&nbsp;    return 0;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private String cleanId(String id) {
+<b class="nc">&nbsp;    return id.toUpperCase().replace(&quot;Ä&quot;, &quot;AE&quot;).replace(&quot;Ü&quot;, &quot;UE&quot;).replace(&quot;Ö&quot;, &quot;OE&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * ignore automatically loaded pairs and only match using given confusionPair
+&nbsp;   * used for evaluation by ProhibitedCompoundRuleEvaluator
+&nbsp;   * @param confusionPair pair to evaluate, parts are assumed to be lowercase / null to reset
+&nbsp;   */
+&nbsp;  public void setConfusionPair(Pair confusionPair) {
+<b class="nc">&nbsp;    this.confusionPair = confusionPair;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Nullable
+&nbsp;  String removeHyphensAndAdaptCase(String word) {
+<b class="nc">&nbsp;    String[] parts = word.split(&quot;-&quot;);</b>
+<b class="nc">&nbsp;    if (parts.length &gt; 1) {</b>
+<b class="nc">&nbsp;      StringBuilder sb = new StringBuilder();</b>
+<b class="nc">&nbsp;      int i = 0;</b>
+<b class="nc">&nbsp;      for (String part : parts) {</b>
+<b class="nc">&nbsp;        if (part.length() &lt;= 1) {</b>
+&nbsp;          // don&#39;t: S-Bahn -&gt; Sbahn
+<b class="nc">&nbsp;          return null;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        sb.append(i == 0 ? part : lowercaseFirstChar(part));</b>
+<b class="nc">&nbsp;        i++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return sb.toString();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  static class WeightedRuleMatch implements Comparable&lt;WeightedRuleMatch&gt; {
+&nbsp;    long weight;
+&nbsp;    RuleMatch match;
+<b class="nc">&nbsp;    WeightedRuleMatch(long weight, RuleMatch match) {</b>
+<b class="nc">&nbsp;      this.weight = weight;</b>
+<b class="nc">&nbsp;      this.match = match;</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public int compareTo(@NotNull WeightedRuleMatch other) {
+<b class="nc">&nbsp;      return Long.compare(other.weight, weight);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+<b class="nc">&nbsp;  public static class Pair {</b>
+&nbsp;    private final String part1;
+&nbsp;    private final String part1Desc;
+&nbsp;    private final String part2;
+&nbsp;    private final String part2Desc;
+<b class="nc">&nbsp;    public Pair(String part1, String part1Desc, String part2, String part2Desc) {</b>
+<b class="nc">&nbsp;      this.part1 = part1;</b>
+<b class="nc">&nbsp;      this.part1Desc = part1Desc;</b>
+<b class="nc">&nbsp;      this.part2 = part2;</b>
+<b class="nc">&nbsp;      this.part2Desc = part2Desc;</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;      return part1 + &quot;/&quot; + part2;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  static private class SpecificIdRule extends Rule {  // don&#39;t extend ProhibitedCompoundRule for performance reasons (speller would get re-initialized a lot)
+&nbsp;    private final String id;
+&nbsp;    private final String desc;
+<b class="nc">&nbsp;    SpecificIdRule(String id, String part1, String part2, ResourceBundle messages, boolean isPremium, List&lt;Tag&gt; tags) {</b>
+<b class="nc">&nbsp;      this.setPremium(isPremium);</b>
+<b class="nc">&nbsp;      this.id = Objects.requireNonNull(id);</b>
+<b class="nc">&nbsp;      this.desc = &quot;Markiert wahrscheinlich falsche Komposita mit Teilwort &#39;&quot; + uppercaseFirstChar(part1) + &quot;&#39; statt &#39;&quot; + uppercaseFirstChar(part2) + &quot;&#39; und umgekehrt&quot;;</b>
+<b class="nc">&nbsp;      setCategory(Categories.TYPOS.getCategory(messages));</b>
+<b class="nc">&nbsp;      setTags(tags);</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public String getId() {
+<b class="nc">&nbsp;      return id;</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public String getDescription() {
+<b class="nc">&nbsp;      return desc;</b>
+&nbsp;    }
+&nbsp;    @Override
+&nbsp;    public RuleMatch[] match(AnalyzedSentence sentence) throws IOException {
+<b class="nc">&nbsp;      return RuleMatch.EMPTY_ARRAY;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

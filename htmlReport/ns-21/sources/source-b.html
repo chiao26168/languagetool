@@ -1,0 +1,843 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LORemoteLanguageTool</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: LORemoteLanguageTool (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LORemoteLanguageTool</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/160)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/216)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LORemoteLanguageTool$RemoteRule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/48)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LORemoteLanguageTool$RemoteTextLevelRule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/41)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/182)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/298)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2016 Daniel Naber (http://www.danielnaber.de)
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.MalformedURLException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;import org.languagetool.AnalyzedSentence;
+&nbsp;import org.languagetool.AnalyzedToken;
+&nbsp;import org.languagetool.AnalyzedTokenReadings;
+&nbsp;import org.languagetool.JLanguageTool;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.LinguServices;
+&nbsp;import org.languagetool.UserConfig;
+&nbsp;import org.languagetool.JLanguageTool.ParagraphHandling;
+&nbsp;import org.languagetool.gui.Configuration;
+&nbsp;import org.languagetool.openoffice.OfficeTools.RemoteCheck;
+&nbsp;import org.languagetool.remote.CheckConfiguration;
+&nbsp;import org.languagetool.remote.CheckConfigurationBuilder;
+&nbsp;import org.languagetool.remote.RemoteConfigurationInfo;
+&nbsp;import org.languagetool.remote.RemoteLanguageTool;
+&nbsp;import org.languagetool.remote.RemoteResult;
+&nbsp;import org.languagetool.remote.RemoteRuleMatch;
+&nbsp;import org.languagetool.rules.Category;
+&nbsp;import org.languagetool.rules.CategoryId;
+&nbsp;import org.languagetool.rules.ITSIssueType;
+&nbsp;import org.languagetool.rules.Rule;
+&nbsp;import org.languagetool.rules.RuleMatch;
+&nbsp;import org.languagetool.rules.TextLevelRule;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class to run LanguageTool in LO to use a remote server
+&nbsp; * @since 4.8
+&nbsp; * @author Fred Kruse
+&nbsp; */
+&nbsp;class LORemoteLanguageTool {
+&nbsp;
+&nbsp;  private static final String BLANK = &quot; &quot;;
+&nbsp;  private static final String SERVER_URL = &quot;https://api.languagetool.org&quot;;
+&nbsp;  private static final String PREMIUM_SERVER_URL = &quot;https://api.languagetoolplus.com&quot;;
+&nbsp;  private static final int SERVER_LIMIT = 20000;
+&nbsp;
+<b class="nc">&nbsp;  private final Set&lt;String&gt; enabledRules = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;  private final Set&lt;String&gt; disabledRules = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;  private final Set&lt;CategoryId&gt; disabledRuleCategories = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;  private final Set&lt;CategoryId&gt; enabledRuleCategories = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;  private final List&lt;Rule&gt; allRules = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;  private final List&lt;Rule&gt; spellingRules = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;  private final List&lt;String&gt; ruleValues = new ArrayList&lt;&gt;();</b>
+&nbsp;  private final Language language;
+&nbsp;  private final Language motherTongue;
+&nbsp;  private final RemoteLanguageTool remoteLanguageTool;
+&nbsp;  private final UserConfig userConfig;
+&nbsp;  private final boolean addSynonyms;
+&nbsp;  private final boolean isPremium;
+&nbsp;  private final String username;
+&nbsp;  private final String apiKey;
+<b class="nc">&nbsp;  private JLanguageTool lt = null;</b>
+&nbsp;
+&nbsp;  private int maxTextLength;
+&nbsp;  private boolean remoteRun;
+&nbsp;  
+&nbsp;  LORemoteLanguageTool(Language language, Language motherTongue, Configuration config,
+<b class="nc">&nbsp;                       List&lt;Rule&gt; extraRemoteRules, UserConfig userConfig) throws MalformedURLException {</b>
+<b class="nc">&nbsp;    this.language = language;</b>
+<b class="nc">&nbsp;    this.motherTongue = motherTongue;</b>
+<b class="nc">&nbsp;    this.userConfig = userConfig;</b>
+<b class="nc">&nbsp;    addSynonyms = userConfig != null &amp;&amp; userConfig.getLinguServices() != null &amp;&amp; !config.noSynonymsAsSuggestions();</b>
+<b class="nc">&nbsp;    String serverUrl = config.getServerUrl();</b>
+<b class="nc">&nbsp;    setRuleValues(config.getConfigurableValues());</b>
+<b class="nc">&nbsp;    username = config.getRemoteUsername();</b>
+<b class="nc">&nbsp;    apiKey = config.getRemoteApiKey();</b>
+<b class="nc">&nbsp;    isPremium = username != null &amp;&amp; apiKey != null &amp;&amp; config.isPremium();</b>
+<b class="nc">&nbsp;    URL serverBaseUrl = new URL(serverUrl == null ? (isPremium ? PREMIUM_SERVER_URL : SERVER_URL) : serverUrl);</b>
+<b class="nc">&nbsp;    remoteLanguageTool = new RemoteLanguageTool(serverBaseUrl);</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      String urlParameters = &quot;language=&quot; + language.getShortCodeWithCountryAndVariant();</b>
+<b class="nc">&nbsp;      RemoteConfigurationInfo configInfo = remoteLanguageTool.getConfigurationInfo(urlParameters);</b>
+<b class="nc">&nbsp;      storeAllRules(configInfo.getRemoteRules());</b>
+<b class="nc">&nbsp;      maxTextLength = configInfo.getMaxTextLength();</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;Server Limit text length: &quot; + maxTextLength);</b>
+<b class="nc">&nbsp;      remoteRun = true;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;      maxTextLength = SERVER_LIMIT;</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;Server doesn&#39;t support maxTextLength, Limit text length set to: &quot; + maxTextLength);</b>
+<b class="nc">&nbsp;      remoteRun = false;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * check a text by a remote LT server
+&nbsp;   */
+&nbsp;  List&lt;RuleMatch&gt; check(String text, ParagraphHandling paraMode, RemoteCheck checkMode) throws IOException {
+<b class="nc">&nbsp;    if (!remoteRun) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    List&lt;RuleMatch&gt; ruleMatches = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    if (text == null || text.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;      return ruleMatches;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    CheckConfigurationBuilder configBuilder = new CheckConfigurationBuilder(language.getShortCodeWithCountryAndVariant());</b>
+<b class="nc">&nbsp;    if (isPremium) {</b>
+<b class="nc">&nbsp;      configBuilder.username(username);</b>
+<b class="nc">&nbsp;      configBuilder.apiKey(apiKey);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (motherTongue != null) {</b>
+<b class="nc">&nbsp;      configBuilder.setMotherTongueLangCode(motherTongue.getShortCodeWithCountryAndVariant());</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (paraMode == ParagraphHandling.ONLYPARA) {</b>
+<b class="nc">&nbsp;      configBuilder.ruleValues(ruleValues);</b>
+<b class="nc">&nbsp;      Set&lt;String&gt; tmpEnabled = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;      if (checkMode == RemoteCheck.ALL || checkMode == RemoteCheck.ONLY_GRAMMAR) {</b>
+<b class="nc">&nbsp;        tmpEnabled.addAll(enabledRules);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (checkMode == RemoteCheck.ALL || checkMode == RemoteCheck.ONLY_SPELL) {</b>
+<b class="nc">&nbsp;        for (Rule rule : spellingRules) {</b>
+<b class="nc">&nbsp;          tmpEnabled.add(rule.getId());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (tmpEnabled.size() &gt; 0) {</b>
+<b class="nc">&nbsp;        configBuilder.enabledRuleIds(tmpEnabled.toArray(new String[0]));</b>
+<b class="nc">&nbsp;        configBuilder.enabledOnly();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      configBuilder.mode(&quot;textLevelOnly&quot;);</b>
+<b class="nc">&nbsp;    } else {</b>
+<b class="nc">&nbsp;      if (checkMode == RemoteCheck.ALL || checkMode == RemoteCheck.ONLY_GRAMMAR) {</b>
+<b class="nc">&nbsp;        Set&lt;String&gt; tmpDisabled = new HashSet&lt;&gt;(disabledRules);</b>
+<b class="nc">&nbsp;        if (checkMode == RemoteCheck.ALL) {</b>
+<b class="nc">&nbsp;          for (Rule rule : spellingRules) {</b>
+<b class="nc">&nbsp;            tmpDisabled.remove(rule.getId());</b>
+<b class="nc">&nbsp;          }</b>
+&nbsp;        }
+<b class="nc">&nbsp;        configBuilder.enabledRuleIds(enabledRules.toArray(new String[0]));</b>
+<b class="nc">&nbsp;        configBuilder.disabledRuleIds(tmpDisabled.toArray(new String[0]));</b>
+<b class="nc">&nbsp;        configBuilder.ruleValues(ruleValues);</b>
+<b class="nc">&nbsp;        configBuilder.mode(&quot;all&quot;);</b>
+<b class="nc">&nbsp;      } else if (checkMode == RemoteCheck.ONLY_SPELL) {</b>
+<b class="nc">&nbsp;        Set&lt;String&gt; tmpEnabled = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (Rule rule : spellingRules) {</b>
+<b class="nc">&nbsp;          tmpEnabled.add(rule.getId());</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        if (tmpEnabled.size() &gt; 0) {</b>
+<b class="nc">&nbsp;          configBuilder.enabledRuleIds(tmpEnabled.toArray(new String[0]));</b>
+<b class="nc">&nbsp;          configBuilder.enabledOnly();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        configBuilder.mode(&quot;allButTextLevelOnly&quot;);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    configBuilder.level(&quot;default&quot;);</b>
+<b class="nc">&nbsp;    CheckConfiguration remoteConfig = configBuilder.build();</b>
+&nbsp;    int limit;
+<b class="nc">&nbsp;    for (int nStart = 0; text.length() &gt; nStart; nStart += limit) {</b>
+&nbsp;      String subText;
+<b class="nc">&nbsp;      if (text.length() &lt;= nStart + maxTextLength) {</b>
+<b class="nc">&nbsp;        subText = text.substring(nStart);</b>
+<b class="nc">&nbsp;        limit = maxTextLength;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        int nEnd = text.lastIndexOf(OfficeTools.END_OF_PARAGRAPH, nStart + SERVER_LIMIT) + OfficeTools.NUMBER_PARAGRAPH_CHARS;</b>
+<b class="nc">&nbsp;        if (nEnd &lt;= nStart) {</b>
+<b class="nc">&nbsp;          nEnd = text.lastIndexOf(BLANK, nStart + SERVER_LIMIT) + 1;</b>
+<b class="nc">&nbsp;          if (nEnd &lt;= nStart) {</b>
+<b class="nc">&nbsp;            nEnd = nStart + SERVER_LIMIT;</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        subText = text.substring(nStart, nEnd);</b>
+<b class="nc">&nbsp;        limit = nEnd;</b>
+&nbsp;      }
+&nbsp;      RemoteResult remoteResult;
+&nbsp;      try {
+<b class="nc">&nbsp;        remoteResult = remoteLanguageTool.check(subText, remoteConfig);</b>
+<b class="nc">&nbsp;      } catch (Throwable t) {</b>
+<b class="nc">&nbsp;        MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;        remoteRun = false;</b>
+<b class="nc">&nbsp;        return null;</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      ruleMatches.addAll(toRuleMatches(text, remoteResult.getMatches(), nStart));</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return ruleMatches;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get the language the check will done for
+&nbsp;   */
+&nbsp;  Language getLanguage() {
+<b class="nc">&nbsp;    return language;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get all rules 
+&nbsp;   */
+&nbsp;  List&lt;Rule&gt; getAllRules() {
+<b class="nc">&nbsp;    return allRules;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * true if the check should be done by a remote server
+&nbsp;   */
+&nbsp;  boolean remoteRun() {
+<b class="nc">&nbsp;    return remoteRun;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * true if the rule should be ignored
+&nbsp;   */
+&nbsp;  private boolean ignoreRule(Rule rule) {
+<b class="nc">&nbsp;    Category ruleCategory = rule.getCategory();</b>
+<b class="nc">&nbsp;    boolean isCategoryDisabled = (disabledRuleCategories.contains(ruleCategory.getId()) || rule.getCategory().isDefaultOff()) </b>
+<b class="nc">&nbsp;            &amp;&amp; !enabledRuleCategories.contains(ruleCategory.getId());</b>
+<b class="nc">&nbsp;    boolean isRuleDisabled = disabledRules.contains(rule.getId()) </b>
+<b class="nc">&nbsp;            || (rule.isDefaultOff() &amp;&amp; !enabledRules.contains(rule.getId()));</b>
+&nbsp;    boolean isDisabled;
+<b class="nc">&nbsp;    if (isCategoryDisabled) {</b>
+<b class="nc">&nbsp;      isDisabled = !enabledRules.contains(rule.getId());</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      isDisabled = isRuleDisabled;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return isDisabled;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get all active rules
+&nbsp;   */
+&nbsp;  public List&lt;Rule&gt; getAllActiveRules() {
+<b class="nc">&nbsp;    List&lt;Rule&gt; rulesActive = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (Rule rule : allRules) {</b>
+<b class="nc">&nbsp;      if (!ignoreRule(rule)) {</b>
+<b class="nc">&nbsp;        rulesActive.add(rule);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }    </b>
+<b class="nc">&nbsp;    return rulesActive;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get all active office rules
+&nbsp;   */
+&nbsp;  public List&lt;Rule&gt; getAllActiveOfficeRules() {
+<b class="nc">&nbsp;    List&lt;Rule&gt; rulesActive = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (Rule rule : allRules) {</b>
+<b class="nc">&nbsp;      if (!ignoreRule(rule) &amp;&amp; !rule.isOfficeDefaultOff()) {</b>
+<b class="nc">&nbsp;        rulesActive.add(rule);</b>
+<b class="nc">&nbsp;      } else if (rule.isOfficeDefaultOn() &amp;&amp; !disabledRules.contains(rule.getId())) {</b>
+<b class="nc">&nbsp;        rulesActive.add(rule);</b>
+<b class="nc">&nbsp;        enableRule(rule.getId());</b>
+<b class="nc">&nbsp;      } else if (!ignoreRule(rule) &amp;&amp; rule.isOfficeDefaultOff() &amp;&amp; !enabledRules.contains(rule.getId())) {</b>
+<b class="nc">&nbsp;        disableRule(rule.getId());</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }    </b>
+<b class="nc">&nbsp;    return rulesActive;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get disabled rules
+&nbsp;   */
+&nbsp;  public Set&lt;String&gt; getDisabledRules() {
+<b class="nc">&nbsp;    return disabledRules;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Enable the rule
+&nbsp;   */
+&nbsp;  void enableRule (String ruleId) {
+<b class="nc">&nbsp;    disabledRules.remove(ruleId);</b>
+<b class="nc">&nbsp;    enabledRules.add(ruleId);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Disable the rule
+&nbsp;   */
+&nbsp;  void disableRule (String ruleId) {
+<b class="nc">&nbsp;    disabledRules.add(ruleId);</b>
+<b class="nc">&nbsp;    enabledRules.remove(ruleId);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Disable the category
+&nbsp;   */
+&nbsp;  public void disableCategory(CategoryId id) {
+<b class="nc">&nbsp;    disabledRuleCategories.add(id);</b>
+<b class="nc">&nbsp;    enabledRuleCategories.remove(id);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Set the values for rules
+&nbsp;   */
+&nbsp;  private void setRuleValues(Map&lt;String, Integer&gt; configurableValues) {
+<b class="nc">&nbsp;    ruleValues.clear();</b>
+<b class="nc">&nbsp;    Set&lt;String&gt; rules = configurableValues.keySet();</b>
+<b class="nc">&nbsp;    for (String rule : rules) {</b>
+<b class="nc">&nbsp;      String ruleValueString = rule + &quot;:&quot; + configurableValues.get(rule);</b>
+<b class="nc">&nbsp;      ruleValues.add(ruleValueString);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get synonyms for a word
+&nbsp;   */
+&nbsp;  public List&lt;String&gt; getSynonymsForWord(String word, LinguServices linguServices) {
+<b class="nc">&nbsp;    List&lt;String&gt; synonyms = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;    List&lt;String&gt; rawSynonyms = linguServices.getSynonyms(word, language);</b>
+<b class="nc">&nbsp;    for (String synonym : rawSynonyms) {</b>
+<b class="nc">&nbsp;      synonym = synonym.replaceAll(&quot;\\(.*\\)&quot;, &quot;&quot;).trim();</b>
+<b class="nc">&nbsp;      if (!synonym.isEmpty() &amp;&amp; !synonyms.contains(synonym)) {</b>
+<b class="nc">&nbsp;        synonyms.add(synonym);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return synonyms;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get synonyms for a repeated word
+&nbsp;   */
+&nbsp;  public List&lt;String&gt; getSynonymsForToken(AnalyzedTokenReadings token, LinguServices linguServices) {
+<b class="nc">&nbsp;    List&lt;String&gt; synonyms = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;    if(linguServices == null || token == null) {</b>
+<b class="nc">&nbsp;      return synonyms;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    List&lt;AnalyzedToken&gt; readings = token.getReadings();</b>
+<b class="nc">&nbsp;    for (AnalyzedToken reading : readings) {</b>
+<b class="nc">&nbsp;      String lemma = reading.getLemma();</b>
+<b class="nc">&nbsp;      if (lemma != null) {</b>
+<b class="nc">&nbsp;        List&lt;String&gt; newSynonyms = getSynonymsForWord(lemma, linguServices);</b>
+<b class="nc">&nbsp;        for (String synonym : newSynonyms) {</b>
+<b class="nc">&nbsp;          if (!synonyms.contains(synonym)) {</b>
+<b class="nc">&nbsp;            synonyms.add(synonym);</b>
+&nbsp;          }
+<b class="nc">&nbsp;        }</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if(synonyms.isEmpty()) {</b>
+<b class="nc">&nbsp;      synonyms = getSynonymsForWord(token.getToken(), linguServices);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return synonyms;</b>
+&nbsp;  }
+&nbsp;  /**
+&nbsp;   * get synonyms of a word
+&nbsp;   */
+&nbsp;  private List&lt;String&gt; getSynonyms(String word) {
+<b class="nc">&nbsp;    if (!addSynonyms) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (lt == null) {</b>
+<b class="nc">&nbsp;      lt = new JLanguageTool(language, motherTongue, null, userConfig);</b>
+&nbsp;    }
+&nbsp;    List&lt;AnalyzedSentence&gt; analyzedSentence;
+&nbsp;    try {
+<b class="nc">&nbsp;      analyzedSentence = lt.analyzeText(word);</b>
+<b class="nc">&nbsp;      return getSynonymsForToken(analyzedSentence.get(0).getTokensWithoutWhitespace()[1], userConfig.getLinguServices());</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Convert a remote rule match to a LT rule match 
+&nbsp;   */
+&nbsp;  private RuleMatch toRuleMatch(String text, RemoteRuleMatch remoteMatch, int nOffset) throws MalformedURLException {
+<b class="nc">&nbsp;    Rule matchRule = null;</b>
+<b class="nc">&nbsp;    for (Rule rule : allRules) {</b>
+<b class="nc">&nbsp;      if (remoteMatch.getRuleId().equals(rule.getId())) {</b>
+<b class="nc">&nbsp;        matchRule = rule;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (matchRule == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;WARNING: Rule \&quot;&quot; + remoteMatch.getRuleDescription() + &quot;(ID: &quot; </b>
+<b class="nc">&nbsp;                                    + remoteMatch.getRuleId() + &quot;)\&quot; may be not supported by option panel!&quot;);</b>
+<b class="nc">&nbsp;      matchRule = new RemoteRule(remoteMatch);</b>
+<b class="nc">&nbsp;      allRules.add(matchRule);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    RuleMatch ruleMatch = new RuleMatch(matchRule, null, remoteMatch.getErrorOffset() + nOffset, </b>
+<b class="nc">&nbsp;        remoteMatch.getErrorOffset() + remoteMatch.getErrorLength() + nOffset, remoteMatch.getMessage(), </b>
+<b class="nc">&nbsp;        remoteMatch.getShortMessage().isPresent() ? remoteMatch.getShortMessage().get() : null);</b>
+<b class="nc">&nbsp;    if (remoteMatch.getUrl().isPresent()) {</b>
+<b class="nc">&nbsp;      ruleMatch.setUrl(new URL(remoteMatch.getUrl().get()));</b>
+&nbsp;    }
+<b class="nc">&nbsp;    List&lt;String&gt; replacements = null;</b>
+<b class="nc">&nbsp;    if (remoteMatch.getReplacements().isPresent()) {</b>
+<b class="nc">&nbsp;      replacements = remoteMatch.getReplacements().get();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (replacements != null &amp;&amp; !replacements.isEmpty()) {</b>
+<b class="nc">&nbsp;      ruleMatch.setSuggestedReplacements(remoteMatch.getReplacements().get());</b>
+<b class="nc">&nbsp;    } else if (addSynonyms &amp;&amp; remoteMatch.getRuleId().startsWith(&quot;STYLE_REPEATED_WORD_RULE&quot;)) {</b>
+<b class="nc">&nbsp;      String word = text.substring(ruleMatch.getFromPos(), ruleMatch.getToPos());</b>
+<b class="nc">&nbsp;      List&lt;String&gt; synonyms = getSynonyms(word);</b>
+<b class="nc">&nbsp;      if (synonyms != null &amp;&amp; !synonyms.isEmpty()) {</b>
+<b class="nc">&nbsp;        ruleMatch.setSuggestedReplacements(synonyms);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return ruleMatch;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Convert a list of remote rule matches to a list of LT rule matches
+&nbsp;   */
+&nbsp;  private List&lt;RuleMatch&gt; toRuleMatches(String text, List&lt;RemoteRuleMatch&gt; remoteRulematches, int nOffset) throws MalformedURLException {
+<b class="nc">&nbsp;    List&lt;RuleMatch&gt; ruleMatches = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    if (remoteRulematches == null || remoteRulematches.isEmpty()) {</b>
+<b class="nc">&nbsp;      return ruleMatches;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    for (RemoteRuleMatch remoteMatch : remoteRulematches) {</b>
+<b class="nc">&nbsp;      RuleMatch ruleMatch = toRuleMatch(text, remoteMatch, nOffset);</b>
+<b class="nc">&nbsp;      ruleMatches.add(ruleMatch);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return ruleMatches;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * store all rules in a list
+&nbsp;   */
+&nbsp;  private void storeAllRules(List&lt;Map&lt;String,String&gt;&gt; listRuleMaps) {
+<b class="nc">&nbsp;    allRules.clear();</b>
+<b class="nc">&nbsp;    spellingRules.clear();</b>
+<b class="nc">&nbsp;    for (Map&lt;String,String&gt; ruleMap : listRuleMaps) {</b>
+&nbsp;      Rule rule;
+<b class="nc">&nbsp;      if (ruleMap.containsKey(&quot;isTextLevelRule&quot;)) {</b>
+<b class="nc">&nbsp;        rule = new RemoteTextLevelRule(ruleMap);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        rule = new RemoteRule(ruleMap);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (rule.isDictionaryBasedSpellingRule()) {</b>
+<b class="nc">&nbsp;        spellingRules.add(rule);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      allRules.add(rule);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Class to define remote (sentence level) rules
+&nbsp;   */
+&nbsp;  static class RemoteRule extends Rule {
+&nbsp;    
+&nbsp;    private final String ruleId;
+&nbsp;    private final String description;
+&nbsp;    private final boolean hasConfigurableValue;
+&nbsp;    private final boolean isDictionaryBasedSpellingRule;
+&nbsp;    private final int defaultValue;
+&nbsp;    private final int minConfigurableValue;
+&nbsp;    private final int maxConfigurableValue;
+&nbsp;    private final String configureText;
+&nbsp;    
+<b class="nc">&nbsp;    RemoteRule(Map&lt;String,String&gt; ruleMap) {</b>
+<b class="nc">&nbsp;      ruleId = ruleMap.get(&quot;ruleId&quot;);</b>
+<b class="nc">&nbsp;      description = ruleMap.get(&quot;description&quot;);</b>
+<b class="nc">&nbsp;      if (ruleMap.containsKey(&quot;isDefaultOff&quot;)) {</b>
+<b class="nc">&nbsp;        setDefaultOff();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (ruleMap.containsKey(&quot;isOfficeDefaultOn&quot;)) {</b>
+<b class="nc">&nbsp;        setOfficeDefaultOn();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (ruleMap.containsKey(&quot;isOfficeDefaultOff&quot;)) {</b>
+<b class="nc">&nbsp;        setOfficeDefaultOff();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      isDictionaryBasedSpellingRule = ruleMap.containsKey(&quot;isDictionaryBasedSpellingRule&quot;);</b>
+<b class="nc">&nbsp;      if (ruleMap.containsKey(&quot;hasConfigurableValue&quot;)) {</b>
+<b class="nc">&nbsp;        hasConfigurableValue = true;</b>
+<b class="nc">&nbsp;        defaultValue = Integer.parseInt(ruleMap.get(&quot;defaultValue&quot;));</b>
+<b class="nc">&nbsp;        minConfigurableValue = Integer.parseInt(ruleMap.get(&quot;minConfigurableValue&quot;));</b>
+<b class="nc">&nbsp;        maxConfigurableValue = Integer.parseInt(ruleMap.get(&quot;maxConfigurableValue&quot;));</b>
+<b class="nc">&nbsp;        configureText = ruleMap.get(&quot;configureText&quot;);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        hasConfigurableValue = false;</b>
+<b class="nc">&nbsp;        defaultValue = 0;</b>
+<b class="nc">&nbsp;        minConfigurableValue = 0;</b>
+<b class="nc">&nbsp;        maxConfigurableValue = 100;</b>
+<b class="nc">&nbsp;        configureText = &quot;&quot;;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      setCategory(new Category(new CategoryId(ruleMap.get(&quot;categoryId&quot;)), ruleMap.get(&quot;categoryName&quot;)));</b>
+<b class="nc">&nbsp;      setLocQualityIssueType(ITSIssueType.getIssueType(ruleMap.get(&quot;locQualityIssueType&quot;)));</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    RemoteRule(RemoteRuleMatch remoteMatch) {</b>
+<b class="nc">&nbsp;      ruleId = remoteMatch.getRuleId();</b>
+<b class="nc">&nbsp;      description = remoteMatch.getRuleDescription();</b>
+<b class="nc">&nbsp;      isDictionaryBasedSpellingRule = false;</b>
+<b class="nc">&nbsp;      hasConfigurableValue = false;</b>
+<b class="nc">&nbsp;      defaultValue = 0;</b>
+<b class="nc">&nbsp;      minConfigurableValue = 0;</b>
+<b class="nc">&nbsp;      maxConfigurableValue = 100;</b>
+<b class="nc">&nbsp;      configureText = &quot;&quot;;</b>
+<b class="nc">&nbsp;      String categoryId = remoteMatch.getCategoryId().orElse(null);</b>
+<b class="nc">&nbsp;      String categoryName = remoteMatch.getCategory().orElse(null);</b>
+<b class="nc">&nbsp;      if (categoryId != null &amp;&amp; categoryName != null) {</b>
+<b class="nc">&nbsp;        setCategory(new Category(new CategoryId(categoryId), categoryName));</b>
+&nbsp;      }
+<b class="nc">&nbsp;      String locQualityIssueType = remoteMatch.getLocQualityIssueType().orElse(null);</b>
+<b class="nc">&nbsp;      if (locQualityIssueType != null) {</b>
+<b class="nc">&nbsp;        setLocQualityIssueType(ITSIssueType.getIssueType(locQualityIssueType));</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getId() {
+<b class="nc">&nbsp;      return ruleId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getDescription() {
+<b class="nc">&nbsp;      return description;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean isDictionaryBasedSpellingRule() {
+<b class="nc">&nbsp;      return isDictionaryBasedSpellingRule;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean hasConfigurableValue() {
+<b class="nc">&nbsp;      return hasConfigurableValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getDefaultValue() {
+<b class="nc">&nbsp;      return defaultValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getMinConfigurableValue() {
+<b class="nc">&nbsp;      return minConfigurableValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getMaxConfigurableValue() {
+<b class="nc">&nbsp;      return maxConfigurableValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getConfigureText() {
+<b class="nc">&nbsp;      return configureText;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public RuleMatch[] match(AnalyzedSentence sentence) {
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Class to define remote text level rules
+&nbsp;   */
+&nbsp;  static class RemoteTextLevelRule extends TextLevelRule {
+&nbsp;    
+&nbsp;    private final String ruleId;
+&nbsp;    private final String description;
+&nbsp;    private final boolean hasConfigurableValue;
+&nbsp;    private final boolean isDictionaryBasedSpellingRule;
+&nbsp;    private final int defaultValue;
+&nbsp;    private final int minConfigurableValue;
+&nbsp;    private final int maxConfigurableValue;
+&nbsp;    private final int minToCheckParagraph;
+&nbsp;    private final String configureText;
+&nbsp;    
+<b class="nc">&nbsp;    RemoteTextLevelRule(Map&lt;String,String&gt; ruleMap) {</b>
+<b class="nc">&nbsp;      ruleId = ruleMap.get(&quot;ruleId&quot;);</b>
+<b class="nc">&nbsp;      description = ruleMap.get(&quot;description&quot;);</b>
+<b class="nc">&nbsp;      if (ruleMap.containsKey(&quot;isDefaultOff&quot;)) {</b>
+<b class="nc">&nbsp;        setDefaultOff();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (ruleMap.containsKey(&quot;isOfficeDefaultOn&quot;)) {</b>
+<b class="nc">&nbsp;        setOfficeDefaultOn();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (ruleMap.containsKey(&quot;isOfficeDefaultOff&quot;)) {</b>
+<b class="nc">&nbsp;        setOfficeDefaultOff();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      isDictionaryBasedSpellingRule = ruleMap.containsKey(&quot;isDictionaryBasedSpellingRule&quot;);</b>
+<b class="nc">&nbsp;      if (ruleMap.containsKey(&quot;hasConfigurableValue&quot;)) {</b>
+<b class="nc">&nbsp;        hasConfigurableValue = true;</b>
+<b class="nc">&nbsp;        defaultValue = Integer.parseInt(ruleMap.get(&quot;defaultValue&quot;));</b>
+<b class="nc">&nbsp;        minConfigurableValue = Integer.parseInt(ruleMap.get(&quot;minConfigurableValue&quot;));</b>
+<b class="nc">&nbsp;        maxConfigurableValue = Integer.parseInt(ruleMap.get(&quot;maxConfigurableValue&quot;));</b>
+<b class="nc">&nbsp;        configureText = ruleMap.get(&quot;configureText&quot;);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        hasConfigurableValue = false;</b>
+<b class="nc">&nbsp;        defaultValue = 0;</b>
+<b class="nc">&nbsp;        minConfigurableValue = 0;</b>
+<b class="nc">&nbsp;        maxConfigurableValue = 100;</b>
+<b class="nc">&nbsp;        configureText = &quot;&quot;;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      minToCheckParagraph = Integer.parseInt(ruleMap.get(&quot;minToCheckParagraph&quot;));</b>
+<b class="nc">&nbsp;      setCategory(new Category(new CategoryId(ruleMap.get(&quot;categoryId&quot;)), ruleMap.get(&quot;categoryName&quot;)));</b>
+<b class="nc">&nbsp;      setLocQualityIssueType(ITSIssueType.getIssueType(ruleMap.get(&quot;locQualityIssueType&quot;)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getId() {
+<b class="nc">&nbsp;      return ruleId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getDescription() {
+<b class="nc">&nbsp;      return description;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean isDictionaryBasedSpellingRule() {
+<b class="nc">&nbsp;      return isDictionaryBasedSpellingRule;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean hasConfigurableValue() {
+<b class="nc">&nbsp;      return hasConfigurableValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getDefaultValue() {
+<b class="nc">&nbsp;      return defaultValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getMinConfigurableValue() {
+<b class="nc">&nbsp;      return minConfigurableValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int getMaxConfigurableValue() {
+<b class="nc">&nbsp;      return maxConfigurableValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getConfigureText() {
+<b class="nc">&nbsp;      return configureText;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public RuleMatch[] match(List&lt;AnalyzedSentence&gt; sentences) {
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int minToCheckParagraph() {
+<b class="nc">&nbsp;      return minToCheckParagraph;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;  }
+&nbsp;  
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

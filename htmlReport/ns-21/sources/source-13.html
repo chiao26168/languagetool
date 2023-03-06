@@ -1,0 +1,511 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > OfficeSpreadsheetTools</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: OfficeSpreadsheetTools (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OfficeSpreadsheetTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/128)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/206)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import org.languagetool.openoffice.OfficeDrawTools.ParagraphContainer;
+&nbsp;
+&nbsp;import com.sun.star.beans.XPropertySet;
+&nbsp;import com.sun.star.container.XIndexAccess;
+&nbsp;import com.sun.star.frame.XController;
+&nbsp;import com.sun.star.frame.XModel;
+&nbsp;import com.sun.star.lang.IndexOutOfBoundsException;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;import com.sun.star.lang.XServiceInfo;
+&nbsp;import com.sun.star.sheet.XSpreadsheet;
+&nbsp;import com.sun.star.sheet.XSpreadsheetDocument;
+&nbsp;import com.sun.star.sheet.XSpreadsheetView;
+&nbsp;import com.sun.star.sheet.XSpreadsheets;
+&nbsp;import com.sun.star.table.XCell;
+&nbsp;import com.sun.star.uno.UnoRuntime;
+&nbsp;
+&nbsp;/**
+&nbsp; * Tools to get information of LibreOffice Calc context
+&nbsp; * @since 5.7
+&nbsp; * @author Fred Kruse
+&nbsp; */
+<b class="nc">&nbsp;public class OfficeSpreadsheetTools {</b>
+&nbsp;  
+&nbsp;  private final static int MAX_TABLE_ROWS = 50;
+&nbsp;  private final static int MAX_TABLE_COLS = 50;
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * test if the document is a Spreadsheet Document
+&nbsp;   */
+&nbsp;  public static boolean isSpreadsheetDocument(XComponent xComponent) {
+<b class="nc">&nbsp;    XServiceInfo xInfo = UnoRuntime.queryInterface(XServiceInfo.class, xComponent);</b>
+<b class="nc">&nbsp;    return xInfo.supportsService(&quot;com.sun.star.sheet.SpreadsheetDocument&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get the number of last filled Column of a Sheet
+&nbsp;   */
+&nbsp;  private static int getFilledColumnCount(XSpreadsheet xSheet, int maxRows) {
+<b class="nc">&nbsp;    for (int nCol = MAX_TABLE_COLS - 1; nCol &gt; 0; nCol--) {</b>
+<b class="nc">&nbsp;      for (int nRow = 0; nRow &lt; maxRows; nRow++) {</b>
+<b class="nc">&nbsp;        String sContent = null;</b>
+&nbsp;        try {
+<b class="nc">&nbsp;          sContent = xSheet.getCellByPosition(nCol, nRow).getFormula();</b>
+<b class="nc">&nbsp;        } catch (IndexOutOfBoundsException e) {</b>
+<b class="nc">&nbsp;          MessageHandler.printException(e);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        if (sContent != null &amp;&amp; !sContent.isEmpty()) {</b>
+<b class="nc">&nbsp;          return nCol + 1;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return 1;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get the number of last filled Row of a Sheet
+&nbsp;   */
+&nbsp;  private static int getFilledRowCount(XSpreadsheet xSheet, int maxCols) {
+<b class="nc">&nbsp;    for (int nRow = MAX_TABLE_ROWS - 1; nRow &gt; 0; nRow--) {</b>
+<b class="nc">&nbsp;      for (int nCol = 0; nCol &lt; maxCols; nCol++) {</b>
+<b class="nc">&nbsp;        String sContent = null;</b>
+&nbsp;        try {
+<b class="nc">&nbsp;          sContent = xSheet.getCellByPosition(nCol, nRow).getFormula();</b>
+<b class="nc">&nbsp;        } catch (IndexOutOfBoundsException e) {</b>
+<b class="nc">&nbsp;          MessageHandler.printException(e);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        if (sContent != null &amp;&amp; !sContent.isEmpty()) {</b>
+<b class="nc">&nbsp;          return nRow + 1;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return 1;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * true if formula is a text
+&nbsp;   */
+&nbsp;  private static boolean isNotTextFormat(String s) {
+<b class="nc">&nbsp;    s = s.trim();</b>
+<b class="nc">&nbsp;    if (!s.isEmpty()) {</b>
+<b class="nc">&nbsp;      char ch0 = s.charAt(0);</b>
+<b class="nc">&nbsp;      if (ch0 == &#39;=&#39;) {</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if ((Character.isDigit(ch0) || (s.length() &gt; 1 &amp;&amp; s.charAt(1) == &#39;-&#39; &amp;&amp; Character.isDigit(s.charAt(1)))) &amp;&amp; !s.contains(&quot; &quot;)) {</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * returns the text of all cells as paragraphs
+&nbsp;   */
+&nbsp;  public static ParagraphContainer getAllParagraphs(XComponent xComponent) {
+<b class="nc">&nbsp;    if (xComponent == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: OfficeSpreadsheetTools: xComponent == null&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    XSpreadsheetDocument xSpreadsheetDocument = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xComponent);</b>
+<b class="nc">&nbsp;    if (xSpreadsheetDocument == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: OfficeSpreadsheetTools: xSpreadsheetDocument == null&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    XPropertySet xSpreadsheetPropertySet = UnoRuntime.queryInterface(XPropertySet.class, xSpreadsheetDocument);</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      Locale locale = (Locale) xSpreadsheetPropertySet.getPropertyValue(&quot;CharLocale&quot;);</b>
+<b class="nc">&nbsp;      XSpreadsheets xSheets = xSpreadsheetDocument.getSheets();</b>
+<b class="nc">&nbsp;      if (xSheets == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: OfficeSpreadsheetTools: xSheets == null&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XIndexAccess xSheetsIA = UnoRuntime.queryInterface(XIndexAccess.class, xSheets);</b>
+<b class="nc">&nbsp;      if (xSheetsIA == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: OfficeSpreadsheetTools: xSheetsIA == null&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;String&gt; paragraphs = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;      List&lt;Locale&gt; locales = new ArrayList&lt;Locale&gt;();</b>
+<b class="nc">&nbsp;      List&lt;Integer&gt; pageBegins = new ArrayList&lt;Integer&gt;();</b>
+<b class="nc">&nbsp;      int nPara = 0;</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; xSheetsIA.getCount(); i++) {</b>
+<b class="nc">&nbsp;        XSpreadsheet xSheet = UnoRuntime.queryInterface(XSpreadsheet.class, xSheetsIA.getByIndex(i));</b>
+<b class="nc">&nbsp;        if (xSheet == null) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: OfficeSpreadsheetTools: xSheet == null&quot;);</b>
+<b class="nc">&nbsp;          return null;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        boolean isEmptyText = false;</b>
+<b class="nc">&nbsp;        int maxRows = getFilledRowCount(xSheet, MAX_TABLE_COLS);</b>
+<b class="nc">&nbsp;        int maxCols = getFilledColumnCount(xSheet, maxRows);</b>
+<b class="nc">&nbsp;        for (int nCol = 0; nCol &lt; maxCols; nCol++) {</b>
+<b class="nc">&nbsp;          pageBegins.add(nPara);</b>
+<b class="nc">&nbsp;          for (int nRow = 0; nRow &lt; maxRows; nRow++) {</b>
+<b class="nc">&nbsp;            XCell xCell = xSheet.getCellByPosition(nCol, nRow);</b>
+<b class="nc">&nbsp;            String text = xCell.getFormula();</b>
+<b class="nc">&nbsp;            if (!text.isEmpty() &amp;&amp; isNotTextFormat(text)) {</b>
+<b class="nc">&nbsp;              text = &quot;&quot;;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (text.isEmpty() &amp;&amp; !isEmptyText) {</b>
+<b class="nc">&nbsp;              isEmptyText = true;</b>
+<b class="nc">&nbsp;              if (!pageBegins.contains(nPara)) {</b>
+<b class="nc">&nbsp;                pageBegins.add(nPara);</b>
+&nbsp;              }
+<b class="nc">&nbsp;            } else if (!text.isEmpty() &amp;&amp; isEmptyText) {</b>
+<b class="nc">&nbsp;              isEmptyText = false;</b>
+<b class="nc">&nbsp;              if (!pageBegins.contains(nPara)) {</b>
+<b class="nc">&nbsp;                pageBegins.add(nPara);</b>
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;            paragraphs.add(text);</b>
+<b class="nc">&nbsp;            locales.add(locale);</b>
+<b class="nc">&nbsp;            nPara++;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return new ParagraphContainer(paragraphs, locales, pageBegins);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions XWordCursorthrown by UnoRuntime.queryInterface are caught</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set a new text into a cell
+&nbsp;   */
+&nbsp;  public static void setTextofCell(int nPara, String replace, XComponent xComponent) {
+<b class="nc">&nbsp;    if (xComponent == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setTextofCell: xComponent == null&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    XSpreadsheetDocument xSpreadsheetDocument = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xComponent);</b>
+<b class="nc">&nbsp;    if (xSpreadsheetDocument == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setTextofCell: xSpreadsheetDocument == null&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+&nbsp;    try {
+<b class="nc">&nbsp;      XSpreadsheets xSheets = xSpreadsheetDocument.getSheets();</b>
+<b class="nc">&nbsp;      if (xSheets == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setTextofCell: xSheets == null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XIndexAccess xSheetsIA = UnoRuntime.queryInterface(XIndexAccess.class, xSheets);</b>
+<b class="nc">&nbsp;      if (xSheetsIA == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setTextofCell: xSheetsIA == null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      int nParaCount = 0;</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; xSheetsIA.getCount(); i++) {</b>
+<b class="nc">&nbsp;        XSpreadsheet xSheet = UnoRuntime.queryInterface(XSpreadsheet.class, xSheetsIA.getByIndex(i));</b>
+<b class="nc">&nbsp;        if (xSheet == null) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setTextofCell: xSheet == null&quot;);</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        int maxRows = getFilledRowCount(xSheet, MAX_TABLE_COLS);</b>
+<b class="nc">&nbsp;        int maxCols = getFilledColumnCount(xSheet, maxRows);</b>
+<b class="nc">&nbsp;        for (int nCol = 0; nCol &lt; maxCols; nCol++) {</b>
+<b class="nc">&nbsp;          for (int nRow = 0; nRow &lt; maxRows; nRow++) {</b>
+<b class="nc">&nbsp;            if (nPara == nParaCount) {</b>
+<b class="nc">&nbsp;              XCell xCell = xSheet.getCellByPosition(nCol, nRow);</b>
+<b class="nc">&nbsp;              xCell.setFormula(replace);</b>
+&nbsp;              return;
+&nbsp;            }
+<b class="nc">&nbsp;            nParaCount++;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions XWordCursorthrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set the current visual sheet
+&nbsp;   */
+&nbsp;  public static void setCurrentSheet(int nPara, XComponent xComponent) {
+&nbsp;    try {
+<b class="nc">&nbsp;      XSpreadsheetDocument xSpreadsheetDocument = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xComponent);</b>
+<b class="nc">&nbsp;      if (xSpreadsheetDocument == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setCurrentSheet: xSpreadsheetDocument == null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XModel xModel = UnoRuntime.queryInterface(XModel.class, xSpreadsheetDocument);</b>
+<b class="nc">&nbsp;      XController xController = xModel.getCurrentController();</b>
+<b class="nc">&nbsp;      XSpreadsheetView xSpreadsheetView = UnoRuntime.queryInterface(XSpreadsheetView.class, xController);</b>
+<b class="nc">&nbsp;      if (xSpreadsheetView == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setCurrentSheet: xSpreadsheetView == null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XSpreadsheets xSheets = xSpreadsheetDocument.getSheets();</b>
+<b class="nc">&nbsp;      if (xSheets == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setCurrentSheet: xSheets == null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XIndexAccess xSheetsIA = UnoRuntime.queryInterface(XIndexAccess.class, xSheets);</b>
+<b class="nc">&nbsp;      if (xSheetsIA == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setCurrentSheet: xSheetsIA == null&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      int nParaCount = 0;</b>
+<b class="nc">&nbsp;      int nSheets = xSheetsIA.getCount();</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; nSheets; i++) {</b>
+<b class="nc">&nbsp;        XSpreadsheet xSheet = UnoRuntime.queryInterface(XSpreadsheet.class, xSheetsIA.getByIndex(i));</b>
+<b class="nc">&nbsp;        if (xSheet == null) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setCurrentSheet: xSheet == null&quot;);</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        if (i == nSheets - 1 || nParaCount == nPara) {</b>
+<b class="nc">&nbsp;          xSpreadsheetView.setActiveSheet(xSheet);</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        int maxRows = getFilledRowCount(xSheet, MAX_TABLE_COLS);</b>
+<b class="nc">&nbsp;        int maxCols = getFilledColumnCount(xSheet, maxRows);</b>
+<b class="nc">&nbsp;        for (int nCol = 0; nCol &lt; maxCols; nCol++) {</b>
+<b class="nc">&nbsp;          for (int nRow = 0; nRow &lt; maxRows; nRow++) {</b>
+<b class="nc">&nbsp;            if (nParaCount == nPara) {</b>
+<b class="nc">&nbsp;              xSpreadsheetView.setActiveSheet(xSheet);</b>
+&nbsp;              return;
+&nbsp;            }
+<b class="nc">&nbsp;            nParaCount++;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get the first paragraph from current visual sheet
+&nbsp;   */
+&nbsp;  public static int getParagraphFromCurrentSheet(XComponent xComponent) {
+&nbsp;    try {
+<b class="nc">&nbsp;      XSpreadsheetDocument xSpreadsheetDocument = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xComponent);</b>
+<b class="nc">&nbsp;      if (xSpreadsheetDocument == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: getParagraphFromCurrentSheet: xSpreadsheetDocument == null&quot;);</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XModel xModel = UnoRuntime.queryInterface(XModel.class, xSpreadsheetDocument);</b>
+<b class="nc">&nbsp;      XController xController = xModel.getCurrentController();</b>
+<b class="nc">&nbsp;      XSpreadsheetView xSpreadsheetView = UnoRuntime.queryInterface(XSpreadsheetView.class, xController);</b>
+<b class="nc">&nbsp;      if (xSpreadsheetView == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: getParagraphFromCurrentSheet: xSpreadsheetView == null&quot;);</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XSpreadsheet xCurrentSheet = xSpreadsheetView.getActiveSheet();</b>
+<b class="nc">&nbsp;      XPropertySet xSheetPropertySet = UnoRuntime.queryInterface(XPropertySet.class, xCurrentSheet);</b>
+<b class="nc">&nbsp;      String currentSheetName = (String) xSheetPropertySet.getPropertyValue(&quot;AbsoluteName&quot;);</b>
+<b class="nc">&nbsp;      XSpreadsheets xSheets = xSpreadsheetDocument.getSheets();</b>
+<b class="nc">&nbsp;      if (xSheets == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: getParagraphFromCurrentSheet: xSheets == null&quot;);</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XIndexAccess xSheetsIA = UnoRuntime.queryInterface(XIndexAccess.class, xSheets);</b>
+<b class="nc">&nbsp;      if (xSheetsIA == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: getParagraphFromCurrentSheet: xSheetsIA == null&quot;);</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int nParaCount = 0;</b>
+<b class="nc">&nbsp;      int nSheets = xSheetsIA.getCount();</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: getParagraphFromCurrentSheet: nSheets = &quot; + nSheets);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; nSheets; i++) {</b>
+<b class="nc">&nbsp;        XSpreadsheet xSheet = UnoRuntime.queryInterface(XSpreadsheet.class, xSheetsIA.getByIndex(i));</b>
+<b class="nc">&nbsp;        if (xSheet == null) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: getParagraphFromCurrentSheet: xSheet == null&quot;);</b>
+<b class="nc">&nbsp;          return -1;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        xSheetPropertySet = UnoRuntime.queryInterface(XPropertySet.class, xSheet);</b>
+<b class="nc">&nbsp;        String sheetName = (String) xSheetPropertySet.getPropertyValue(&quot;AbsoluteName&quot;);</b>
+<b class="nc">&nbsp;        if (currentSheetName.equals(sheetName)) {</b>
+<b class="nc">&nbsp;          return nParaCount;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: getParagraphFromCurrentSheet: xCurrentSheet = &quot; + xCurrentSheet + &quot;, xSheet = &quot; + xSheet);</b>
+<b class="nc">&nbsp;        int maxRows = getFilledRowCount(xSheet, MAX_TABLE_COLS);</b>
+<b class="nc">&nbsp;        int maxCols = getFilledColumnCount(xSheet, maxRows);</b>
+<b class="nc">&nbsp;        for (int nCol = 0; nCol &lt; maxCols; nCol++) {</b>
+<b class="nc">&nbsp;          for (int nRow = 0; nRow &lt; maxRows; nRow++) {</b>
+<b class="nc">&nbsp;            nParaCount++;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return -1;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set the Language of the Spreadsheet
+&nbsp;   * NOTE: the change of language affects always the whole spreadsheet
+&nbsp;   */
+&nbsp;  public static void setLanguageOfSpreadsheet(Locale locale, XComponent xComponent) {
+<b class="nc">&nbsp;    if (xComponent == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setLanguageOfSpreadsheet: xComponent == null&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    XSpreadsheetDocument xSpreadsheetDocument = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xComponent);</b>
+<b class="nc">&nbsp;    if (xSpreadsheetDocument == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: setLanguageOfSpreadsheet: xSpreadsheetDocument == null&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    XPropertySet xSpreadsheetPropertySet = UnoRuntime.queryInterface(XPropertySet.class, xSpreadsheetDocument);</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      xSpreadsheetPropertySet.setPropertyValue(&quot;CharLocale&quot;, locale);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions XWordCursorthrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get local of the Spreadsheet
+&nbsp;   */
+&nbsp;  public static Locale getDocumentLocale(XComponent xComponent) {
+<b class="nc">&nbsp;    if (xComponent == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: getDocumentLocale: xComponent == null&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    XSpreadsheetDocument xSpreadsheetDocument = UnoRuntime.queryInterface(XSpreadsheetDocument.class, xComponent);</b>
+<b class="nc">&nbsp;    if (xSpreadsheetDocument == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeSpreadsheetTools: getDocumentLocale: xSpreadsheetDocument == null&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    XPropertySet xSpreadsheetPropertySet = UnoRuntime.queryInterface(XPropertySet.class, xSpreadsheetDocument);</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return (Locale) xSpreadsheetPropertySet.getPropertyValue(&quot;CharLocale&quot;);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions XWordCursorthrown by UnoRuntime.queryInterface are caught</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

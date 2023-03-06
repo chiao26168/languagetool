@@ -1,0 +1,418 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > MessageHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: MessageHandler (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MessageHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/50)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MessageHandler$ClosingInformationThread</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MessageHandler$ClosingInformationThread$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MessageHandler$DialogThread</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/71)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.awt.event.WindowEvent;
+&nbsp;import java.awt.event.WindowFocusListener;
+&nbsp;import java.io.BufferedWriter;
+&nbsp;import java.io.FileOutputStream;
+&nbsp;import java.io.FileWriter;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.OutputStream;
+&nbsp;import java.io.OutputStreamWriter;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.util.Date;
+&nbsp;
+&nbsp;import javax.swing.JDialog;
+&nbsp;import javax.swing.JOptionPane;
+&nbsp;import javax.swing.UIManager;
+&nbsp;
+&nbsp;import org.languagetool.JLanguageTool;
+&nbsp;import org.languagetool.openoffice.OfficeTools.OfficeProductInfo;
+&nbsp;import org.languagetool.tools.Tools;
+&nbsp;
+&nbsp;import com.sun.star.uno.XComponentContext;
+&nbsp;
+&nbsp;/**
+&nbsp; * Writes Messages to screen or log-file
+&nbsp; * @since 4.3
+&nbsp; * @author Fred Kruse, Marcin Miłkowski
+&nbsp; */
+<b class="nc">&nbsp;class MessageHandler {</b>
+&nbsp;  
+<b class="nc">&nbsp;  private static final String logLineBreak = System.lineSeparator();  //  LineBreak in Log-File (MS-Windows compatible)</b>
+&nbsp;  
+<b class="nc">&nbsp;  private static boolean isOpen = false;</b>
+&nbsp;  
+&nbsp;  private static boolean testMode;
+&nbsp;  
+<b class="nc">&nbsp;  MessageHandler(XComponentContext xContext) {</b>
+<b class="nc">&nbsp;    initLogFile(xContext);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Initialize log-file
+&nbsp;   */
+&nbsp;  private static void initLogFile(XComponentContext xContext) {
+<b class="nc">&nbsp;    try (OutputStream stream = new FileOutputStream(OfficeTools.getLogFilePath(xContext));</b>
+<b class="nc">&nbsp;        OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;        BufferedWriter br = new BufferedWriter(writer)</b>
+&nbsp;        ) {
+<b class="nc">&nbsp;      Date date = new Date();</b>
+<b class="nc">&nbsp;      OfficeProductInfo officeInfo = OfficeTools.getOfficeProductInfo(xContext);</b>
+<b class="nc">&nbsp;      writer.write(&quot;LT office integration log from &quot; + date + logLineBreak + logLineBreak);</b>
+<b class="nc">&nbsp;      writer.write(&quot;LanguageTool &quot; + JLanguageTool.VERSION + &quot; (&quot; + JLanguageTool.BUILD_DATE + &quot;, &quot; </b>
+&nbsp;          + JLanguageTool.GIT_SHORT_ID + &quot;)&quot; + logLineBreak);
+<b class="nc">&nbsp;      writer.write(&quot;OS: &quot; + System.getProperty(&quot;os.name&quot;) + &quot; &quot; </b>
+<b class="nc">&nbsp;          + System.getProperty(&quot;os.version&quot;) + &quot; on &quot; + System.getProperty(&quot;os.arch&quot;) + logLineBreak);</b>
+<b class="nc">&nbsp;      if (officeInfo != null) { </b>
+<b class="nc">&nbsp;        writer.write(officeInfo.ooName + &quot; &quot; + officeInfo.ooVersion + officeInfo.ooExtension</b>
+&nbsp;            + &quot; (&quot; + officeInfo.ooVendor +&quot;), &quot; + officeInfo.ooLocale + logLineBreak);
+&nbsp;      }
+<b class="nc">&nbsp;      writer.write(OfficeTools.getJavaInformation() + logLineBreak + logLineBreak);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Initialize MessageHandler
+&nbsp;   */
+&nbsp;  static void init(XComponentContext xContext) {
+<b class="nc">&nbsp;    initLogFile(xContext);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Show an error in a dialog
+&nbsp;   */
+&nbsp;  static void showError(Throwable e) {
+<b class="nc">&nbsp;    printException(e);</b>
+<b class="nc">&nbsp;    if (testMode) {</b>
+<b class="nc">&nbsp;      throw new RuntimeException(e);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    String msg = &quot;An error has occurred in LanguageTool &quot;</b>
+&nbsp;        + JLanguageTool.VERSION + &quot; (&quot; + JLanguageTool.BUILD_DATE + &quot;):\n&quot; + e + &quot;\nStacktrace:\n&quot;;
+<b class="nc">&nbsp;    msg += Tools.getFullStackTrace(e);</b>
+<b class="nc">&nbsp;    String metaInfo = &quot;OS: &quot; + System.getProperty(&quot;os.name&quot;) + &quot; on &quot;</b>
+<b class="nc">&nbsp;        + System.getProperty(&quot;os.arch&quot;) + &quot;, Java version &quot;</b>
+<b class="nc">&nbsp;        + System.getProperty(&quot;java.version&quot;) + &quot; from &quot;</b>
+<b class="nc">&nbsp;        + System.getProperty(&quot;java.vm.vendor&quot;);</b>
+<b class="nc">&nbsp;    msg += metaInfo;</b>
+<b class="nc">&nbsp;    DialogThread dt = new DialogThread(msg, true);</b>
+<b class="nc">&nbsp;    e.printStackTrace();</b>
+<b class="nc">&nbsp;    dt.start();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Write to log-file
+&nbsp;   */
+&nbsp;  static void printToLogFile(String str) {
+<b class="nc">&nbsp;    try (OutputStream stream = new FileOutputStream(OfficeTools.getLogFilePath(), true);</b>
+<b class="nc">&nbsp;        OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;        BufferedWriter br = new BufferedWriter(writer)</b>
+&nbsp;        ) {
+<b class="nc">&nbsp;      writer.write(str + logLineBreak);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * Prints Exception to log-file  
+&nbsp;   */
+&nbsp;  static void printException(Throwable t) {
+<b class="nc">&nbsp;   printToLogFile(Tools.getFullStackTrace(t));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Will throw exception instead of showing errors as dialogs - use only for test cases.
+&nbsp;   */
+&nbsp;  static void setTestMode(boolean mode) {
+<b class="nc">&nbsp;    testMode = mode;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Shows a message in a dialog box
+&nbsp;   * @param txt message to be shown
+&nbsp;   */
+&nbsp;  static void showMessage(String txt) {
+<b class="nc">&nbsp;    showMessage(txt, true);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  static void showMessage(String txt, boolean toLogFile) {
+<b class="nc">&nbsp;    if (toLogFile) {</b>
+<b class="nc">&nbsp;      printToLogFile(txt);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    DialogThread dt = new DialogThread(txt, false);</b>
+<b class="nc">&nbsp;    dt.run();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * run an information message in a separate thread
+&nbsp;   * closing if lost focus
+&nbsp;   */
+&nbsp;  static void showClosingInformationDialog(String text) {
+<b class="nc">&nbsp;    ClosingInformationThread informationDialog = new ClosingInformationThread(text);</b>
+<b class="nc">&nbsp;    informationDialog.start();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * class to run a dialog in a separate thread
+&nbsp;   */
+&nbsp;  private static class DialogThread extends Thread {
+&nbsp;    private final String text;
+&nbsp;    private boolean isException;
+&nbsp;
+<b class="nc">&nbsp;    DialogThread(String text, boolean isException) {</b>
+<b class="nc">&nbsp;      this.text = text;</b>
+<b class="nc">&nbsp;      this.isException = isException;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void run() {
+<b class="nc">&nbsp;      if (isException) {</b>
+<b class="nc">&nbsp;        if (!isOpen) {</b>
+<b class="nc">&nbsp;          isOpen = true;</b>
+<b class="nc">&nbsp;          JOptionPane.showMessageDialog(null, text);</b>
+<b class="nc">&nbsp;          isOpen = false;</b>
+&nbsp;        }
+&nbsp;      } else {
+<b class="nc">&nbsp;        JOptionPane.showMessageDialog(null, text);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * class to run a dialog in a separate thread
+&nbsp;   * closing if lost focus
+&nbsp;   */
+&nbsp;  private static class ClosingInformationThread extends Thread {
+&nbsp;    private final String text;
+&nbsp;    JDialog dialog;
+&nbsp;
+<b class="nc">&nbsp;    ClosingInformationThread(String text) {</b>
+<b class="nc">&nbsp;      this.text = text;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void run() {
+<b class="nc">&nbsp;      JOptionPane pane = new JOptionPane(text, JOptionPane.INFORMATION_MESSAGE);</b>
+<b class="nc">&nbsp;      dialog = pane.createDialog(null, UIManager.getString(&quot;OptionPane.messageDialogTitle&quot;, null));</b>
+<b class="nc">&nbsp;      dialog.setModal(false);</b>
+<b class="nc">&nbsp;      dialog.setAutoRequestFocus(true);</b>
+<b class="nc">&nbsp;      dialog.setAlwaysOnTop(true);</b>
+<b class="nc">&nbsp;      dialog.addWindowFocusListener(new WindowFocusListener() {</b>
+&nbsp;        @Override
+&nbsp;        public void windowGainedFocus(WindowEvent e) {
+<b class="nc">&nbsp;        }</b>
+&nbsp;        @Override
+&nbsp;        public void windowLostFocus(WindowEvent e) {
+<b class="nc">&nbsp;          dialog.setVisible(false);</b>
+&nbsp;        }
+&nbsp;      });
+<b class="nc">&nbsp;      dialog.setVisible(true);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

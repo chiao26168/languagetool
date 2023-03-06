@@ -1,0 +1,275 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > MorfologikSpanishSpellerRule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.rules.es</a>
+</div>
+
+<h1>Coverage Summary for Class: MorfologikSpanishSpellerRule (org.languagetool.rules.es)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MorfologikSpanishSpellerRule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/55)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2014 Daniel Naber (http://www.danielnaber.de)
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.rules.es;
+&nbsp;
+&nbsp;import org.languagetool.AnalyzedToken;
+&nbsp;import org.languagetool.AnalyzedTokenReadings;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.UserConfig;
+&nbsp;import org.languagetool.rules.SuggestedReplacement;
+&nbsp;import org.languagetool.rules.spelling.morfologik.MorfologikSpellerRule;
+&nbsp;import org.languagetool.tagging.es.SpanishTagger;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.regex.Matcher;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * @since 2.8
+&nbsp; */
+&nbsp;public class MorfologikSpanishSpellerRule extends MorfologikSpellerRule {
+&nbsp;
+<b class="nc">&nbsp;  private static final Pattern PREFIX_WITH_WHITESPACE = Pattern.compile(</b>
+&nbsp;      &quot;^(ultra|eco|tele|anti|auto|ex|extra|macro|mega|meta|micro|multi|mono|mini|post|retro|semi|super|hiper|trans|re|g|l|m) (..+)|.+ s$&quot;,
+&nbsp;      Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+<b class="nc">&nbsp;  private static final Pattern CAMEL_CASE = Pattern.compile(&quot;^(.\\p{Ll}+)(\\p{Lu}.+)$&quot;, Pattern.UNICODE_CASE);</b>
+<b class="nc">&nbsp;  private static final Pattern PARTICULA_FINAL = Pattern.compile(&quot;^(..+) (que|cual)$&quot;,</b>
+&nbsp;      Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+<b class="nc">&nbsp;  private static final Pattern SPLIT_SUGGESTIONS = Pattern.compile(&quot;^(..+\\p{L}|en|de|del|al|a|y|o|con)(\\d+)$&quot;,</b>
+&nbsp;      Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+<b class="nc">&nbsp;  private static final Pattern ANY_TAG = Pattern.compile(&quot;[NVACPDRS].*&quot;);</b>
+<b class="nc">&nbsp;  private static final SpanishTagger tagger = SpanishTagger.INSTANCE;</b>
+&nbsp;
+&nbsp;  public MorfologikSpanishSpellerRule(ResourceBundle messages, Language language, UserConfig userConfig,
+&nbsp;      List&lt;Language&gt; altLanguages) throws IOException {
+<b class="nc">&nbsp;    super(messages, language, userConfig, altLanguages);</b>
+<b class="nc">&nbsp;    this.setIgnoreTaggedWords();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getFileName() {
+<b class="nc">&nbsp;    return &quot;/es/es-ES.dict&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public final String getId() {
+<b class="nc">&nbsp;    return &quot;MORFOLOGIK_RULE_ES&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  // Use this rule in LO/OO extension despite being a spelling rule
+&nbsp;  public boolean useInOffice() {
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  protected List&lt;SuggestedReplacement&gt; orderSuggestions(List&lt;SuggestedReplacement&gt; suggestions, String word) {
+<b class="nc">&nbsp;    List&lt;SuggestedReplacement&gt; newSuggestions = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; suggestions.size(); i++) {</b>
+&nbsp;      // remove wrong split prefixes
+<b class="nc">&nbsp;      if (PREFIX_WITH_WHITESPACE.matcher(suggestions.get(i).getReplacement()).matches()) {</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+&nbsp;      // move some split words to first place
+<b class="nc">&nbsp;      Matcher matcher = PARTICULA_FINAL.matcher(suggestions.get(i).getReplacement());</b>
+<b class="nc">&nbsp;      if (matcher.matches()) {</b>
+<b class="nc">&nbsp;        newSuggestions.add(0, suggestions.get(i));</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      newSuggestions.add(suggestions.get(i));</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return newSuggestions;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  @Override
+&nbsp;  protected List&lt;SuggestedReplacement&gt; getAdditionalTopSuggestions(List&lt;SuggestedReplacement&gt; suggestions, String word)
+&nbsp;      throws IOException {
+<b class="nc">&nbsp;    List&lt;String&gt; suggestionsList = suggestions.stream().map(SuggestedReplacement::getReplacement)</b>
+<b class="nc">&nbsp;        .collect(Collectors.toList());</b>
+<b class="nc">&nbsp;    return SuggestedReplacement.convert(getAdditionalTopSuggestionsString(suggestionsList, word));</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  private List&lt;String&gt; getAdditionalTopSuggestionsString(List&lt;String&gt; suggestions, String word) throws IOException {
+<b class="nc">&nbsp;    String suggestion = &quot;&quot;;</b>
+<b class="nc">&nbsp;    suggestion = findSuggestion(suggestion, word, CAMEL_CASE, ANY_TAG, 1, &quot; &quot;, false);</b>
+<b class="nc">&nbsp;    suggestion = findSuggestion(suggestion, word, SPLIT_SUGGESTIONS, ANY_TAG, 1, &quot; &quot;, true);</b>
+<b class="nc">&nbsp;    if (!suggestion.isEmpty()) {</b>
+<b class="nc">&nbsp;      return Collections.singletonList(suggestion);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return Collections.emptyList();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  private String findSuggestion(String suggestion, String word, Pattern wordPattern, Pattern postagPattern,
+&nbsp;      int suggestionPosition, String separator, boolean recursive) throws IOException {
+<b class="nc">&nbsp;    if (!suggestion.isEmpty()) {</b>
+<b class="nc">&nbsp;      return suggestion;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Matcher matcher = wordPattern.matcher(word);</b>
+<b class="nc">&nbsp;    if (matcher.matches()) {</b>
+<b class="nc">&nbsp;      String newSuggestion = matcher.group(suggestionPosition);</b>
+<b class="nc">&nbsp;      AnalyzedTokenReadings newatr = tagger.tag(Arrays.asList(newSuggestion)).get(0);</b>
+<b class="nc">&nbsp;      if ((!newatr.hasPosTag(&quot;VMIP1S0B&quot;) || newSuggestion.equals(&quot;fer&quot;)) &amp;&amp; matchPostagRegexp(newatr, postagPattern)) {</b>
+<b class="nc">&nbsp;        return matcher.group(1) + separator + matcher.group(2);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (recursive) {</b>
+<b class="nc">&nbsp;        List&lt;String&gt; moresugg = this.speller1.getSuggestions(newSuggestion);</b>
+<b class="nc">&nbsp;        if (moresugg.size() &gt; 0) {</b>
+&nbsp;          String newWord;
+<b class="nc">&nbsp;          if (suggestionPosition == 1) {</b>
+<b class="nc">&nbsp;            newWord = moresugg.get(0) + matcher.group(2); //.toLowerCase()</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            newWord = matcher.group(1) + moresugg.get(0).toLowerCase();</b>
+&nbsp;          }
+<b class="nc">&nbsp;          return findSuggestion(suggestion, newWord, wordPattern, postagPattern, suggestionPosition, separator, false);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return &quot;&quot;;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Match POS tag with regular expression
+&nbsp;   */
+&nbsp;  private boolean matchPostagRegexp(AnalyzedTokenReadings aToken, Pattern pattern) {
+<b class="nc">&nbsp;    for (AnalyzedToken analyzedToken : aToken) {</b>
+<b class="nc">&nbsp;      String posTag = analyzedToken.getPOSTag();</b>
+<b class="nc">&nbsp;      if (posTag == null) {</b>
+<b class="nc">&nbsp;        posTag = &quot;UNKNOWN&quot;;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      final Matcher m = pattern.matcher(posTag);</b>
+<b class="nc">&nbsp;      if (m.matches()) {</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

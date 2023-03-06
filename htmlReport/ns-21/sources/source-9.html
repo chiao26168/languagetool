@@ -1,0 +1,1099 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > FlatParagraphTools</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: FlatParagraphTools (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FlatParagraphTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/288)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/485)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">FlatParagraphTools$FlatParagraphContainer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/33)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/288)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/491)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.languagetool.openoffice.SingleCheck.SentenceErrors;
+&nbsp;
+&nbsp;import com.sun.star.beans.Property;
+&nbsp;import com.sun.star.beans.PropertyState;
+&nbsp;import com.sun.star.beans.PropertyValue;
+&nbsp;import com.sun.star.beans.XPropertySet;
+&nbsp;import com.sun.star.beans.XPropertySetInfo;
+&nbsp;import com.sun.star.container.XStringKeyMap;
+&nbsp;import com.sun.star.lang.IllegalArgumentException;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;import com.sun.star.linguistic2.SingleProofreadingError;
+&nbsp;import com.sun.star.text.TextMarkupType;
+&nbsp;import com.sun.star.text.XFlatParagraph;
+&nbsp;import com.sun.star.text.XFlatParagraphIterator;
+&nbsp;import com.sun.star.text.XFlatParagraphIteratorProvider;
+&nbsp;import com.sun.star.uno.UnoRuntime;
+&nbsp;
+&nbsp;/**
+&nbsp; * Information about Paragraphs of LibreOffice/OpenOffice documents
+&nbsp; * on the basis of the LO/OO FlatParagraphs
+&nbsp; * @since 4.0
+&nbsp; * @author Fred Kruse
+&nbsp; */
+&nbsp;public class FlatParagraphTools {
+&nbsp;  
+&nbsp;  private static boolean debugMode; //  should be false except for testing
+&nbsp;  
+<b class="nc">&nbsp;  private static int isBusy = 0;</b>
+&nbsp;
+&nbsp;  private XFlatParagraphIterator xFlatParaIter;
+&nbsp;  private XFlatParagraph lastFlatPara;
+&nbsp;  private XComponent xComponent;
+&nbsp;  
+<b class="nc">&nbsp;  FlatParagraphTools(XComponent xComponent) {</b>
+<b class="nc">&nbsp;    debugMode = OfficeTools.DEBUG_MODE_FP;</b>
+<b class="nc">&nbsp;    this.xComponent = xComponent;</b>
+<b class="nc">&nbsp;    xFlatParaIter = getXFlatParagraphIterator(xComponent);</b>
+<b class="nc">&nbsp;    lastFlatPara = getCurrentFlatParagraph();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * document is disposed: set all class variables to null
+&nbsp;   */
+&nbsp;  public void setDisposed() {
+<b class="nc">&nbsp;    xFlatParaIter = null;</b>
+<b class="nc">&nbsp;    lastFlatPara = null;</b>
+<b class="nc">&nbsp;    xComponent = null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * is valid initialization of FlatParagraphTools
+&nbsp;   */
+&nbsp;  boolean isValid() {
+<b class="nc">&nbsp;    return xFlatParaIter != null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns XFlatParagraphIterator 
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  private XFlatParagraphIterator getXFlatParagraphIterator(XComponent xComponent) {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (xComponent == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraphIteratorProvider xFlatParaItPro </b>
+<b class="nc">&nbsp;          = UnoRuntime.queryInterface(XFlatParagraphIteratorProvider.class, xComponent);</b>
+<b class="nc">&nbsp;      if (xFlatParaItPro == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return xFlatParaItPro.getFlatParagraphIterator(TextMarkupType.PROOFREADING, true);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Initialize XFlatParagraphIterator
+&nbsp;   * Set the new iterator only if it is not null
+&nbsp;   */
+&nbsp;  synchronized public void init() {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraphIterator tmpFlatParaIter = getXFlatParagraphIterator(xComponent);</b>
+<b class="nc">&nbsp;      if (tmpFlatParaIter != null) {</b>
+<b class="nc">&nbsp;        xFlatParaIter = tmpFlatParaIter;</b>
+&nbsp;      }
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Returns current FlatParagraph
+&nbsp;   * Set lastFlatPara if current FlatParagraph is not null
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  private XFlatParagraph getCurrentFlatParagraph() {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (xFlatParaIter == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getCurrentFlatParagraph: FlatParagraphIterator == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatParaIter.getNextPara();</b>
+<b class="nc">&nbsp;      if (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        lastFlatPara = tmpFlatPara;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return tmpFlatPara;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;    
+&nbsp;  /**
+&nbsp;   * Returns last FlatParagraph not null
+&nbsp;   * Set lastFlatPara if current FlatParagraph is not null
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  private XFlatParagraph getLastFlatParagraph() {
+<b class="nc">&nbsp;    getCurrentFlatParagraph();</b>
+<b class="nc">&nbsp;    return lastFlatPara;</b>
+&nbsp;  }
+&nbsp;    
+&nbsp;  /**
+&nbsp;   * is true if FlatParagraph is from Automatic Iteration
+&nbsp;   */
+&nbsp;  synchronized public boolean isFlatParaFromIter() {
+<b class="nc">&nbsp;    return (getCurrentFlatParagraph() != null);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Change text of flat paragraph nPara 
+&nbsp;   * delete characters between nStart and nStart + nLen, insert newText at nStart
+&nbsp;   */
+&nbsp;  synchronized public XFlatParagraph getFlatParagraphAt (int nPara) {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getFlatParagraphAt: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        xFlatPara = tmpFlatPara;</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int num = 0;</b>
+<b class="nc">&nbsp;      while (xFlatPara != null &amp;&amp; num &lt; nPara) {</b>
+<b class="nc">&nbsp;        xFlatPara = xFlatParaIter.getParaAfter(xFlatPara);</b>
+<b class="nc">&nbsp;        num++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;FlatParagraphTools: getFlatParagraphAt: FlatParagraph == null; n = &quot; + num + &quot;; nPara = &quot; + nPara);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return xFlatPara;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;             // Return null as method failed</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * return text of current paragraph
+&nbsp;   * return null if it fails
+&nbsp;   */
+&nbsp;  synchronized public String getCurrentParaText() {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getCurrentFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getCurrentParaText: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return xFlatPara.getText();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns Current Paragraph Number from FlatParagaph
+&nbsp;   * Returns -1 if it fails
+&nbsp;   */
+&nbsp;  synchronized public int getCurNumFlatParagraph() {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getCurrentFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getCurNumFlatParagraph: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int pos = -1;</b>
+<b class="nc">&nbsp;      XFlatParagraph tmpXFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpXFlatPara != null) {</b>
+<b class="nc">&nbsp;        tmpXFlatPara = xFlatParaIter.getParaBefore(tmpXFlatPara);</b>
+<b class="nc">&nbsp;        pos++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return pos;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return -1;           // Return -1 as method failed</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns Text of all FlatParagraphs of Document
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  synchronized public FlatParagraphContainer getAllFlatParagraphs(Locale fixedLocale) {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getAllFlatParagraphs: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;String&gt; allParas = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      List&lt;Locale&gt; locales = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      List&lt;int[]&gt; footnotePositions = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      List&lt;Integer&gt; sortedTextIds = getIntPropertyValue(&quot;SortedTextId&quot;, tmpFlatPara) == -1 ? null : new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      int documentElementsCount = sortedTextIds == null ? -1 : getIntPropertyValue(&quot;DocumentElementsCount&quot;, tmpFlatPara);</b>
+<b class="nc">&nbsp;      Locale locale = null;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        String text = tmpFlatPara.getText();</b>
+<b class="nc">&nbsp;        int len = text.length();</b>
+<b class="nc">&nbsp;        allParas.add(0, text);</b>
+<b class="nc">&nbsp;        footnotePositions.add(0, getIntArrayPropertyValue(&quot;FootnotePositions&quot;, tmpFlatPara));</b>
+&nbsp;        // add just one local for the whole paragraph
+<b class="nc">&nbsp;        locale = getPrimaryParagraphLanguage(tmpFlatPara, 0, len, fixedLocale, locale, false);</b>
+<b class="nc">&nbsp;        locales.add(0, locale);</b>
+<b class="nc">&nbsp;        if (sortedTextIds != null) {</b>
+<b class="nc">&nbsp;          sortedTextIds.add(0, getIntPropertyValue(&quot;SortedTextId&quot;, tmpFlatPara));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      tmpFlatPara = xFlatParaIter.getParaAfter(xFlatPara);</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        String text = tmpFlatPara.getText();</b>
+<b class="nc">&nbsp;        int len = text.length();</b>
+<b class="nc">&nbsp;        allParas.add(text);</b>
+<b class="nc">&nbsp;        footnotePositions.add(getIntArrayPropertyValue(&quot;FootnotePositions&quot;, tmpFlatPara));</b>
+<b class="nc">&nbsp;        locale = getPrimaryParagraphLanguage(tmpFlatPara, 0, len, fixedLocale, locale, false);</b>
+<b class="nc">&nbsp;        locales.add(locale);</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          printPropertyValueInfo(tmpFlatPara);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (sortedTextIds != null) {</b>
+<b class="nc">&nbsp;          sortedTextIds.add(getIntPropertyValue(&quot;SortedTextId&quot;, tmpFlatPara));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaAfter(tmpFlatPara);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return new FlatParagraphContainer(allParas, locales, footnotePositions, sortedTextIds, documentElementsCount);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Returns Text of some FlatParagraphs defined in a List
+&nbsp;   * Returns null if it fails
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  synchronized public List&lt;String&gt; getFlatParagraphs(List&lt;Integer&gt; nParas) {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getAllFlatParagraphs: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;String&gt; sParas = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        xFlatPara = tmpFlatPara;</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int nFlat = 0;</b>
+<b class="nc">&nbsp;      int nPara = 0;</b>
+<b class="nc">&nbsp;      while (xFlatPara != null &amp;&amp; nPara &lt; nParas.size()) {</b>
+<b class="nc">&nbsp;        if (nFlat == nParas.get(nPara)) {</b>
+<b class="nc">&nbsp;          String text = xFlatPara.getText();</b>
+<b class="nc">&nbsp;          sParas.add(text);</b>
+<b class="nc">&nbsp;          nPara++;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        xFlatPara = xFlatParaIter.getParaAfter(xFlatPara);</b>
+<b class="nc">&nbsp;        nFlat++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return sParas;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get the language of paragraph 
+&nbsp;   * @throws IllegalArgumentException 
+&nbsp;   */
+&nbsp;  private static Locale getParagraphLanguage(XFlatParagraph flatPara, int first, int len) throws IllegalArgumentException {
+<b class="nc">&nbsp;    Locale locale = flatPara.getLanguageOfText(first, len);</b>
+<b class="nc">&nbsp;    if (locale == null || locale.Language.isEmpty()) {</b>
+<b class="nc">&nbsp;      locale = flatPara.getPrimaryLanguageOfText(first, len);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return locale;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get language Portions of a paragraph
+&nbsp;   * @throws IllegalArgumentException 
+&nbsp;   */
+&nbsp;  @SuppressWarnings(&quot;unused&quot;)
+&nbsp;  private static List&lt;Integer&gt; getLanguagePortions(XFlatParagraph flatPara, int len) throws IllegalArgumentException {
+<b class="nc">&nbsp;    List&lt;Integer&gt; langPortions = new ArrayList&lt;Integer&gt;();</b>
+<b class="nc">&nbsp;    Locale lastLocale = flatPara.getLanguageOfText(0, 1);</b>
+<b class="nc">&nbsp;    for (int i = 1; i &lt; len; i++) {</b>
+<b class="nc">&nbsp;      Locale locale = flatPara.getLanguageOfText(i, 1);</b>
+<b class="nc">&nbsp;      if (!OfficeTools.isEqualLocale(lastLocale, locale)) {</b>
+<b class="nc">&nbsp;        langPortions.add(i);</b>
+<b class="nc">&nbsp;        lastLocale = locale;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return langPortions;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get the main language of paragraph 
+&nbsp;   * @throws IllegalArgumentException 
+&nbsp;   */
+&nbsp;  synchronized public static Locale getPrimaryParagraphLanguage(XFlatParagraph flatPara, int start, int len, Locale fixedLocale, 
+&nbsp;      Locale lastLocale, boolean onlyPrimary) throws IllegalArgumentException {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (fixedLocale != null) {</b>
+<b class="nc">&nbsp;        return fixedLocale;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (len == 0 &amp;&amp; lastLocale != null) {</b>
+<b class="nc">&nbsp;        return lastLocale.Variant.startsWith(OfficeTools.MULTILINGUAL_LABEL) ? </b>
+<b class="nc">&nbsp;            new Locale(lastLocale.Language, lastLocale.Country, lastLocale.Variant.substring(OfficeTools.MULTILINGUAL_LABEL.length())) : lastLocale;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (len &lt; 2) {</b>
+<b class="nc">&nbsp;        return getParagraphLanguage(flatPara, start, len);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Map&lt;Locale, Integer&gt; locales = new HashMap&lt;Locale, Integer&gt;();</b>
+<b class="nc">&nbsp;      for (int i = start; i &lt; len; i++) {</b>
+<b class="nc">&nbsp;        Locale locale = flatPara.getLanguageOfText(i, 1);</b>
+<b class="nc">&nbsp;        boolean existingLocale = false;</b>
+<b class="nc">&nbsp;        for (Locale loc : locales.keySet()) {</b>
+<b class="nc">&nbsp;          if (loc.Language.equals(locale.Language)) {</b>
+<b class="nc">&nbsp;            locales.put(loc, locales.get(loc) + 1);</b>
+<b class="nc">&nbsp;            existingLocale = true;</b>
+<b class="nc">&nbsp;            break;</b>
+&nbsp;          }
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        if (!existingLocale) {</b>
+<b class="nc">&nbsp;          locales.put(locale, 1);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (locales.keySet().size() == 0) {</b>
+<b class="nc">&nbsp;        return lastLocale.Variant.startsWith(OfficeTools.MULTILINGUAL_LABEL) ? </b>
+<b class="nc">&nbsp;            new Locale(lastLocale.Language, lastLocale.Country, lastLocale.Variant.substring(OfficeTools.MULTILINGUAL_LABEL.length())) : lastLocale;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Locale biggestLocal = null;</b>
+<b class="nc">&nbsp;      int biggestLocalNumber = 0;</b>
+<b class="nc">&nbsp;      for (Locale loc : locales.keySet()) {</b>
+<b class="nc">&nbsp;        int locNum = locales.get(loc);</b>
+<b class="nc">&nbsp;        if (biggestLocal == null || locNum &gt; biggestLocalNumber) {</b>
+<b class="nc">&nbsp;          biggestLocal = loc;</b>
+<b class="nc">&nbsp;          biggestLocalNumber = locNum;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (biggestLocal == null) {</b>
+<b class="nc">&nbsp;        return lastLocale.Variant.startsWith(OfficeTools.MULTILINGUAL_LABEL) ? </b>
+<b class="nc">&nbsp;            new Locale(lastLocale.Language, lastLocale.Country, lastLocale.Variant.substring(OfficeTools.MULTILINGUAL_LABEL.length())) : lastLocale;</b>
+<b class="nc">&nbsp;      } else if (onlyPrimary || locales.keySet().size() == 1) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getPrimaryParagraphLanguage: locale: &quot; + OfficeTools.localeToString(biggestLocal));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return biggestLocal;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getPrimaryParagraphLanguage: is multilingual locale: &quot; + OfficeTools.localeToString(biggestLocal));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return new Locale(biggestLocal.Language, biggestLocal.Country, OfficeTools.MULTILINGUAL_LABEL + biggestLocal.Variant);</b>
+&nbsp;      }
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get the main language of paragraph 
+&nbsp;   * @throws IllegalArgumentException 
+&nbsp;   */
+&nbsp;  synchronized public Locale getPrimaryLanguageOfPartOfParagraph(int nPara, int start, int len, Locale lastLocale) throws IllegalArgumentException {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph flatPara = getFlatParagraphAt(nPara);</b>
+<b class="nc">&nbsp;      if (flatPara == null) {</b>
+<b class="nc">&nbsp;        return lastLocale;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return getPrimaryParagraphLanguage(flatPara, start, len, null, lastLocale, true);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Returns Number of all FlatParagraphs of Document from current FlatParagraph
+&nbsp;   * Returns negative value if it fails
+&nbsp;   */
+&nbsp;  synchronized public int getNumberOfAllFlatPara() {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getNumberOfAllFlatPara: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      int num = 0;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+<b class="nc">&nbsp;        num++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      num--;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaAfter(tmpFlatPara);</b>
+<b class="nc">&nbsp;        num++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return num;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return -1;             // Return -1 as method failed</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * Returns positions of properties by name 
+&nbsp;   */
+&nbsp;  private Object getPropertyValueAsObject(String propName, XFlatParagraph xFlatPara) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getPropertyValueAsObject: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return  null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XPropertySet paraProps = UnoRuntime.queryInterface(XPropertySet.class, xFlatPara);</b>
+<b class="nc">&nbsp;      if (paraProps == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;FlatParagraphTools: getPropertyValueAsObject: XPropertySet == null&quot;);</b>
+<b class="nc">&nbsp;        return  null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return paraProps.getPropertyValue(propName);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Returns positions of properties by name 
+&nbsp;   */
+&nbsp;  private int[] getIntArrayPropertyValue(String propName, XFlatParagraph xFlatPara) {
+&nbsp;    try {
+<b class="nc">&nbsp;      Object propertyValue = getPropertyValueAsObject(propName, xFlatPara);</b>
+<b class="nc">&nbsp;      if (propertyValue == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getIntArrayPropertyValue: propertyValue == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return  new int[]{};</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (propertyValue instanceof int[]) {</b>
+<b class="nc">&nbsp;        return (int[]) propertyValue;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;FlatParagraphTools: getIntArrayPropertyValue: Not of expected type int[]: &quot; + propertyValue + &quot;: &quot; + propertyValue);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return new int[]{};</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Returns positions of properties by name 
+&nbsp;   */
+&nbsp;  private int getIntPropertyValue(String propName, XFlatParagraph xFlatPara) {
+&nbsp;    try {
+<b class="nc">&nbsp;      Object propertyValue = getPropertyValueAsObject(propName, xFlatPara);</b>
+<b class="nc">&nbsp;      if (propertyValue == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getIntPropertyValue: propertyValue == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return  -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (propertyValue instanceof Integer) {</b>
+<b class="nc">&nbsp;        return (int) propertyValue;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: getPropertyValues: Not of expected type int: &quot; + propertyValue + &quot;: &quot; + propertyValue);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return -1;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Print property values to logfile
+&nbsp;   */
+&nbsp;  private void printPropertyValueInfo(XFlatParagraph xFlatPara) {
+<b class="nc">&nbsp;    if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;FlatParagraphTools: printPropertyValues: FlatParagraph == null&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    XPropertySet paraProps = UnoRuntime.queryInterface(XPropertySet.class, xFlatPara);</b>
+<b class="nc">&nbsp;    if (paraProps == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;XPropertySet == null&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;FlatParagraphTools: Property Value Info:&quot;);</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XPropertySetInfo propertySetInfo = paraProps.getPropertySetInfo();</b>
+&nbsp;      
+<b class="nc">&nbsp;      for (Property property : propertySetInfo.getProperties()) {</b>
+&nbsp;        int nValue;
+<b class="nc">&nbsp;        if (property.Name.equals(&quot;FootnotePositions&quot;) || property.Name.equals(&quot;FieldPositions&quot;)) {</b>
+<b class="nc">&nbsp;          nValue = ((int[]) paraProps.getPropertyValue(property.Name)).length;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          nValue = (int) paraProps.getPropertyValue(property.Name);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Name : &quot; + property.Name + &quot;; Type : &quot; + property.Type.getTypeName() + &quot;; Value : &quot; + nValue + &quot;; Handle : &quot; + property.Handle);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;    return;
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Marks all paragraphs as checked with exception of the paragraphs &quot;from&quot; to &quot;to&quot;
+&nbsp;   */
+&nbsp;  synchronized public void setFlatParasAsChecked(int from, int to, List&lt;Boolean&gt; isChecked) {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: setFlatParasAsChecked: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      if (isChecked == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: setFlatParasAsChecked: List isChecked == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        isChecked  = new ArrayList&lt;&gt;();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      XFlatParagraph startFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        startFlatPara = tmpFlatPara;</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      tmpFlatPara = startFlatPara;</b>
+<b class="nc">&nbsp;      int num = 0;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null &amp;&amp; num &lt; from) {</b>
+<b class="nc">&nbsp;        if (debugMode &amp;&amp; num &gt;= isChecked.size()) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: setFlatParasAsChecked: List isChecked == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (num &lt; isChecked.size() &amp;&amp; isChecked.get(num)) {</b>
+<b class="nc">&nbsp;          tmpFlatPara.setChecked(TextMarkupType.PROOFREADING, true);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaAfter(tmpFlatPara);</b>
+<b class="nc">&nbsp;        num++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      while (tmpFlatPara != null &amp;&amp; num &lt; to) {</b>
+<b class="nc">&nbsp;        tmpFlatPara.setChecked(TextMarkupType.PROOFREADING, false);</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaAfter(tmpFlatPara);</b>
+<b class="nc">&nbsp;        num++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        if (debugMode &amp;&amp; num &gt;= isChecked.size()) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: setFlatParasAsChecked: List isChecked == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (num &lt; isChecked.size() &amp;&amp; isChecked.get(num)) {</b>
+<b class="nc">&nbsp;          tmpFlatPara.setChecked(TextMarkupType.PROOFREADING, true);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaAfter(tmpFlatPara);</b>
+<b class="nc">&nbsp;        num++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Marks all paragraphs as checked
+&nbsp;   */
+&nbsp;  synchronized public void setFlatParasAsChecked() {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: setFlatParasAsChecked: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        tmpFlatPara.setChecked(TextMarkupType.PROOFREADING, true);</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        tmpFlatPara.setChecked(TextMarkupType.PROOFREADING, true);</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaAfter(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get information of checked status of all paragraphs
+&nbsp;   */
+&nbsp;  synchronized public List&lt;Boolean&gt; isChecked(List&lt;Integer&gt; changedParas, int nDiv) {
+<b class="nc">&nbsp;    isBusy++;</b>
+<b class="nc">&nbsp;    List&lt;Boolean&gt; isChecked = new ArrayList&lt;&gt;();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: isChecked: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      XFlatParagraph startFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        startFlatPara = tmpFlatPara;</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      tmpFlatPara = startFlatPara;</b>
+<b class="nc">&nbsp;      for (int i = 0; tmpFlatPara != null; i++) {</b>
+<b class="nc">&nbsp;        boolean dontCheck = (changedParas == null || !changedParas.contains(i - nDiv))</b>
+<b class="nc">&nbsp;            &amp;&amp; tmpFlatPara.isChecked(TextMarkupType.PROOFREADING);</b>
+<b class="nc">&nbsp;        isChecked.add(dontCheck);</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaAfter(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return isChecked;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Set marks to changed paragraphs
+&nbsp;   * if override is true existing marks are removed and marks are new set
+&nbsp;   * else the marks are added to the existing marks
+&nbsp;   */
+&nbsp;
+&nbsp;  synchronized public void markParagraphs(Map&lt;Integer, List&lt;SentenceErrors&gt;&gt; changedParas) {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (changedParas == null || changedParas.isEmpty()) {</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: markParagraphs: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+&nbsp;        return;
+&nbsp;      }
+&nbsp;      // treat text cursor separately because of performance reasons for big texts
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      XFlatParagraph startFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        startFlatPara = tmpFlatPara;</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      tmpFlatPara = startFlatPara;</b>
+<b class="nc">&nbsp;      int num = 0;</b>
+<b class="nc">&nbsp;      int nMarked = 0;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null &amp;&amp; nMarked &lt; changedParas.size()) {</b>
+<b class="nc">&nbsp;        if (changedParas.containsKey(num)) {</b>
+<b class="nc">&nbsp;          addMarksToOneParagraph(tmpFlatPara, changedParas.get(num));</b>
+<b class="nc">&nbsp;          if (debugMode) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;FlatParagraphTools: mark Paragraph: &quot; + num + &quot;, Text: &quot; + tmpFlatPara.getText());</b>
+&nbsp;          }
+<b class="nc">&nbsp;          nMarked++;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaAfter(tmpFlatPara);</b>
+<b class="nc">&nbsp;        num++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugMode &amp;&amp; tmpFlatPara == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;FlatParagraphTools: markParagraphs: tmpFlatParagraph == null&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * add marks to existing marks of current paragraph
+&nbsp;   */
+&nbsp;  synchronized public void markCurrentParagraph(List&lt;SentenceErrors&gt; errorList) {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (errorList == null || errorList.size() == 0) {</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getCurrentFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: markCurrentParagraph: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      addMarksToOneParagraph(xFlatPara, errorList);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;    
+&nbsp;  /**
+&nbsp;   * add marks to existing marks of a paragraph
+&nbsp;   * if override: existing marks will be overridden
+&nbsp;   */
+&nbsp;  private void addMarksToOneParagraph(XFlatParagraph flatPara, List&lt;SentenceErrors&gt; errorList) {
+<b class="nc">&nbsp;    boolean isChecked = flatPara.isChecked(TextMarkupType.PROOFREADING);</b>
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;FlatParagraphTools: addMarksToOneParagraph: xMarkingAccess: isChecked = &quot; + isChecked);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    for (SentenceErrors errors : errorList) {</b>
+&nbsp;      XStringKeyMap props;
+<b class="nc">&nbsp;      for (SingleProofreadingError pError : errors.sentenceErrors) {</b>
+<b class="nc">&nbsp;        props = flatPara.getMarkupInfoContainer();</b>
+<b class="nc">&nbsp;        PropertyValue[] properties = pError.aProperties;</b>
+<b class="nc">&nbsp;        int color = -1;</b>
+<b class="nc">&nbsp;        short type = -1;</b>
+<b class="nc">&nbsp;        for (PropertyValue property : properties) {</b>
+<b class="nc">&nbsp;          if (&quot;LineColor&quot;.equals(property.Name)) {</b>
+<b class="nc">&nbsp;            color = (int) property.Value;</b>
+<b class="nc">&nbsp;          } else if (&quot;LineType&quot;.equals(property.Name)) {</b>
+<b class="nc">&nbsp;            type = (short) property.Value;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;        try {
+<b class="nc">&nbsp;          if (color &gt;= 0) {</b>
+<b class="nc">&nbsp;            props.insertValue(&quot;LineColor&quot;, color);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (type &gt; 0) {</b>
+<b class="nc">&nbsp;            props.insertValue(&quot;LineType&quot;, type);</b>
+&nbsp;          }
+<b class="nc">&nbsp;        } catch (Throwable t) {</b>
+<b class="nc">&nbsp;          MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        flatPara.commitStringMarkup(TextMarkupType.PROOFREADING, pError.aRuleIdentifier, </b>
+&nbsp;            pError.nErrorStart, pError.nErrorLength, props);
+&nbsp;      }
+<b class="nc">&nbsp;      props = flatPara.getMarkupInfoContainer();</b>
+<b class="nc">&nbsp;      flatPara.commitStringMarkup(TextMarkupType.SENTENCE, &quot;Sentence&quot;, errors.sentenceStart, errors.sentenceEnd - errors.sentenceStart, props);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (isChecked) {</b>
+<b class="nc">&nbsp;      flatPara.setChecked(TextMarkupType.PROOFREADING, true);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Change text of flat paragraph nPara 
+&nbsp;   * delete characters between nStart and nStart + nLen, insert newText at nStart
+&nbsp;   */
+&nbsp;  synchronized public void changeTextOfParagraph (int nPara, int nStart, int nLen, String newText) {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: changeTextOfParagraph: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        xFlatPara = tmpFlatPara;</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int num = 0;</b>
+<b class="nc">&nbsp;      while (xFlatPara != null &amp;&amp; num &lt; nPara) {</b>
+<b class="nc">&nbsp;        xFlatPara = xFlatParaIter.getParaAfter(xFlatPara);</b>
+<b class="nc">&nbsp;        num++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;FlatParagraphTools: changeTextOfParagraph: FlatParagraph == null; n = &quot; + num + &quot;; nPara = &quot; + nPara);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      xFlatPara.changeText(nStart, nLen, newText, new PropertyValue[0]);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+&nbsp;      return;             // Return -1 as method failed
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Change text of flat paragraph nPara 
+&nbsp;   * delete characters between nStart and nStart + nLen, insert newText at nStart
+&nbsp;   */
+&nbsp;  synchronized public void setLanguageOfParagraph (int nPara, int nStart, int nLen, Locale locale) {
+<b class="nc">&nbsp;    isBusy++;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XFlatParagraph xFlatPara = getLastFlatParagraph();</b>
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;FlatParagraphTools: setLanguageOfParagraph: FlatParagraph == null&quot;);</b>
+&nbsp;        }
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XFlatParagraph tmpFlatPara = xFlatPara;</b>
+<b class="nc">&nbsp;      while (tmpFlatPara != null) {</b>
+<b class="nc">&nbsp;        xFlatPara = tmpFlatPara;</b>
+<b class="nc">&nbsp;        tmpFlatPara = xFlatParaIter.getParaBefore(tmpFlatPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int num = 0;</b>
+<b class="nc">&nbsp;      while (xFlatPara != null &amp;&amp; num &lt; nPara) {</b>
+<b class="nc">&nbsp;        xFlatPara = xFlatParaIter.getParaAfter(xFlatPara);</b>
+<b class="nc">&nbsp;        num++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (xFlatPara == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;FlatParagraphTools: setLanguageOfParagraph: FlatParagraph == null; n = &quot; + num + &quot;; nPara = &quot; + nPara);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      PropertyValue[] propertyValues = { new PropertyValue(&quot;CharLocale&quot;, -1, locale, PropertyState.DIRECT_VALUE) };</b>
+<b class="nc">&nbsp;      xFlatPara.changeAttributes(nStart, nLen, propertyValues);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+&nbsp;      return;             // Return -1 as method failed
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isBusy--;</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Returns the status of cursor tools
+&nbsp;   *  true: If a cursor tool in one or more threads is active
+&nbsp;   */
+&nbsp;  public static boolean isBusy() {
+<b class="nc">&nbsp;    return isBusy &gt; 0;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public static class FlatParagraphContainer {
+&nbsp;    public List&lt;String&gt; paragraphs;
+&nbsp;    public List&lt;Locale&gt; locales;
+&nbsp;    public List&lt;int[]&gt; footnotePositions;
+&nbsp;    public List&lt;Integer&gt; sortedTextIds;
+&nbsp;    public int documentElementsCount;
+&nbsp;    
+&nbsp;    FlatParagraphContainer(List&lt;String&gt; paragraphs, List&lt;Locale&gt; locales, List&lt;int[]&gt; footnotePositions, 
+<b class="nc">&nbsp;        List&lt;Integer&gt; sortedTextIds, int documentElementsCount) {</b>
+<b class="nc">&nbsp;      this.paragraphs = paragraphs;</b>
+<b class="nc">&nbsp;      this.locales = locales;</b>
+<b class="nc">&nbsp;      this.footnotePositions = footnotePositions;</b>
+<b class="nc">&nbsp;      this.sortedTextIds = sortedTextIds;</b>
+<b class="nc">&nbsp;      this.documentElementsCount = documentElementsCount;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

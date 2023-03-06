@@ -1,0 +1,509 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > French</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.language</a>
+</div>
+
+<h1>Coverage Summary for Class: French (org.languagetool.language)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">French</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/482)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/189)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2007 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.language;
+&nbsp;
+&nbsp;import org.jetbrains.annotations.NotNull;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.languagetool.*;
+&nbsp;import org.languagetool.languagemodel.LanguageModel;
+&nbsp;import org.languagetool.rules.*;
+&nbsp;import org.languagetool.rules.fr.*;
+&nbsp;import org.languagetool.rules.spelling.SpellingCheckRule;
+&nbsp;import org.languagetool.synthesis.FrenchSynthesizer;
+&nbsp;import org.languagetool.synthesis.Synthesizer;
+&nbsp;import org.languagetool.tagging.Tagger;
+&nbsp;import org.languagetool.tagging.disambiguation.Disambiguator;
+&nbsp;import org.languagetool.tagging.disambiguation.fr.FrenchHybridDisambiguator;
+&nbsp;import org.languagetool.tagging.fr.FrenchTagger;
+&nbsp;import org.languagetool.tokenizers.SRXSentenceTokenizer;
+&nbsp;import org.languagetool.tokenizers.SentenceTokenizer;
+&nbsp;import org.languagetool.tokenizers.Tokenizer;
+&nbsp;import org.languagetool.tokenizers.fr.FrenchWordTokenizer;
+&nbsp;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.*;
+&nbsp;
+<b class="nc">&nbsp;public class French extends Language implements AutoCloseable {</b>
+&nbsp;
+&nbsp;  private LanguageModel languageModel;
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public SentenceTokenizer createDefaultSentenceTokenizer() {
+<b class="nc">&nbsp;    return new SRXSentenceTokenizer(this);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getName() {
+<b class="nc">&nbsp;    return &quot;French&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getShortCode() {
+<b class="nc">&nbsp;    return &quot;fr&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String[] getCountries() {
+<b class="nc">&nbsp;    return new String[]{&quot;FR&quot;, &quot;&quot;, &quot;BE&quot;, &quot;CH&quot;, &quot;CA&quot;, &quot;LU&quot;, &quot;MC&quot;, &quot;CM&quot;,</b>
+&nbsp;            &quot;CI&quot;, &quot;HT&quot;, &quot;ML&quot;, &quot;SN&quot;, &quot;CD&quot;, &quot;MA&quot;, &quot;RE&quot;};
+&nbsp;  }
+&nbsp;
+&nbsp;  @NotNull
+&nbsp;  @Override
+&nbsp;  public Tagger createDefaultTagger() {
+<b class="nc">&nbsp;    return FrenchTagger.INSTANCE;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Nullable
+&nbsp;  @Override
+&nbsp;  public Synthesizer createDefaultSynthesizer() {
+<b class="nc">&nbsp;    return FrenchSynthesizer.INSTANCE;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  @Override
+&nbsp;  public Tokenizer createDefaultWordTokenizer() {
+<b class="nc">&nbsp;    return new FrenchWordTokenizer();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Disambiguator createDefaultDisambiguator() {
+<b class="nc">&nbsp;    return new FrenchHybridDisambiguator();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Contributor[] getMaintainers() {
+<b class="nc">&nbsp;    return new Contributor[] {</b>
+&nbsp;        Contributors.DOMINIQUE_PELLE
+&nbsp;    };
+&nbsp;  }
+&nbsp;
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public SpellingCheckRule createDefaultSpellingRule(ResourceBundle messages) throws IOException {
+<b class="nc">&nbsp;    return new MorfologikFrenchSpellerRule(messages, this, null, Collections.emptyList());</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public List&lt;Rule&gt; getRelevantRules(ResourceBundle messages, UserConfig userConfig, Language motherTongue, List&lt;Language&gt; altLanguages) throws IOException {
+<b class="nc">&nbsp;    return Arrays.asList(</b>
+&nbsp;            new CommaWhitespaceRule(messages, false),
+&nbsp;            new DoublePunctuationRule(messages),
+&nbsp;            new GenericUnpairedBracketsRule(messages,
+<b class="nc">&nbsp;                    Arrays.asList(&quot;[&quot;, &quot;(&quot;, &quot;{&quot; /*&quot;«&quot;, &quot;‘&quot;*/),</b>
+<b class="nc">&nbsp;                    Arrays.asList(&quot;]&quot;, &quot;)&quot;, &quot;}&quot;</b>
+&nbsp;                         /*&quot;»&quot;, French dialog can contain multiple sentences. */
+&nbsp;                         /*&quot;’&quot; used in &quot;d’arm&quot; and many other words */)),
+&nbsp;            new MorfologikFrenchSpellerRule(messages, this, userConfig, altLanguages),
+&nbsp;            new UppercaseSentenceStartRule(messages, this),
+&nbsp;            new MultipleWhitespaceRule(messages, this),
+&nbsp;            new SentenceWhitespaceRule(messages),
+&nbsp;            new LongSentenceRule(messages, userConfig, 40),
+&nbsp;            new LongParagraphRule(messages, this, userConfig),
+&nbsp;            // specific to French:
+&nbsp;            new CompoundRule(messages, this, userConfig),
+&nbsp;            new QuestionWhitespaceStrictRule(messages, this),
+&nbsp;            new QuestionWhitespaceRule(messages, this),
+&nbsp;            new SimpleReplaceRule(messages),
+&nbsp;            new FrenchRepeatedWordsRule(messages)
+&nbsp;    );
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public List&lt;Rule&gt; getRelevantRulesGlobalConfig(ResourceBundle messages, GlobalConfig globalConfig, UserConfig userConfig, Language motherTongue, List&lt;Language&gt; altLanguages) throws IOException {
+<b class="nc">&nbsp;    List&lt;Rule&gt; rules = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    if (globalConfig != null &amp;&amp; globalConfig.getGrammalecteServer() != null) {</b>
+<b class="nc">&nbsp;      rules.add(new GrammalecteRule(messages, globalConfig));</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return rules;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 3.1 */
+&nbsp;  @Override
+&nbsp;  public List&lt;Rule&gt; getRelevantLanguageModelRules(ResourceBundle messages, LanguageModel languageModel, UserConfig userConfig) throws IOException {
+<b class="nc">&nbsp;    return Arrays.asList(</b>
+&nbsp;            new FrenchConfusionProbabilityRule(messages, languageModel, this)
+&nbsp;    );
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 3.1 */
+&nbsp;  @Override
+&nbsp;  public synchronized LanguageModel getLanguageModel(File indexDir) throws IOException {
+<b class="nc">&nbsp;    languageModel = initLanguageModel(indexDir, languageModel);</b>
+<b class="nc">&nbsp;    return languageModel;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getOpeningDoubleQuote() {
+<b class="nc">&nbsp;    return &quot;«&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getClosingDoubleQuote() {
+<b class="nc">&nbsp;    return &quot;»&quot;;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getOpeningSingleQuote() {
+<b class="nc">&nbsp;    return &quot;‘&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getClosingSingleQuote() {
+<b class="nc">&nbsp;    return &quot;’&quot;;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public boolean isAdvancedTypographyEnabled() {
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  @Override
+&nbsp;  public String toAdvancedTypography (String input) {
+<b class="nc">&nbsp;    String output = super.toAdvancedTypography(input);</b>
+&nbsp;  
+&nbsp;    // special cases: apostrophe + quotation marks
+<b class="nc">&nbsp;    String beforeApostrophe = &quot;([cjnmtsldCJNMTSLD]|qu|jusqu|lorsqu|puisqu|quoiqu|Qu|Jusqu|Lorsqu|Puisqu|Quoiqu|QU|JUSQU|LORSQU|PUISQU|QUOIQU)&quot;;</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;(\\b&quot;+beforeApostrophe+&quot;)&#39;&quot;, &quot;$1’&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;(\\b&quot;+beforeApostrophe+&quot;)’\&quot;&quot;, &quot;$1’&quot; + getOpeningDoubleQuote());</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;(\\b&quot;+beforeApostrophe+&quot;)’&#39;&quot;, &quot;$1’&quot; + getOpeningSingleQuote());</b>
+&nbsp;    
+&nbsp;    // non-breaking (thin) space 
+&nbsp;    // according to https://fr.wikipedia.org/wiki/Espace_ins%C3%A9cable#En_France
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;\u00a0;&quot;, &quot;\u202f;&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;\u00a0!&quot;, &quot;\u202f!&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;\u00a0\\?&quot;, &quot;\u202f?&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;;&quot;, &quot;\u202f;&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;!&quot;, &quot;\u202f!&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;\\?&quot;, &quot;\u202f?&quot;);</b>
+&nbsp;    
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;:&quot;, &quot;\u00a0:&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;»&quot;, &quot;\u00a0»&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;«&quot;, &quot;«\u00a0&quot;);</b>
+&nbsp;    
+&nbsp;    //remove duplicate spaces
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;\u00a0\u00a0&quot;, &quot;\u00a0&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;\u202f\u202f&quot;, &quot;\u202f&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;  &quot;, &quot; &quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;\u00a0 &quot;, &quot;\u00a0&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot; \u00a0&quot;, &quot;\u00a0&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot; \u202f&quot;, &quot;\u202f&quot;);</b>
+<b class="nc">&nbsp;    output = output.replaceAll(&quot;\u202f &quot;, &quot;\u202f&quot;);</b>
+&nbsp;    
+<b class="nc">&nbsp;    return output;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Closes the language model, if any. 
+&nbsp;   * @since 3.1
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public void close() throws Exception {
+<b class="nc">&nbsp;    if (languageModel != null) {</b>
+<b class="nc">&nbsp;      languageModel.close();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public LanguageMaintainedState getMaintainedState() {
+<b class="nc">&nbsp;    return LanguageMaintainedState.ActivelyMaintained;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  protected int getPriorityForId(String id) {
+<b class="nc">&nbsp;    switch (id) { </b>
+<b class="nc">&nbsp;      case &quot;FR_COMPOUNDS&quot;: return 500; // greater than agreement rules</b>
+<b class="nc">&nbsp;      case &quot;FR_SIMPLE_REPLACE&quot;: return 150;</b>
+<b class="nc">&nbsp;      case &quot;AGREEMENT_EXCEPTIONS&quot;: return 100; // greater than D_N</b>
+<b class="nc">&nbsp;      case &quot;EXPRESSIONS_VU&quot;: return 100; // greater than A_ACCENT_A</b>
+<b class="nc">&nbsp;      case &quot;SA_CA_SE&quot;: return 100; // greater than D_N</b>
+<b class="nc">&nbsp;      case &quot;SIL_VOUS_PLAIT&quot;: return 100; // greater than ACCORD_R_PERS_VERBE</b>
+<b class="nc">&nbsp;      case &quot;QUASI_NOM&quot;: return 100; // greater than D_N</b>
+<b class="nc">&nbsp;      case &quot;MA&quot;: return 100; // greater than D_J</b>
+<b class="nc">&nbsp;      case &quot;SON_SONT&quot;: return 100; // greater than D_J</b>
+<b class="nc">&nbsp;      case &quot;JE_TES&quot;: return 100; // greater than D_J</b>
+<b class="nc">&nbsp;      case &quot;A_INFINITIF&quot;: return 100;</b>
+<b class="nc">&nbsp;      case &quot;ON_ONT&quot;: return 100; // greater than PRONSUJ_NONVERBE</b>
+<b class="nc">&nbsp;      case &quot;LEURS_LEUR&quot;: return 100; // greater than N_V</b>
+<b class="nc">&nbsp;      case &quot;DU_DU&quot;: return 100; // greater than DU_LE</b>
+<b class="nc">&nbsp;      case &quot;ACCORD_CHAQUE&quot;: return 100; // greater than ACCORD_NOMBRE</b>
+<b class="nc">&nbsp;      case &quot;J_N2&quot;: return 100; // greater than J_N</b>
+<b class="nc">&nbsp;      case &quot;CEST_A_DIRE&quot;: return 100; // greater than A_A_ACCENT</b>
+<b class="nc">&nbsp;      case &quot;FAIRE_VPPA&quot;: return 100; // greater than A_ACCENT_A</b>
+<b class="nc">&nbsp;      case &quot;D_N_E_OU_E&quot;: return 100; // greater than D_N</b>
+<b class="nc">&nbsp;      case &quot;GENS_ACCORD&quot;: return 100; // greater than AGREEMENT_POSTPONED_ADJ</b>
+<b class="nc">&nbsp;      case &quot;VIRGULE_EXPRESSIONS_FIGEES&quot;: return 100; // greater than agreement rules</b>
+<b class="nc">&nbsp;      case &quot;TRAIT_UNION&quot;: return 100; // greater than other rules for trait d&#39;union</b>
+<b class="nc">&nbsp;      case &quot;PLURIEL_AL2&quot;: return 100; // greater than other rules for pluriel al</b>
+<b class="nc">&nbsp;      case &quot;FR_SPLIT_WORDS_HYPHEN&quot;: return 100; // greater than MOTS_INCOMP</b>
+<b class="nc">&nbsp;      case &quot;PAS_DE_TRAIT_UNION&quot;: return 50; //  // greater than agreement rules</b>
+<b class="nc">&nbsp;      case &quot;PRIME-TIME&quot;: return 50; //  // greater than agreement rules</b>
+<b class="nc">&nbsp;      case &quot;A_VERBE_INFINITIF&quot;: return 20; // greater than PRONSUJ_NONVERBE</b>
+<b class="nc">&nbsp;      case &quot;DE_OU_DES&quot;: return 20; // greater than PAS_ADJ</b>
+<b class="nc">&nbsp;      case &quot;EMPLOI_EMPLOIE&quot;: return 20; // greater than MOTS_INCOMP</b>
+<b class="nc">&nbsp;      case &quot;VOIR_VOIRE&quot;: return 20; // greater than PLACE_DE_LA_VIRGULE</b>
+<b class="nc">&nbsp;      case &quot;CAT_TYPOGRAPHIE&quot;: return 20; // greater than PRONSUJ_NONVERBE or agreement rules</b>
+<b class="nc">&nbsp;      case &quot;CAT_HOMONYMES_PARONYMES&quot;: return 20;</b>
+<b class="nc">&nbsp;      case &quot;CAT_TOURS_CRITIQUES&quot;: return 20;</b>
+<b class="nc">&nbsp;      case &quot;D_VPPA&quot;: return 20; //greater than D_J</b>
+<b class="nc">&nbsp;      case &quot;EST_CE_QUE&quot;: return 20; // greater than TRAIT_UNION_INVERSION</b>
+<b class="nc">&nbsp;      case &quot;CONFUSION_PARLEZ_PARLER&quot;: return 10; // greater than N_V</b>
+<b class="nc">&nbsp;      case &quot;AGREEMENT_TOUT_LE&quot;: return 10; // compare to TOUT_LES</b>
+<b class="nc">&nbsp;      case &quot;ESPACE_UNITES&quot;: return 10; // needs to have higher priority than spell checker</b>
+<b class="nc">&nbsp;      case &quot;BYTES&quot;: return 10; // needs to be higher than spell checker for 10MB style matches</b>
+<b class="nc">&nbsp;      case &quot;Y_A&quot;: return 10; // needs to be higher than spell checker for style suggestion</b>
+<b class="nc">&nbsp;      case &quot;COTE&quot;: return 10; // needs to be higher than D_N</b>
+<b class="nc">&nbsp;      case &quot;PEUTETRE&quot;: return 10; // needs to be higher than AUX_ETRE_VCONJ</b>
+<b class="nc">&nbsp;      case &quot;A_A_ACCENT&quot;: return 10; // triggers false alarms for IL_FAUT_INF if there is no a/à correction </b>
+<b class="nc">&nbsp;      case &quot;A_ACCENT_A&quot;: return 10; // greater than PRONSUJ_NONVERBE</b>
+<b class="nc">&nbsp;      case &quot;A_A_ACCENT2&quot;: return 10; // greater than ACCORD_SUJET_VERBE</b>
+<b class="nc">&nbsp;      case &quot;A_ACCENT&quot;: return 10; // greater than ACCORD_SUJET_VERBE</b>
+<b class="nc">&nbsp;      case &quot;JE_M_APPEL&quot;: return 10;  // override NON_V</b>
+<b class="nc">&nbsp;      case &quot;ACCORD_R_PERS_VERBE&quot;: return 10;  // match before POSER_UNE_QUESTION</b>
+<b class="nc">&nbsp;      case &quot;JE_SUI&quot;: return 10;  // needs higher priority than spell checker</b>
+&nbsp;      //case &quot;D_N&quot;: return 10; // needs to have higher priority than agreement postponed adj | Commented out because many other rules should be higher: CAT_REGIONALISMES, CAT_TYPOGRAPHIE, CAT_GRAMMAIRE...
+&nbsp;      //case &quot;ACCORD_COULEUR&quot;: return 1; // needs to have higher priority than agreement postponed adj
+<b class="nc">&nbsp;      case &quot;R_VAVOIR_VINF&quot;: return 10; // needs higher priority than A_INFINITIF</b>
+<b class="nc">&nbsp;      case &quot;AN_EN&quot;: return 10; // needs higher priority than AN_ANNEE</b>
+<b class="nc">&nbsp;      case &quot;APOS_M&quot;: return 10; // needs higher priority than APOS_ESPACE</b>
+<b class="nc">&nbsp;      case &quot;ACCORD_PLURIEL_ORDINAUX&quot;: return 10; // needs higher priority than D_J</b>
+<b class="nc">&nbsp;      case &quot;SUJET_AUXILIAIRE&quot;: return 10; // needs higher priority than JE_VERBE; TU_VERBE; IL_VERBE; ILS_VERBE; ON_VERBE;</b>
+<b class="nc">&nbsp;      case &quot;ADJ_ADJ_SENT_END&quot;: return 10; // needs higher priority than ACCORD_COULEUR</b>
+<b class="nc">&nbsp;      case &quot;OU_PAS&quot;: return 10; // needs higher priority than VERBE_OBJ</b>
+<b class="nc">&nbsp;      case &quot;PLACE_DE_LA_VIRGULE&quot;: return 10; // needs higher priority than C_EST_QUOI</b>
+<b class="nc">&nbsp;      case &quot;SE_CE&quot;: return -10; // needs higher priority than ELISION</b>
+<b class="nc">&nbsp;      case &quot;SYNONYMS&quot;: return -10; // less than ELISION</b>
+<b class="nc">&nbsp;      case &quot;PAS_DE_SOUCIS&quot;: return 10; // needs higher priority than PAS_DE_PB_SOUCIS (premium)</b>
+&nbsp;      //case &quot;PRONSUJ_NONVERBE&quot;: return 10; // needs higher priority than AUXILIAIRE_MANQUANT
+&nbsp;      //case &quot;AUXILIAIRE_MANQUANT&quot;: return 5; // needs higher priority than ACCORD_NOM_VERBE
+<b class="nc">&nbsp;      case &quot;CONFUSION_PAR_PART&quot;: return -5;  // turn off completely when PART_OU_PAR is activated</b>
+<b class="nc">&nbsp;      case &quot;SON&quot;: return -5; // less than ETRE_VPPA_OU_ADJ</b>
+<b class="nc">&nbsp;      case &quot;J_N&quot;: return -10; // needs lesser priority than D_J</b>
+<b class="nc">&nbsp;      case &quot;TE_NV&quot;: return -20; // less than SE_CE, SE_SA and SE_SES</b>
+<b class="nc">&nbsp;      case &quot;TE_NV2&quot;: return -10; // less than SE_CE, SE_SA and SE_SES</b>
+<b class="nc">&nbsp;      case &quot;PLURIEL_AL&quot;: return -10; // less than AGREEMENT_POSTPONED_ADJ</b>
+<b class="nc">&nbsp;      case &quot;INTERROGATIVE_DIRECTE&quot;: return -10; // less than OU</b>
+<b class="nc">&nbsp;      case &quot;D_J_N&quot;: return -10; // less than J_N</b>
+<b class="nc">&nbsp;      case &quot;FAMILIARITES&quot;: return -10; // less than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;V_J_A_R&quot;: return -10; // less than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;TRES_TRES_ADJ&quot;: return -10; // less than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;IMP_PRON&quot;: return -10; // less than D_N</b>
+<b class="nc">&nbsp;      case &quot;TOO_LONG_PARAGRAPH&quot;: return -15;</b>
+<b class="nc">&nbsp;      case &quot;PREP_VERBECONJUGUE&quot;: return -20;</b>
+<b class="nc">&nbsp;      case &quot;LA_LA2&quot;: return -20; // less than LA_LA</b>
+<b class="nc">&nbsp;      case &quot;FRENCH_WORD_REPEAT_RULE&quot;: return -20; // less than TRES_TRES_ADJ</b>
+<b class="nc">&nbsp;      case &quot;CROIRE&quot;: return -20; // less than JE_CROIS_QUE</b>
+<b class="nc">&nbsp;      case &quot;PAS_DE_VERBE_APRES_POSSESSIF_DEMONSTRATIF&quot;: return -20;</b>
+<b class="nc">&nbsp;      case &quot;VIRGULE_VERBE&quot;: return -20; // less than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;VERBES_FAMILIERS&quot;: return -25;  // less than PREP_VERBECONJUGUE + PAS_DE_VERBE_APRES_POSSESSIF_DEMONSTRATIF</b>
+<b class="nc">&nbsp;      case &quot;VERB_PRONOUN&quot;: return -50; // greater than FR_SPELLING_RULE; less than ACCORD_V_QUESTION</b>
+<b class="nc">&nbsp;      case &quot;IL_VERBE&quot;: return -50; // greater than FR_SPELLING_RULE</b>
+<b class="nc">&nbsp;      case &quot;A_LE&quot;: return -50; // less than A_ACCENT</b>
+<b class="nc">&nbsp;      case &quot;ILS_VERBE&quot;: return -50; // greater than FR_SPELLING_RULE</b>
+<b class="nc">&nbsp;      case &quot;AGREEMENT_POSTPONED_ADJ&quot;: return -50;</b>
+<b class="nc">&nbsp;      case &quot;MULTI_ADJ&quot;: return -50;</b>
+<b class="nc">&nbsp;      case &quot;PARENTHESES&quot;: return -50;// less than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;ESSENTIEL&quot;: return -50; // lesser than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;CONFUSION_AL_LA&quot;: return -50; // lesser than AUX_AVOIR_VCONJ</b>
+<b class="nc">&nbsp;      case &quot;IMPORTANT&quot;: return -50; // lesser than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;SOUHAITER&quot;: return -50; // lesser than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;CAR&quot;: return -50; // lesser than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;AIMER&quot;: return -50; // lesser than grammar rules</b>
+<b class="nc">&nbsp;      case &quot;CONFUSION_RULE_PREMIUM&quot;: return -50; // lesser than PRONSUJ_NONVERBE</b>
+<b class="nc">&nbsp;      case &quot;FR_SPELLING_RULE&quot;: return -100;</b>
+<b class="nc">&nbsp;      case &quot;VIRG_INF&quot;: return -100;// lesser than CONFUSION_E_ER</b>
+<b class="nc">&nbsp;      case &quot;ET_SENT_START&quot;: return -151; // lower than grammalecte rules</b>
+<b class="nc">&nbsp;      case &quot;MAIS_SENT_START&quot;: return -151; // lower than grammalecte rules</b>
+<b class="nc">&nbsp;      case &quot;EN_CE_QUI_CONCERNE&quot;: return -152;  // less than MAIS_SENT_START + ET_SENT_START</b>
+<b class="nc">&nbsp;      case &quot;EN_MEME_TEMPS&quot;: return -152;  // less than MAIS_SENT_START + ET_SENT_START</b>
+<b class="nc">&nbsp;      case &quot;ET_AUSSI&quot;: return -152;  // less than CONFUSION_EST_ET + ET_SENT_START</b>
+<b class="nc">&nbsp;      case &quot;MAIS_AUSSI&quot;: return -152;  // less than MAIS_SENT_START</b>
+<b class="nc">&nbsp;      case &quot;ELISION&quot;: return -200; // should be lower in priority than spell checker</b>
+<b class="nc">&nbsp;      case &quot;POINT&quot;: return -200; // should be lower in priority than spell checker</b>
+<b class="nc">&nbsp;      case &quot;REPETITIONS_STYLE&quot;: return -250;  // repetition style rules, usually with prefix REP_</b>
+<b class="nc">&nbsp;      case &quot;FR_REPEATEDWORDS_EXIGER&quot;: return -250;  // repetition style rules,</b>
+<b class="nc">&nbsp;      case &quot;POINTS_SUSPENSIONS_SPACE&quot;: return -250;  // should be lower in priority than ADJ_ADJ_SENT_END</b>
+<b class="nc">&nbsp;      case &quot;UPPERCASE_SENTENCE_START&quot;: return -300;</b>
+<b class="nc">&nbsp;      case &quot;FRENCH_WHITESPACE_STRICT&quot;: return -350; // picky; if on, it should overwrite FRENCH_WHITESPACE</b>
+<b class="nc">&nbsp;      case &quot;TOUT_MAJUSCULES&quot;: return -400;</b>
+<b class="nc">&nbsp;      case &quot;VIRG_NON_TROUVEE&quot;: return -400;</b>
+<b class="nc">&nbsp;      case &quot;POINTS_2&quot;: return -400;</b>
+<b class="nc">&nbsp;      case &quot;MOTS_INCOMP&quot;: return -400; // greater than PRONSUJ_NONVERBE and DUPLICATE_DETERMINER</b>
+<b class="nc">&nbsp;      case &quot;FRENCH_WHITESPACE&quot;: return -400; // lesser than UPPERCASE_SENTENCE_START and FR_SPELLING_RULE</b>
+<b class="nc">&nbsp;      case &quot;MOT_TRAIT_MOT&quot;: return -400; // lesser than UPPERCASE_SENTENCE_START and FR_SPELLING_RULE</b>
+<b class="nc">&nbsp;      case &quot;FRENCH_WORD_REPEAT_BEGINNING_RULE&quot;: return -350; // less than REPETITIONS_STYLE</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    if (id.startsWith(&quot;grammalecte_&quot;)) {</b>
+<b class="nc">&nbsp;      return -150;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    if (id.startsWith(&quot;AI_FR_HYDRA_LEO&quot;)) { // prefer more specific rules (also speller)</b>
+<b class="nc">&nbsp;      return -101;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    return super.getPriorityForId(id);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public boolean hasMinMatchesRules() {
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public List&lt;RuleMatch&gt; adaptSuggestions(List&lt;RuleMatch&gt; ruleMatches, Set&lt;String&gt; enabledRules) {
+<b class="nc">&nbsp;    if (enabledRules.contains(&quot;APOS_TYP&quot;)) {</b>
+<b class="nc">&nbsp;      List&lt;RuleMatch&gt; newRuleMatches = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      for (RuleMatch rm : ruleMatches) {</b>
+<b class="nc">&nbsp;        List&lt;String&gt; replacements = rm.getSuggestedReplacements();</b>
+<b class="nc">&nbsp;        List&lt;String&gt; newReplacements = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (String s : replacements) {</b>
+<b class="nc">&nbsp;          if (s.length() &gt; 1) {</b>
+<b class="nc">&nbsp;            s = s.replace(&quot;&#39;&quot;, &quot;’&quot;);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          newReplacements.add(s);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        RuleMatch newMatch = new RuleMatch(rm, newReplacements);</b>
+<b class="nc">&nbsp;        newRuleMatches.add(newMatch);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return newRuleMatches;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return ruleMatches;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

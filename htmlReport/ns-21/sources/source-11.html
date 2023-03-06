@@ -1,0 +1,2213 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > MultiDocumentsHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: MultiDocumentsHandler (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MultiDocumentsHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/94)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/606)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/891)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MultiDocumentsHandler$1</td>
+  </tr>
+  <tr>
+    <td class="name">MultiDocumentsHandler$AboutDialogThread</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MultiDocumentsHandler$HandleLtDictionary</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MultiDocumentsHandler$LtHelper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MultiDocumentsHandler$ShapeChangeCheck</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/104)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/622)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/934)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.awt.*;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.text.MessageFormat;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;import javax.swing.UIManager;
+&nbsp;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.languagetool.JLanguageTool;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.Languages;
+&nbsp;import org.languagetool.UserConfig;
+&nbsp;import org.languagetool.gui.Configuration;
+&nbsp;import org.languagetool.gui.ConfigurationDialog;
+&nbsp;import org.languagetool.openoffice.DocumentCache.TextParagraph;
+&nbsp;import org.languagetool.openoffice.OfficeTools.DocumentType;
+&nbsp;import org.languagetool.openoffice.OfficeTools.OfficeProductInfo;
+&nbsp;import org.languagetool.openoffice.SingleDocument.RuleDesc;
+&nbsp;import org.languagetool.openoffice.SpellAndGrammarCheckDialog.LtCheckDialog;
+&nbsp;import org.languagetool.rules.CategoryId;
+&nbsp;import org.languagetool.rules.Rule;
+&nbsp;import org.languagetool.tools.Tools;
+&nbsp;
+&nbsp;import com.sun.star.beans.PropertyValue;
+&nbsp;import com.sun.star.beans.XPropertySet;
+&nbsp;import com.sun.star.frame.XModel;
+&nbsp;import com.sun.star.lang.EventObject;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;import com.sun.star.lang.XEventListener;
+&nbsp;import com.sun.star.linguistic2.LinguServiceEvent;
+&nbsp;import com.sun.star.linguistic2.LinguServiceEventFlags;
+&nbsp;import com.sun.star.linguistic2.ProofreadingResult;
+&nbsp;import com.sun.star.linguistic2.XLinguServiceEventListener;
+&nbsp;import com.sun.star.linguistic2.XProofreader;
+&nbsp;import com.sun.star.text.XTextDocument;
+&nbsp;import com.sun.star.text.XTextViewCursor;
+&nbsp;import com.sun.star.text.XTextViewCursorSupplier;
+&nbsp;import com.sun.star.uno.UnoRuntime;
+&nbsp;import com.sun.star.uno.XComponentContext;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class to handle multiple LO documents for checking
+&nbsp; * @since 4.3
+&nbsp; * @author Fred Kruse, Marcin Miłkowski
+&nbsp; */
+<b class="nc">&nbsp;public class MultiDocumentsHandler {</b>
+&nbsp;
+&nbsp;  // LibreOffice (since 4.2.0) special tag for locale with variant 
+&nbsp;  // e.g. language =&quot;qlt&quot; country=&quot;ES&quot; variant=&quot;ca-ES-valencia&quot;:
+&nbsp;  private static final String LIBREOFFICE_SPECIAL_LANGUAGE_TAG = &quot;qlt&quot;;
+&nbsp;  
+<b class="nc">&nbsp;  private static final ResourceBundle messages = JLanguageTool.getMessageBundle();</b>
+&nbsp;
+&nbsp;  private static final int HEAP_CHECK_INTERVAL = 500;
+&nbsp;
+&nbsp;  private final List&lt;XLinguServiceEventListener&gt; xEventListeners;
+<b class="nc">&nbsp;  private boolean docReset = false;</b>
+&nbsp;
+<b class="nc">&nbsp;  private static boolean debugMode = false;   //  should be false except for testing</b>
+<b class="nc">&nbsp;  private static boolean debugModeTm = false;   //  should be false except for testing</b>
+&nbsp;  
+<b class="nc">&nbsp;  private SwJLanguageTool lt = null;</b>
+<b class="nc">&nbsp;  private Language docLanguage = null;</b>
+<b class="nc">&nbsp;  private Language fixedLanguage = null;</b>
+&nbsp;  private Language langForShortName;
+&nbsp;  private Locale locale;
+&nbsp;  private final XEventListener xEventListener;
+&nbsp;  private final XProofreader xProofreader;
+&nbsp;  private final File configDir;
+&nbsp;  private final File oldConfigFile;
+&nbsp;  private String configFile;
+<b class="nc">&nbsp;  private Configuration config = null;</b>
+<b class="nc">&nbsp;  private LinguisticServices linguServices = null;</b>
+&nbsp;  private SortedTextRules sortedTextRules;
+&nbsp;  private Map&lt;String, Set&lt;String&gt;&gt; disabledRulesUI; //  Rules disabled by context menu or spell dialog
+&nbsp;  private final List&lt;Rule&gt; extraRemoteRules;        //  store of rules supported by remote server but not locally
+&nbsp;  private final LtDictionary dictionary;            //  internal dictionary of LT defined words 
+<b class="nc">&nbsp;  private LtCheckDialog ltDialog = null;            //  LT spelling and grammar check dialog</b>
+<b class="nc">&nbsp;  private ConfigurationDialog cfgDialog = null;     //  configuration dialog (show only one configuration panel)</b>
+<b class="nc">&nbsp;  private static AboutDialog aboutDialog = null;           //  about dialog (show only one about panel)</b>
+<b class="nc">&nbsp;  private boolean dialogIsRunning = false;          //  The dialog was started     </b>
+&nbsp;  
+&nbsp;  private XComponentContext xContext;               //  The context of the document
+&nbsp;  private final List&lt;SingleDocument&gt; documents;     //  The List of LO documents to be checked
+<b class="nc">&nbsp;  private boolean isDisposed = false;</b>
+<b class="nc">&nbsp;  private boolean recheck = true;                   //  if true: recheck the whole document at next iteration</b>
+&nbsp;  private int docNum;                               //  number of the current document
+&nbsp;  
+<b class="nc">&nbsp;  private int numSinceHeapTest = 0;                 //  number of checks since last heap test</b>
+<b class="nc">&nbsp;  private boolean heapLimitReached = false;         //  heap limit is reached</b>
+&nbsp;
+<b class="nc">&nbsp;  private boolean noBackgroundCheck = false;        //  is LT switched off by config</b>
+<b class="nc">&nbsp;  private boolean useQueue = true;                  //  will be overwritten by config</b>
+&nbsp;
+<b class="nc">&nbsp;  private String menuDocId = null;                  //  Id of document at which context menu was called </b>
+<b class="nc">&nbsp;  private TextLevelCheckQueue textLevelQueue = null;  // Queue to check text level rules</b>
+<b class="nc">&nbsp;  private ShapeChangeCheck shapeChangeCheck = null;   // Thread for test changes in shape texts</b>
+&nbsp;  
+<b class="nc">&nbsp;  private boolean useOrginalCheckDialog = false;    // use original spell and grammar dialog (LT check dialog does not work for OO)</b>
+<b class="nc">&nbsp;  private boolean checkImpressDocument = false;     //  the document to check is Impress</b>
+<b class="nc">&nbsp;  private boolean isNotTextDocument = false;</b>
+<b class="nc">&nbsp;  private int heapCheckInterval = HEAP_CHECK_INTERVAL;</b>
+<b class="nc">&nbsp;  private boolean testMode = false;</b>
+<b class="nc">&nbsp;  private boolean javaLookAndFeelIsSet = false;</b>
+&nbsp;  
+&nbsp;
+<b class="nc">&nbsp;  MultiDocumentsHandler(XComponentContext xContext, XProofreader xProofreader, XEventListener xEventListener) {</b>
+<b class="nc">&nbsp;    this.xContext = xContext;</b>
+<b class="nc">&nbsp;    this.xEventListener = xEventListener;</b>
+<b class="nc">&nbsp;    this.xProofreader = xProofreader;</b>
+<b class="nc">&nbsp;    xEventListeners = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    configFile = OfficeTools.CONFIG_FILE;</b>
+<b class="nc">&nbsp;    configDir = OfficeTools.getLOConfigDir(xContext);</b>
+<b class="nc">&nbsp;    oldConfigFile = OfficeTools.getOldConfigFile();</b>
+<b class="nc">&nbsp;    MessageHandler.init(xContext);</b>
+<b class="nc">&nbsp;    documents = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    disabledRulesUI = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    extraRemoteRules = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    dictionary = new LtDictionary();</b>
+<b class="nc">&nbsp;    LtHelper ltHelper = new LtHelper();</b>
+<b class="nc">&nbsp;    ltHelper.start();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Runs the grammar checker on paragraph text.
+&nbsp;   *
+&nbsp;   * @param docID document ID
+&nbsp;   * @param paraText paragraph text
+&nbsp;   * @param locale Locale the text Locale
+&nbsp;   * @param startOfSentencePos start of sentence position
+&nbsp;   * @param nSuggestedBehindEndOfSentencePosition end of sentence position
+&nbsp;   * @return ProofreadingResult containing the results of the check.
+&nbsp;   */
+&nbsp;  public final ProofreadingResult doProofreading(String docID,
+&nbsp;      String paraText, Locale locale, int startOfSentencePos,
+&nbsp;      int nSuggestedBehindEndOfSentencePosition,
+&nbsp;      PropertyValue[] propertyValues) {
+<b class="nc">&nbsp;    ProofreadingResult paRes = new ProofreadingResult();</b>
+<b class="nc">&nbsp;    paRes.nStartOfSentencePosition = startOfSentencePos;</b>
+<b class="nc">&nbsp;    paRes.nStartOfNextSentencePosition = nSuggestedBehindEndOfSentencePosition;</b>
+<b class="nc">&nbsp;    paRes.nBehindEndOfSentencePosition = paRes.nStartOfNextSentencePosition;</b>
+<b class="nc">&nbsp;    paRes.xProofreader = xProofreader;</b>
+<b class="nc">&nbsp;    paRes.aLocale = locale;</b>
+<b class="nc">&nbsp;    paRes.aDocumentIdentifier = docID;</b>
+<b class="nc">&nbsp;    paRes.aText = paraText;</b>
+<b class="nc">&nbsp;    paRes.aProperties = propertyValues;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      paRes = getCheckResults(paraText, locale, paRes, propertyValues, docReset);</b>
+<b class="nc">&nbsp;      docReset = false;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return paRes;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * distribute the check request to the concerned document
+&nbsp;   */
+&nbsp;  ProofreadingResult getCheckResults(String paraText, Locale locale, ProofreadingResult paRes, 
+&nbsp;      PropertyValue[] propertyValues, boolean docReset) {
+<b class="nc">&nbsp;    if (lt == null) {</b>
+<b class="nc">&nbsp;      setJavaLookAndFeel();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (!hasLocale(locale)) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getCheckResults: Sorry, don&#39;t have locale: &quot; + OfficeTools.localeToString(locale));</b>
+<b class="nc">&nbsp;      return paRes;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (!noBackgroundCheck) {</b>
+<b class="nc">&nbsp;      boolean isSameLanguage = true;</b>
+<b class="nc">&nbsp;      if (fixedLanguage == null || langForShortName == null) {</b>
+<b class="nc">&nbsp;        langForShortName = getLanguage(locale);</b>
+<b class="nc">&nbsp;        isSameLanguage = langForShortName.equals(docLanguage) &amp;&amp; lt != null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (!isSameLanguage || recheck || checkImpressDocument) {</b>
+<b class="nc">&nbsp;        boolean initDocs = (lt == null || recheck || checkImpressDocument);</b>
+<b class="nc">&nbsp;        checkImpressDocument = false;</b>
+<b class="nc">&nbsp;        if (!isSameLanguage) {</b>
+<b class="nc">&nbsp;          docLanguage = langForShortName;</b>
+<b class="nc">&nbsp;          this.locale = locale;</b>
+<b class="nc">&nbsp;          extraRemoteRules.clear();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (lt == null) {</b>
+<b class="nc">&nbsp;          testFootnotes(propertyValues);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        lt = initLanguageTool(!isSameLanguage);</b>
+<b class="nc">&nbsp;        initCheck(lt);</b>
+<b class="nc">&nbsp;        if (initDocs) {</b>
+<b class="nc">&nbsp;          initDocuments(true);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getCheckResults: Start getNumDoc!&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    docNum = getNumDoc(paRes.aDocumentIdentifier, propertyValues);</b>
+<b class="nc">&nbsp;    if (noBackgroundCheck) {</b>
+<b class="nc">&nbsp;      return paRes;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getCheckResults: Start testHeapSpace!&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    testHeapSpace();</b>
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getCheckResults: Start getCheckResults at single document: &quot; + paraText);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    paRes = documents.get(docNum).getCheckResults(paraText, locale, paRes, propertyValues, docReset, lt);</b>
+<b class="nc">&nbsp;    if (lt.doReset()) {</b>
+&nbsp;      // langTool.doReset() == true: if server connection is broken ==&gt; switch to internal check
+<b class="nc">&nbsp;      MessageHandler.showMessage(messages.getString(&quot;loRemoteSwitchToLocal&quot;));</b>
+<b class="nc">&nbsp;      config.setRemoteCheck(false);</b>
+&nbsp;      try {
+<b class="nc">&nbsp;        config.saveConfiguration(docLanguage);</b>
+<b class="nc">&nbsp;      } catch (IOException e) {</b>
+<b class="nc">&nbsp;        MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      resetDocument();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getCheckResults: return to LO/OO!&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return paRes;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   *  Get the current used document
+&nbsp;   */
+&nbsp;  public SingleDocument getCurrentDocument() {
+<b class="nc">&nbsp;    XComponent xComponent = OfficeTools.getCurrentComponent(xContext);</b>
+<b class="nc">&nbsp;    isNotTextDocument = false;</b>
+<b class="nc">&nbsp;    if (xComponent != null) {</b>
+<b class="nc">&nbsp;      for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;        if (xComponent.equals(document.getXComponent())) {</b>
+<b class="nc">&nbsp;          return document;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      XTextDocument curDoc = UnoRuntime.queryInterface(XTextDocument.class, xComponent);</b>
+<b class="nc">&nbsp;      if (curDoc == null) {</b>
+<b class="nc">&nbsp;        String prefix = null;</b>
+<b class="nc">&nbsp;        if (OfficeDrawTools.isImpressDocument(xComponent)) {</b>
+<b class="nc">&nbsp;          prefix = &quot;I&quot;;</b>
+<b class="nc">&nbsp;          checkImpressDocument = true;</b>
+<b class="nc">&nbsp;        } else if (OfficeSpreadsheetTools.isSpreadsheetDocument(xComponent)) {</b>
+<b class="nc">&nbsp;          prefix = &quot;C&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (prefix != null) {</b>
+<b class="nc">&nbsp;          String docID = createOtherDocId(prefix);</b>
+&nbsp;          try {
+<b class="nc">&nbsp;            xComponent.addEventListener(xEventListener);</b>
+<b class="nc">&nbsp;          } catch (Throwable t) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getCurrentDocument: Error: Document (ID: &quot; + docID + &quot;) has no XComponent -&gt; Internal space will not be deleted when document disposes&quot;);</b>
+<b class="nc">&nbsp;            xComponent = null;</b>
+<b class="nc">&nbsp;          }</b>
+<b class="nc">&nbsp;          if (config == null) {</b>
+<b class="nc">&nbsp;            config = getConfiguration();</b>
+&nbsp;          }
+<b class="nc">&nbsp;          SingleDocument newDocument = new SingleDocument(xContext, config, docID, xComponent, this);</b>
+<b class="nc">&nbsp;          documents.add(newDocument);</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Document &quot; + (documents.size() - 1) + &quot; created; docID = &quot; + docID);</b>
+<b class="nc">&nbsp;          return newDocument;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getCurrentDocument: Is document, but not a text document!&quot;);</b>
+<b class="nc">&nbsp;        isNotTextDocument = true;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * create new Impress document id
+&nbsp;   */
+&nbsp;  private String createOtherDocId(String prefix) {
+&nbsp;    String docID;
+<b class="nc">&nbsp;    if (documents.size() == 0) {</b>
+<b class="nc">&nbsp;      return prefix + &quot;1&quot;;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    for (int n = 1; n &lt; documents.size() + 1; n++) {</b>
+<b class="nc">&nbsp;      docID = prefix + n;</b>
+<b class="nc">&nbsp;      boolean isValid = true;</b>
+<b class="nc">&nbsp;      for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;        if (docID.equals(document.getDocID())) {</b>
+<b class="nc">&nbsp;          isValid = false;</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (isValid) {</b>
+<b class="nc">&nbsp;        return docID;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return prefix + (documents.size() + 1);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * return true, if a document was found but is not a text document
+&nbsp;   */
+&nbsp;  boolean isNotTextDocument() {
+<b class="nc">&nbsp;    return isNotTextDocument;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * return true, if the document to check is an Impress document
+&nbsp;   */
+&nbsp;  boolean isCheckImpressDocument() {
+<b class="nc">&nbsp;    return checkImpressDocument;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * set the checkImpressDocument flag
+&nbsp;   */
+&nbsp;  void setCheckImpressDocument(boolean checkImpressDocument) {
+<b class="nc">&nbsp;    this.checkImpressDocument = checkImpressDocument;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Set all documents to be checked again
+&nbsp;   */
+&nbsp;  void setRecheck() {
+<b class="nc">&nbsp;    recheck = true;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Set XComponentContext
+&nbsp;   */
+&nbsp;  void setComponentContext(XComponentContext xContext) {
+<b class="nc">&nbsp;    this.xContext = xContext;</b>
+<b class="nc">&nbsp;    setRecheck();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Set pointer to configuration dialog
+&nbsp;   */
+&nbsp;  public void setConfigurationDialog(ConfigurationDialog dialog) {
+<b class="nc">&nbsp;    cfgDialog = dialog;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Set pointer to LT spell and grammar check dialog
+&nbsp;   */
+&nbsp;  public void setLtDialog(LtCheckDialog dialog) {
+<b class="nc">&nbsp;    ltDialog = dialog;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Set Information LT spell and grammar check dialog was started
+&nbsp;   */
+&nbsp;  public void setLtDialogIsRunning(boolean running) {
+<b class="nc">&nbsp;    this.dialogIsRunning = running;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Set Information LT spell and grammar check dialog was started
+&nbsp;   */
+&nbsp;  public void setConfigFileName(String name) {
+<b class="nc">&nbsp;    configFile = name;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  close configuration dialog
+&nbsp;   * @throws Throwable 
+&nbsp;   */
+&nbsp;  private void closeDialogs() throws Throwable {
+<b class="nc">&nbsp;    if (ltDialog != null) {</b>
+<b class="nc">&nbsp;      ltDialog.closeDialog();</b>
+&nbsp;    } 
+<b class="nc">&nbsp;    if (cfgDialog != null) {</b>
+<b class="nc">&nbsp;      cfgDialog.close();</b>
+<b class="nc">&nbsp;      cfgDialog = null;</b>
+&nbsp;    }
+&nbsp;//    if (aboutDialog != null) {
+&nbsp;//      aboutDialog.close();
+&nbsp;//      aboutDialog = null;
+&nbsp;//    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Set a document as closed
+&nbsp;   */
+&nbsp;  private void setContextOfClosedDoc(XComponent context) {
+<b class="nc">&nbsp;    boolean found = false;</b>
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      if (context.equals(document.getXComponent())) {</b>
+<b class="nc">&nbsp;        found = true;</b>
+<b class="nc">&nbsp;        document.dispose(true);</b>
+<b class="nc">&nbsp;        isDisposed = true;</b>
+<b class="nc">&nbsp;        if (config.saveLoCache()) {</b>
+<b class="nc">&nbsp;          document.writeCaches();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        document.setXComponent(xContext, null);</b>
+<b class="nc">&nbsp;        if (document.getDocumentCache().hasNoContent(false)) {</b>
+&nbsp;          //  The delay seems to be necessary as workaround for a GDK bug (Linux) to stabilizes
+&nbsp;          //  the load of a document from an empty document 
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Disposing document has no content: Wait for 1000 milliseconds&quot;);</b>
+&nbsp;          try {
+<b class="nc">&nbsp;            Thread.sleep(1000);</b>
+<b class="nc">&nbsp;          } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;            MessageHandler.printException(e);</b>
+<b class="nc">&nbsp;          }</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (!found) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: setContextOfClosedDoc: Error: Disposed Document not found - Cache not deleted&quot;);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Add a rule to disabled rules by context menu or spell dialog
+&nbsp;   */
+&nbsp;  void addDisabledRule(String langCode, String ruleId) {
+<b class="nc">&nbsp;    if (disabledRulesUI.containsKey(langCode)) {</b>
+<b class="nc">&nbsp;      disabledRulesUI.get(langCode).add(ruleId);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      Set&lt;String &gt;rulesIds = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;      rulesIds.add(ruleId);</b>
+<b class="nc">&nbsp;      disabledRulesUI.put(langCode, rulesIds);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Remove a rule from disabled rules by spell dialog
+&nbsp;   */
+&nbsp;  void removeDisabledRule(String langCode, String ruleId) {
+<b class="nc">&nbsp;    if (disabledRulesUI.containsKey(langCode)) {</b>
+<b class="nc">&nbsp;      Set&lt;String &gt;rulesIds = disabledRulesUI.get(langCode);</b>
+<b class="nc">&nbsp;      rulesIds.remove(ruleId);</b>
+<b class="nc">&nbsp;      if (rulesIds.isEmpty()) {</b>
+<b class="nc">&nbsp;        disabledRulesUI.remove(langCode);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        disabledRulesUI.put(langCode, rulesIds);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  remove all disabled rules by context menu or spell dialog
+&nbsp;   */
+&nbsp;  void resetDisabledRules() {
+<b class="nc">&nbsp;    disabledRulesUI = new HashMap&lt;&gt;();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get disabled rules for a language code by context menu or spell dialog
+&nbsp;   */
+&nbsp;  Set&lt;String&gt; getDisabledRules(String langCode) {
+<b class="nc">&nbsp;    if (langCode == null || !disabledRulesUI.containsKey(langCode)) {</b>
+<b class="nc">&nbsp;      return new HashSet&lt;String&gt;();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return disabledRulesUI.get(langCode);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get all disabled rules
+&nbsp;   */
+&nbsp;  Map&lt;String, Set&lt;String&gt;&gt; getAllDisabledRules() {
+<b class="nc">&nbsp;    return disabledRulesUI;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get all disabled rules
+&nbsp;   */
+&nbsp;  void setAllDisabledRules(Map&lt;String, Set&lt;String&gt;&gt; disabledRulesUI) {
+<b class="nc">&nbsp;    this.disabledRulesUI = disabledRulesUI;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get all disabled rules by context menu or spell dialog
+&nbsp;   */
+&nbsp;  Map&lt;String, String&gt; getDisabledRulesMap(String langCode) {
+<b class="nc">&nbsp;    if (langCode == null) {</b>
+<b class="nc">&nbsp;      langCode = OfficeTools.localeToString(locale);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Map&lt;String, String&gt; disabledRulesMap = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    List&lt;Rule&gt; allRules = lt.getAllRules();</b>
+<b class="nc">&nbsp;    for (String disabledRule : getDisabledRules(langCode)) {</b>
+<b class="nc">&nbsp;      String ruleDesc = null;</b>
+<b class="nc">&nbsp;      for (Rule rule : allRules) {</b>
+<b class="nc">&nbsp;        if (disabledRule.equals(rule.getId())) {</b>
+<b class="nc">&nbsp;          ruleDesc = rule.getDescription();</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (ruleDesc != null) {</b>
+<b class="nc">&nbsp;        disabledRulesMap.put(disabledRule, ruleDesc);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    for (String disabledRule : config.getDisabledRuleIds()) {</b>
+<b class="nc">&nbsp;      String ruleDesc = null;</b>
+<b class="nc">&nbsp;      for (Rule rule : allRules) {</b>
+<b class="nc">&nbsp;        if (disabledRule.equals(rule.getId())) {</b>
+<b class="nc">&nbsp;          ruleDesc = rule.getDescription();</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (ruleDesc != null) {</b>
+<b class="nc">&nbsp;        disabledRulesMap.put(disabledRule, ruleDesc);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return disabledRulesMap;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  set disabled rules by context menu or spell dialog
+&nbsp;   */
+&nbsp;  void setDisabledRules(String langCode, Set&lt;String&gt; ruleIds) {
+<b class="nc">&nbsp;    disabledRulesUI.put(langCode, new HashSet&lt;&gt;(ruleIds));</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get LanguageTool
+&nbsp;   */
+&nbsp;  SwJLanguageTool getLanguageTool() {
+<b class="nc">&nbsp;    if (lt == null) {</b>
+<b class="nc">&nbsp;      if (docLanguage == null) {</b>
+<b class="nc">&nbsp;        docLanguage = getLanguage();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      lt = initLanguageTool();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return lt;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get Configuration
+&nbsp;   */
+&nbsp;  Configuration getConfiguration() {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (config == null || recheck) {</b>
+<b class="nc">&nbsp;        if (docLanguage == null) {</b>
+<b class="nc">&nbsp;          docLanguage = getLanguage();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        initLanguageTool();</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return config;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get LinguisticServices
+&nbsp;   */
+&nbsp;  public LinguisticServices getLinguisticServices() {
+<b class="nc">&nbsp;     return linguServices;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Allow xContext == null for test cases
+&nbsp;   */
+&nbsp;  void setTestMode(boolean mode) {
+<b class="nc">&nbsp;    testMode = mode;</b>
+<b class="nc">&nbsp;    MessageHandler.setTestMode(mode);</b>
+<b class="nc">&nbsp;    if (mode) {</b>
+<b class="nc">&nbsp;      configFile = &quot;dummy_xxxx.cfg&quot;;</b>
+<b class="nc">&nbsp;      File dummy = new File(configDir, configFile);</b>
+<b class="nc">&nbsp;      if (dummy.exists()) {</b>
+<b class="nc">&nbsp;        dummy.delete();</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * proofs if test cases
+&nbsp;   */
+&nbsp;  boolean isTestMode() {
+<b class="nc">&nbsp;    return testMode;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Checks the language under the cursor. Used for opening the configuration dialog.
+&nbsp;   * @return the language under the visible cursor
+&nbsp;   */
+&nbsp;  public Language getLanguage() {
+<b class="nc">&nbsp;    Locale locale = getDocumentLocale();</b>
+<b class="nc">&nbsp;    if (locale == null) {</b>
+<b class="nc">&nbsp;      locale = new Locale(&quot;en&quot;,&quot;US&quot;,&quot;&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (!hasLocale(locale)) {</b>
+<b class="nc">&nbsp;      String message = Tools.i18n(messages, &quot;language_not_supported&quot;, locale.Language);</b>
+<b class="nc">&nbsp;      MessageHandler.showMessage(message);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return getLanguage(locale);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Checks the language under the cursor. Used for opening the configuration dialog.
+&nbsp;   * @return the locale under the visible cursor
+&nbsp;   */
+&nbsp;  @Nullable
+&nbsp;  public Locale getDocumentLocale() {
+<b class="nc">&nbsp;    if (xContext == null) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    XComponent xComponent = OfficeTools.getCurrentComponent(xContext);</b>
+<b class="nc">&nbsp;    if (xComponent == null) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+&nbsp;    //  Test for Impress or Calc document
+<b class="nc">&nbsp;    if (OfficeDrawTools.isImpressDocument(xComponent)) {</b>
+<b class="nc">&nbsp;      return OfficeDrawTools.getDocumentLocale(xComponent);</b>
+<b class="nc">&nbsp;    } else if (OfficeSpreadsheetTools.isSpreadsheetDocument(xComponent)) {</b>
+<b class="nc">&nbsp;      return OfficeSpreadsheetTools.getDocumentLocale(xComponent);</b>
+&nbsp;    }
+&nbsp;    Locale charLocale;
+&nbsp;    XPropertySet xCursorProps;
+&nbsp;    try {
+<b class="nc">&nbsp;      XModel model = UnoRuntime.queryInterface(XModel.class, xComponent);</b>
+<b class="nc">&nbsp;      if (model == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XTextViewCursorSupplier xViewCursorSupplier =</b>
+<b class="nc">&nbsp;          UnoRuntime.queryInterface(XTextViewCursorSupplier.class, model.getCurrentController());</b>
+<b class="nc">&nbsp;      if (xViewCursorSupplier == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XTextViewCursor xCursor = xViewCursorSupplier.getViewCursor();</b>
+<b class="nc">&nbsp;      if (xCursor == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (xCursor.isCollapsed()) { // no text selection</b>
+<b class="nc">&nbsp;        xCursorProps = UnoRuntime.queryInterface(XPropertySet.class, xCursor);</b>
+&nbsp;      } else { // text is selected, need to create another cursor
+&nbsp;        // as multiple languages can occur here - we care only
+&nbsp;        // about character under the cursor, which might be wrong
+&nbsp;        // but it applies only to the checking dialog to be removed
+<b class="nc">&nbsp;        xCursorProps = UnoRuntime.queryInterface(</b>
+&nbsp;            XPropertySet.class,
+<b class="nc">&nbsp;            xCursor.getText().createTextCursorByRange(xCursor.getStart()));</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      // The CharLocale and CharLocaleComplex properties may both be set, so we still cannot know
+&nbsp;      // whether the text is e.g. Khmer or Tamil (the only &quot;complex text layout (CTL)&quot; languages we support so far).
+&nbsp;      // Thus we check the text itself:
+<b class="nc">&nbsp;      if (new KhmerDetector().isThisLanguage(xCursor.getText().getString())) {</b>
+<b class="nc">&nbsp;        return new Locale(&quot;km&quot;, &quot;&quot;, &quot;&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (new TamilDetector().isThisLanguage(xCursor.getText().getString())) {</b>
+<b class="nc">&nbsp;        return new Locale(&quot;ta&quot;,&quot;&quot;,&quot;&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (xCursorProps == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Object obj = xCursorProps.getPropertyValue(&quot;CharLocale&quot;);</b>
+<b class="nc">&nbsp;      if (obj == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      charLocale = (Locale) obj;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;      return null;</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return charLocale;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * @return true if LT supports the language of a given locale
+&nbsp;   * @param locale The Locale to check
+&nbsp;   */
+&nbsp;  final boolean hasLocale(Locale locale) {
+&nbsp;    try {
+<b class="nc">&nbsp;      for (Language element : Languages.get()) {</b>
+<b class="nc">&nbsp;        if (locale.Language.equalsIgnoreCase(LIBREOFFICE_SPECIAL_LANGUAGE_TAG)</b>
+<b class="nc">&nbsp;            &amp;&amp; element.getShortCodeWithCountryAndVariant().equals(locale.Variant)) {</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (element.getShortCode().equals(locale.Language)) {</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Set configuration Values for all documents
+&nbsp;   */
+&nbsp;  private void setConfigValues(Configuration config, SwJLanguageTool lt) {
+<b class="nc">&nbsp;    this.config = config;</b>
+<b class="nc">&nbsp;    this.lt = lt;</b>
+<b class="nc">&nbsp;    if (textLevelQueue != null &amp;&amp; (heapLimitReached || config.getNumParasToCheck() == 0 || !config.useTextLevelQueue())) {</b>
+<b class="nc">&nbsp;      textLevelQueue.setStop();</b>
+<b class="nc">&nbsp;      textLevelQueue = null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    useQueue = noBackgroundCheck || heapLimitReached || testMode || config.getNumParasToCheck() == 0 ? false : config.useTextLevelQueue();</b>
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      if (!document.isDisposed()) {</b>
+<b class="nc">&nbsp;        document.setConfigValues(config);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get language from locale
+&nbsp;   */
+&nbsp;  public Language getLanguage(Locale locale) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (locale.Language.equalsIgnoreCase(LIBREOFFICE_SPECIAL_LANGUAGE_TAG)) {</b>
+<b class="nc">&nbsp;        return Languages.getLanguageForShortCode(locale.Variant);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        return Languages.getLanguageForShortCode(locale.Language + &quot;-&quot; + locale.Country);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (IllegalArgumentException e) {</b>
+<b class="nc">&nbsp;      return Languages.getLanguageForShortCode(locale.Language);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get or Create a Number from docID
+&nbsp;   * Return -1 if failed
+&nbsp;   */
+&nbsp;  private int getNumDoc(String docID, PropertyValue[] propertyValues) {
+<b class="nc">&nbsp;    for (int i = 0; i &lt; documents.size(); i++) {</b>
+<b class="nc">&nbsp;      if (documents.get(i).getDocID().equals(docID)) {  //  document exist</b>
+<b class="nc">&nbsp;        if (!testMode &amp;&amp; documents.get(i).getXComponent() == null) {</b>
+<b class="nc">&nbsp;          XComponent xComponent = OfficeTools.getCurrentComponent(xContext);</b>
+<b class="nc">&nbsp;          if (xComponent == null) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getNumDoc: Error: Document (ID: &quot; + docID + &quot;) has no XComponent -&gt; Internal space will not be deleted when document disposes&quot;);</b>
+&nbsp;          } else {
+&nbsp;            try {
+<b class="nc">&nbsp;              xComponent.addEventListener(xEventListener);</b>
+<b class="nc">&nbsp;            } catch (Throwable t) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getNumDoc: Error: Document (ID: &quot; + docID + &quot;) has no XComponent -&gt; Internal space will not be deleted when document disposes&quot;);</b>
+<b class="nc">&nbsp;              xComponent = null;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            if (xComponent != null) {</b>
+<b class="nc">&nbsp;              documents.get(i).setXComponent(xContext, xComponent);</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getNumDoc: Fixed: XComponent set for Document (ID: &quot; + docID + &quot;)&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        if (isDisposed) {</b>
+<b class="nc">&nbsp;          int n = removeDoc(docID);</b>
+<b class="nc">&nbsp;          if (n &gt;= 0 &amp;&amp; n &lt; i) {</b>
+<b class="nc">&nbsp;            return i - 1;</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        return i;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    //  Add new document
+<b class="nc">&nbsp;    XComponent xComponent = null;</b>
+<b class="nc">&nbsp;    if (!testMode) {              //  xComponent == null for test cases </b>
+<b class="nc">&nbsp;      xComponent = OfficeTools.getCurrentComponent(xContext);</b>
+<b class="nc">&nbsp;      if (xComponent == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getNumDoc: Error: Document (ID: &quot; + docID + &quot;) has no XComponent -&gt; Internal space will not be deleted when document disposes&quot;);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        for (int i = 0; i &lt; documents.size(); i++) {</b>
+&nbsp;          //  work around to compensate a bug at LO
+<b class="nc">&nbsp;          if (xComponent.equals(documents.get(i).getXComponent())) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Different Doc IDs, but same xComponents!&quot;);</b>
+<b class="nc">&nbsp;            String oldDocId = documents.get(i).getDocID();</b>
+<b class="nc">&nbsp;            documents.get(i).setDocID(docID);</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getNumDoc: Document ID corrected: old: &quot; + oldDocId + &quot;, new: &quot; + docID);</b>
+<b class="nc">&nbsp;            if (useQueue &amp;&amp; textLevelQueue != null) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getNumDoc: Interrupt text level queue for old document ID: &quot; + oldDocId);</b>
+<b class="nc">&nbsp;              textLevelQueue.interruptCheck(oldDocId, true);</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getNumDoc: Interrupt done&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (documents.get(i).isDisposed()) {</b>
+<b class="nc">&nbsp;              documents.get(i).dispose(false);;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return i;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;        try {
+<b class="nc">&nbsp;          xComponent.addEventListener(xEventListener);</b>
+<b class="nc">&nbsp;        } catch (Throwable t) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getNumDoc: Error: Document (ID: &quot; + docID + &quot;) has no XComponent -&gt; Internal space will not be deleted when document disposes&quot;);</b>
+<b class="nc">&nbsp;          xComponent = null;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    SingleDocument newDocument = new SingleDocument(xContext, config, docID, xComponent, this);</b>
+<b class="nc">&nbsp;    documents.add(newDocument);</b>
+<b class="nc">&nbsp;    if (!testMode) {              //  xComponent == null for test cases </b>
+<b class="nc">&nbsp;      newDocument.setLanguage(docLanguage);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (isDisposed) {</b>
+<b class="nc">&nbsp;      removeDoc(docID);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: getNumDoc: Document &quot; + (documents.size() - 1) + &quot; created; docID = &quot; + docID);</b>
+<b class="nc">&nbsp;    return documents.size() - 1;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Delete a document number and all internal space
+&nbsp;   */
+&nbsp;  private int removeDoc(String docID) {
+<b class="nc">&nbsp;    if (isDisposed) {</b>
+<b class="nc">&nbsp;      isDisposed = false;</b>
+<b class="nc">&nbsp;      for (int i = documents.size() - 1; i &gt;= 0; i--) {</b>
+<b class="nc">&nbsp;        if (!docID.equals(documents.get(i).getDocID())) {</b>
+<b class="nc">&nbsp;          if (documents.get(i).isDisposed()) {</b>
+<b class="nc">&nbsp;            if (useQueue &amp;&amp; textLevelQueue != null) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: removeDoc: Interrupt text level queue for document &quot; + documents.get(i).getDocID());</b>
+<b class="nc">&nbsp;              textLevelQueue.interruptCheck(documents.get(i).getDocID(), true);</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: removeDoc: Interrupt done&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Disposed document &quot; + documents.get(i).getDocID() + &quot; removed&quot;);</b>
+<b class="nc">&nbsp;            documents.remove(i);</b>
+<b class="nc">&nbsp;            for (int j = 0; j &lt; documents.size(); j++) {</b>
+<b class="nc">&nbsp;              if (documents.get(j).isDisposed()) {</b>
+<b class="nc">&nbsp;                isDisposed = true;</b>
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;            return (i);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return (-1);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Delete the menu listener of a document
+&nbsp;   */
+&nbsp;  public void removeMenuListener(XComponent xComponent) {
+<b class="nc">&nbsp;    if (xComponent != null) {</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; documents.size(); i++) {</b>
+<b class="nc">&nbsp;        XComponent docComponent = documents.get(i).getXComponent();</b>
+<b class="nc">&nbsp;        if (docComponent != null &amp;&amp; xComponent.equals(docComponent)) { //  disposed document found</b>
+<b class="nc">&nbsp;          documents.get(i).getLtMenu().removeListener();</b>
+<b class="nc">&nbsp;          if (debugMode) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: removeMenuListener: Menu listener of document &quot; + documents.get(i).getDocID() + &quot; removed&quot;);</b>
+&nbsp;          }
+&nbsp;          break;
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Initialize LanguageTool
+&nbsp;   */
+&nbsp;  SwJLanguageTool initLanguageTool() {
+<b class="nc">&nbsp;    return initLanguageTool(null, false);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  SwJLanguageTool initLanguageTool(boolean setService) {
+<b class="nc">&nbsp;    return initLanguageTool(null, setService);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  SwJLanguageTool initLanguageTool(Language currentLanguage, boolean setService) {
+<b class="nc">&nbsp;    SwJLanguageTool lt = null;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      config = new Configuration(configDir, configFile, oldConfigFile, docLanguage, true);</b>
+<b class="nc">&nbsp;      if (this.lt == null) {</b>
+<b class="nc">&nbsp;        OfficeTools.setLogLevel(config.getlogLevel());</b>
+<b class="nc">&nbsp;        debugMode = OfficeTools.DEBUG_MODE_MD;</b>
+<b class="nc">&nbsp;        debugModeTm = OfficeTools.DEBUG_MODE_TM;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      long startTime = 0;</b>
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        startTime = System.currentTimeMillis();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      noBackgroundCheck = config.noBackgroundCheck();</b>
+<b class="nc">&nbsp;      if (linguServices == null) {</b>
+<b class="nc">&nbsp;        linguServices = new LinguisticServices(xContext);</b>
+<b class="nc">&nbsp;        OfficeProductInfo officeProductInfo = OfficeTools.getOfficeProductInfo(xContext);</b>
+<b class="nc">&nbsp;        if (officeProductInfo != null &amp;&amp; officeProductInfo.osArch.equals(&quot;x86&quot;)) {</b>
+<b class="nc">&nbsp;          Tools.setLinguisticServices(linguServices);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      linguServices.setNoSynonymsAsSuggestions(config.noSynonymsAsSuggestions() || testMode);</b>
+<b class="nc">&nbsp;      if (currentLanguage == null) {</b>
+<b class="nc">&nbsp;        fixedLanguage = config.getDefaultLanguage();</b>
+<b class="nc">&nbsp;        if (fixedLanguage != null) {</b>
+<b class="nc">&nbsp;          docLanguage = fixedLanguage;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        currentLanguage = docLanguage;</b>
+&nbsp;      }
+&nbsp;      // not using MultiThreadedSwJLanguageTool here fixes &quot;osl::Thread::Create failed&quot;, see https://bugs.documentfoundation.org/show_bug.cgi?id=90740:
+<b class="nc">&nbsp;      lt = new SwJLanguageTool(currentLanguage, config.getMotherTongue(),</b>
+<b class="nc">&nbsp;          new UserConfig(config.getConfigurableValues(), linguServices), config, extraRemoteRules, testMode);</b>
+<b class="nc">&nbsp;      config.initStyleCategories(lt.getAllRules());</b>
+&nbsp;      /* The next row is only for a single line break marks a paragraph
+&nbsp;      docLanguage.getSentenceTokenizer().setSingleLineBreaksMarksParagraph(true);
+&nbsp;       */
+<b class="nc">&nbsp;      File ngramDirectory = config.getNgramDirectory();</b>
+<b class="nc">&nbsp;      if (ngramDirectory != null) {</b>
+<b class="nc">&nbsp;        File ngramLangDir = new File(config.getNgramDirectory(), currentLanguage.getShortCode());</b>
+<b class="nc">&nbsp;        if (ngramLangDir.exists()) {  // user might have ngram data only for some languages and that&#39;s okay</b>
+<b class="nc">&nbsp;          lt.activateLanguageModelRules(ngramDirectory);</b>
+<b class="nc">&nbsp;          if (debugMode) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: initLanguageTool: ngram Model activated for language: &quot; + currentLanguage.getShortCode());</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;Rule&gt; allRules = checkImpressDocument ? lt.getAllActiveRules() : lt.getAllActiveOfficeRules();</b>
+<b class="nc">&nbsp;      for (Rule rule : allRules) {</b>
+<b class="nc">&nbsp;        if (rule.isDictionaryBasedSpellingRule()) {</b>
+<b class="nc">&nbsp;          lt.disableRule(rule.getId());</b>
+<b class="nc">&nbsp;          if (rule.useInOffice()) {</b>
+&nbsp;            // set default off so it can be re-enabled by user configuration
+<b class="nc">&nbsp;            rule.setDefaultOff();</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      recheck = false;</b>
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to init Language Tool: &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return lt;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return lt;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Enable or disable rules as given by configuration file
+&nbsp;   */
+&nbsp;  void initCheck(SwJLanguageTool lt) {
+<b class="nc">&nbsp;    long startTime = 0;</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime = System.currentTimeMillis();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Set&lt;String&gt; disabledRuleIds = config.getDisabledRuleIds();</b>
+<b class="nc">&nbsp;    if (disabledRuleIds != null) {</b>
+&nbsp;      // copy as the config thread may access this as well
+<b class="nc">&nbsp;      List&lt;String&gt; list = new ArrayList&lt;&gt;(disabledRuleIds);</b>
+<b class="nc">&nbsp;      for (String id : list) {</b>
+<b class="nc">&nbsp;        lt.disableRule(id);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Set&lt;String&gt; disabledCategories = config.getDisabledCategoryNames();</b>
+<b class="nc">&nbsp;    if (disabledCategories != null) {</b>
+&nbsp;      // copy as the config thread may access this as well
+<b class="nc">&nbsp;      List&lt;String&gt; list = new ArrayList&lt;&gt;(disabledCategories);</b>
+<b class="nc">&nbsp;      for (String categoryName : list) {</b>
+<b class="nc">&nbsp;        lt.disableCategory(new CategoryId(categoryName));</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Set&lt;String&gt; enabledRuleIds = config.getEnabledRuleIds();</b>
+<b class="nc">&nbsp;    if (enabledRuleIds != null) {</b>
+&nbsp;      // copy as the config thread may access this as well
+<b class="nc">&nbsp;      List&lt;String&gt; list = new ArrayList&lt;&gt;(enabledRuleIds);</b>
+<b class="nc">&nbsp;      for (String ruleName : list) {</b>
+<b class="nc">&nbsp;        lt.enableRule(ruleName);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Set&lt;String&gt; disabledLocaleRules = getDisabledRules(lt.getLanguage().getShortCodeWithCountryAndVariant());</b>
+<b class="nc">&nbsp;    if (disabledLocaleRules != null) {</b>
+<b class="nc">&nbsp;      for (String id : disabledLocaleRules) {</b>
+<b class="nc">&nbsp;        lt.disableRule(id);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    handleLtDictionary();</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to init Check: &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Initialize single documents, prepare text level rules and start queue
+&nbsp;   */
+&nbsp;  void initDocuments(boolean resetCache) {
+<b class="nc">&nbsp;    long startTime = 0;</b>
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      startTime = System.currentTimeMillis();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    setConfigValues(config, lt);</b>
+<b class="nc">&nbsp;    String langCode = lt.getLanguage().getShortCodeWithCountryAndVariant();</b>
+<b class="nc">&nbsp;    sortedTextRules = new SortedTextRules(lt, config, getDisabledRules(langCode), checkImpressDocument);</b>
+<b class="nc">&nbsp;    if (useQueue &amp;&amp; !noBackgroundCheck) {</b>
+<b class="nc">&nbsp;      if (textLevelQueue == null) {</b>
+<b class="nc">&nbsp;        textLevelQueue = new TextLevelCheckQueue(this);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        textLevelQueue.setReset();</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (resetCache) {</b>
+<b class="nc">&nbsp;      resetResultCaches();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugModeTm) {</b>
+<b class="nc">&nbsp;      long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;      if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to init Documents: &quot; + runTime);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Reset ignored matches
+&nbsp;   */
+&nbsp;  void resetIgnoredMatches() {
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      document.resetIgnoreOnce();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Reset result caches
+&nbsp;   */
+&nbsp;  void resetResultCaches() {
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      document.resetResultCache();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Reset document caches
+&nbsp;   */
+&nbsp;  void resetDocumentCaches() {
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      document.resetDocumentCache();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get current locale language
+&nbsp;   */
+&nbsp;  public Locale getLocale() {
+<b class="nc">&nbsp;    return locale;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get dictionary access
+&nbsp;   */
+&nbsp;  public LtDictionary getLtDictionary() {
+<b class="nc">&nbsp;    return dictionary;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get list of single documents
+&nbsp;   */
+&nbsp;  public List&lt;SingleDocument&gt; getDocuments() {
+<b class="nc">&nbsp;    return documents;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get text level queue
+&nbsp;   */
+&nbsp;  public TextLevelCheckQueue getTextLevelCheckQueue() {
+<b class="nc">&nbsp;    return textLevelQueue;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * true, if LanguageTool is switched off
+&nbsp;   */
+&nbsp;  public boolean isBackgroundCheckOff() {
+<b class="nc">&nbsp;    return noBackgroundCheck;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * true, if Java look and feel is set
+&nbsp;   */
+&nbsp;  public boolean isJavaLookAndFeelSet() {
+<b class="nc">&nbsp;    return javaLookAndFeelIsSet;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   *  Toggle Switch Off / On of LT
+&nbsp;   *  return true if toggle was done 
+&nbsp;   */
+&nbsp;  public boolean toggleNoBackgroundCheck() throws IOException {
+&nbsp;//    MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: setNoBackgroundCheck: noCheck = &quot; + noCheck + &quot;, noBackgroundCheck = &quot; + noBackgroundCheck);
+<b class="nc">&nbsp;    if (docLanguage == null) {</b>
+<b class="nc">&nbsp;      docLanguage = getLanguage();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (config == null) {</b>
+<b class="nc">&nbsp;      config = new Configuration(configDir, configFile, oldConfigFile, docLanguage, true);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    noBackgroundCheck = !noBackgroundCheck;</b>
+<b class="nc">&nbsp;    if (!noBackgroundCheck &amp;&amp; textLevelQueue != null) {</b>
+<b class="nc">&nbsp;      textLevelQueue.setStop();</b>
+<b class="nc">&nbsp;      textLevelQueue = null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    recheck = true;</b>
+<b class="nc">&nbsp;    config.saveNoBackgroundCheck(noBackgroundCheck, docLanguage);</b>
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      document.setConfigValues(config);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (noBackgroundCheck) {</b>
+<b class="nc">&nbsp;      resetResultCaches();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Set docID used within menu
+&nbsp;   */
+&nbsp;  public void setMenuDocId(String docId) {
+<b class="nc">&nbsp;    menuDocId = docId;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Set use original spell und grammar dialog (for OO and old LO)
+&nbsp;   */
+&nbsp;  public void setUseOriginalCheckDialog() {
+<b class="nc">&nbsp;    useOrginalCheckDialog = true;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Set use original spell und grammar dialog (for OO and old LO)
+&nbsp;   */
+&nbsp;  public boolean useOriginalCheckDialog() {
+<b class="nc">&nbsp;    return useOrginalCheckDialog;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Is true if footnotes exist (tests if OO or very old LO) 
+&nbsp;   */
+&nbsp;  private void testFootnotes(PropertyValue[] propertyValues) {
+<b class="nc">&nbsp;    for (PropertyValue propertyValue : propertyValues) {</b>
+<b class="nc">&nbsp;      if (&quot;FootnotePositions&quot;.equals(propertyValue.Name)) {</b>
+&nbsp;        return;
+&nbsp;      }
+&nbsp;    }
+&nbsp;    //  OO and LO &lt; 4.3 do not support &#39;FootnotePositions&#39; property and other advanced features
+&nbsp;    //  switch back to single paragraph check mode
+&nbsp;    //  use OOO configuration file - save existing settings if not already done
+<b class="nc">&nbsp;    useOrginalCheckDialog = true;</b>
+<b class="nc">&nbsp;    File ooConfigFile = new File(configDir, OfficeTools.OOO_CONFIG_FILE);</b>
+<b class="nc">&nbsp;    if (!ooConfigFile.exists()) {</b>
+<b class="nc">&nbsp;      File loConfigFile = new File(configDir, configFile);</b>
+<b class="nc">&nbsp;      if (loConfigFile.exists()) {</b>
+&nbsp;        try {
+<b class="nc">&nbsp;          Configuration tmpConfig = new Configuration(configDir, configFile, oldConfigFile, docLanguage, true);</b>
+<b class="nc">&nbsp;          tmpConfig.setConfigFile(ooConfigFile);</b>
+<b class="nc">&nbsp;          tmpConfig.setNumParasToCheck(0);</b>
+<b class="nc">&nbsp;          tmpConfig.setUseTextLevelQueue(false);</b>
+<b class="nc">&nbsp;          tmpConfig.saveConfiguration(docLanguage);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;          MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    configFile = OfficeTools.OOO_CONFIG_FILE;</b>
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;No support of Footnotes: Open Office assumed - Single paragraph check mode set!&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Call method ignoreOnce for concerned document 
+&nbsp;   */
+&nbsp;  public String ignoreOnce() {
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      if (menuDocId.equals(document.getDocID())) {</b>
+<b class="nc">&nbsp;        return document.ignoreOnce();</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Call method renewMarkups for concerned document 
+&nbsp;   */
+&nbsp;  public void renewMarkups() {
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      if (menuDocId != null &amp;&amp; menuDocId.equals(document.getDocID())) {</b>
+<b class="nc">&nbsp;        document.renewMarkups();</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * reset ignoreOnce information in all documents
+&nbsp;   */
+&nbsp;  public void resetIgnoreOnce() {
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      document.resetIgnoreOnce();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Activate a rule by rule iD
+&nbsp;   */
+&nbsp;  public void activateRule(String ruleId) {
+<b class="nc">&nbsp;    activateRule(OfficeTools.localeToString(locale), ruleId);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public void activateRule(String langcode, String ruleId) {
+<b class="nc">&nbsp;    if (ruleId != null) {</b>
+<b class="nc">&nbsp;      removeDisabledRule(langcode, ruleId);</b>
+<b class="nc">&nbsp;      deactivateRule(ruleId, langcode, true);</b>
+<b class="nc">&nbsp;      resetDocument();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Deactivate a rule as requested by the context menu
+&nbsp;   */
+&nbsp;  public void deactivateRule() {
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      if (menuDocId.equals(document.getDocID())) {</b>
+<b class="nc">&nbsp;        RuleDesc ruleDesc = document.deactivateRule();</b>
+<b class="nc">&nbsp;        if (ruleDesc != null) {</b>
+<b class="nc">&nbsp;          if (debugMode) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: deactivateRule: ruleID = &quot;+ ruleDesc.ruleID + &quot;langCode = &quot; + ruleDesc.langCode);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          deactivateRule(ruleDesc.ruleID, ruleDesc.langCode, false);</b>
+&nbsp;        }
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Remove a special Proofreading error from all caches
+&nbsp;   */
+&nbsp;  private void removeRuleError(String ruleId) {
+<b class="nc">&nbsp;    for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;      document.removeRuleError(ruleId);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Deactivate a rule by rule iD
+&nbsp;   */
+&nbsp;  public void deactivateRule(String ruleId, String langcode, boolean reactivate) {
+<b class="nc">&nbsp;    if (ruleId != null) {</b>
+&nbsp;      try {
+<b class="nc">&nbsp;        Configuration confg = new Configuration(configDir, configFile, oldConfigFile, docLanguage, true);</b>
+<b class="nc">&nbsp;        Set&lt;String&gt; ruleIds = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;        ruleIds.add(ruleId);</b>
+<b class="nc">&nbsp;        if (reactivate) {</b>
+<b class="nc">&nbsp;          confg.removeDisabledRuleIds(ruleIds);</b>
+<b class="nc">&nbsp;          removeDisabledRule(langcode, ruleId);</b>
+<b class="nc">&nbsp;          confg.saveConfiguration(docLanguage);</b>
+<b class="nc">&nbsp;          initDocuments(true);</b>
+<b class="nc">&nbsp;          resetDocument();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          confg.addDisabledRuleIds(ruleIds);</b>
+<b class="nc">&nbsp;          addDisabledRule(langcode, ruleId);</b>
+<b class="nc">&nbsp;          confg.saveConfiguration(docLanguage);</b>
+<b class="nc">&nbsp;          lt.disableRule(ruleId);</b>
+<b class="nc">&nbsp;          initDocuments(false);</b>
+<b class="nc">&nbsp;          removeRuleError(ruleId);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: deactivateRule: Rule &quot; + (reactivate ? &quot;enabled: &quot; : &quot;disabled: &quot;) </b>
+<b class="nc">&nbsp;              + (ruleId == null ? &quot;null&quot; : ruleId));</b>
+&nbsp;        }
+<b class="nc">&nbsp;      } catch (IOException e) {</b>
+<b class="nc">&nbsp;        MessageHandler.printException(e);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * reset sorted text level rules
+&nbsp;   */
+&nbsp;  public void resetSortedTextRules() {
+<b class="nc">&nbsp;    String langCode = lt.getLanguage().getShortCodeWithCountryAndVariant();</b>
+<b class="nc">&nbsp;    sortedTextRules = new SortedTextRules(lt, config, getDisabledRules(langCode), checkImpressDocument);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns a list of different numbers of paragraphs to check for text level rules
+&nbsp;   */
+&nbsp;  public List&lt;Integer&gt; getNumMinToCheckParas() {
+<b class="nc">&nbsp;    if (sortedTextRules == null) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return sortedTextRules.minToCheckParagraph;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Test if sorted rules for index exist
+&nbsp;   */
+&nbsp;  public boolean isSortedRuleForIndex(int index) {
+<b class="nc">&nbsp;    if (index &lt; 0 || index &gt;= sortedTextRules.textLevelRules.size() || sortedTextRules.textLevelRules.get(index).isEmpty()) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * activate all rules stored under a given index related to the list of getNumMinToCheckParas
+&nbsp;   * deactivate all other text level rules
+&nbsp;   */
+&nbsp;  public void activateTextRulesByIndex(int index, SwJLanguageTool lt) {
+<b class="nc">&nbsp;    sortedTextRules.activateTextRulesByIndex(index, lt);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * reactivate all text level rules
+&nbsp;   */
+&nbsp;  public void reactivateTextRules(SwJLanguageTool lt) {
+<b class="nc">&nbsp;    sortedTextRules.reactivateTextRules(lt);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * We leave spell checking to OpenOffice/LibreOffice.
+&nbsp;   * @return false
+&nbsp;   */
+&nbsp;  public final boolean isSpellChecker() {
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Returns xContext
+&nbsp;   */
+&nbsp;  public XComponentContext getContext() {
+<b class="nc">&nbsp;    return xContext;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Runs LT options dialog box.
+&nbsp;   */
+&nbsp;  public void runOptionsDialog() {
+&nbsp;    try {
+<b class="nc">&nbsp;      Configuration config = getConfiguration();</b>
+<b class="nc">&nbsp;      Language lang = config.getDefaultLanguage();</b>
+<b class="nc">&nbsp;      if (lang == null) {</b>
+<b class="nc">&nbsp;        lang = getLanguage();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (lang == null) {</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      SwJLanguageTool lTool = lt;</b>
+<b class="nc">&nbsp;      if (!lang.equals(docLanguage)) {</b>
+<b class="nc">&nbsp;        docLanguage = lang;</b>
+<b class="nc">&nbsp;        lTool = initLanguageTool();</b>
+<b class="nc">&nbsp;        initCheck(lTool);</b>
+<b class="nc">&nbsp;        config = this.config;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      ConfigThread configThread = new ConfigThread(lang, config, lTool, this);</b>
+<b class="nc">&nbsp;      configThread.start();</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * @return An array of Locales supported by LT
+&nbsp;   */
+&nbsp;  public final static Locale[] getLocales() {
+&nbsp;    try {
+<b class="nc">&nbsp;      List&lt;Locale&gt; locales = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      Locale locale = null;</b>
+<b class="nc">&nbsp;      for (Language lang : Languages.get()) {</b>
+<b class="nc">&nbsp;        if (lang.getCountries().length == 0) {</b>
+<b class="nc">&nbsp;          if (lang.getDefaultLanguageVariant() != null) {</b>
+<b class="nc">&nbsp;            if (lang.getDefaultLanguageVariant().getVariant() != null) {</b>
+<b class="nc">&nbsp;              locale = new Locale(lang.getDefaultLanguageVariant().getShortCode(),</b>
+<b class="nc">&nbsp;                  lang.getDefaultLanguageVariant().getCountries()[0], lang.getDefaultLanguageVariant().getVariant());</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              locale = new Locale(lang.getDefaultLanguageVariant().getShortCode(),</b>
+<b class="nc">&nbsp;                  lang.getDefaultLanguageVariant().getCountries()[0], &quot;&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          else if (lang.getVariant() != null) {  // e.g. Esperanto</b>
+<b class="nc">&nbsp;            locale =new Locale(LIBREOFFICE_SPECIAL_LANGUAGE_TAG, &quot;&quot;, lang.getShortCodeWithCountryAndVariant());</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            locale = new Locale(lang.getShortCode(), &quot;&quot;, &quot;&quot;);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (locales != null &amp;&amp; !OfficeTools.containsLocale(locales, locale)) {</b>
+<b class="nc">&nbsp;            locales.add(locale);</b>
+&nbsp;          }
+&nbsp;        } else {
+<b class="nc">&nbsp;          for (String country : lang.getCountries()) {</b>
+<b class="nc">&nbsp;            if (lang.getVariant() != null) {</b>
+<b class="nc">&nbsp;              locale = new Locale(LIBREOFFICE_SPECIAL_LANGUAGE_TAG, country, lang.getShortCodeWithCountryAndVariant());</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              locale = new Locale(lang.getShortCode(), country, &quot;&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (locales != null &amp;&amp; !OfficeTools.containsLocale(locales, locale)) {</b>
+<b class="nc">&nbsp;              locales.add(locale);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return locales == null ? new Locale[0] : locales.toArray(new Locale[0]);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;      return new Locale[0];</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Add a listener that allow re-checking the document after changing the
+&nbsp;   * options in the configuration dialog box.
+&nbsp;   * 
+&nbsp;   * @param eventListener the listener to be added
+&nbsp;   * @return true if listener is non-null and has been added, false otherwise
+&nbsp;   */
+&nbsp;  public final boolean addLinguServiceEventListener(XLinguServiceEventListener eventListener) {
+<b class="nc">&nbsp;    if (eventListener == null) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    xEventListeners.add(eventListener);</b>
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Remove a listener from the event listeners list.
+&nbsp;   * 
+&nbsp;   * @param eventListener the listener to be removed
+&nbsp;   * @return true if listener is non-null and has been removed, false otherwise
+&nbsp;   */
+&nbsp;  public final boolean removeLinguServiceEventListener(XLinguServiceEventListener eventListener) {
+<b class="nc">&nbsp;    if (eventListener == null) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (xEventListeners.contains(eventListener)) {</b>
+<b class="nc">&nbsp;      xEventListeners.remove(eventListener);</b>
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Inform listener that the document should be rechecked for grammar and style check.
+&nbsp;   */
+&nbsp;  public boolean resetCheck() {
+<b class="nc">&nbsp;    return resetCheck(LinguServiceEventFlags.PROOFREAD_AGAIN);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Inform listener that the doc should be rechecked for a special event flag.
+&nbsp;   */
+&nbsp;  public boolean resetCheck(short eventFlag) {
+<b class="nc">&nbsp;    if (!xEventListeners.isEmpty()) {</b>
+<b class="nc">&nbsp;      for (XLinguServiceEventListener xEvLis : xEventListeners) {</b>
+<b class="nc">&nbsp;        if (xEvLis != null) {</b>
+<b class="nc">&nbsp;          LinguServiceEvent xEvent = new LinguServiceEvent();</b>
+<b class="nc">&nbsp;          xEvent.nEvent = eventFlag;</b>
+<b class="nc">&nbsp;          xEvLis.processLinguServiceEvent(xEvent);</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Configuration has be changed
+&nbsp;   */
+&nbsp;  void resetConfiguration() {
+<b class="nc">&nbsp;    linguServices = null;</b>
+<b class="nc">&nbsp;    if (config != null) {</b>
+<b class="nc">&nbsp;      noBackgroundCheck = config.noBackgroundCheck();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    resetIgnoredMatches();</b>
+<b class="nc">&nbsp;    resetResultCaches();</b>
+<b class="nc">&nbsp;    resetDocument();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Inform listener (grammar checking iterator) that options have changed and
+&nbsp;   * the doc should be rechecked.
+&nbsp;   */
+&nbsp;  void resetDocument() {
+<b class="nc">&nbsp;    setRecheck();</b>
+<b class="nc">&nbsp;    resetCheck();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Triggers the events from LT menu
+&nbsp;   */
+&nbsp;  public void trigger(String sEvent) {
+&nbsp;    try {
+<b class="nc">&nbsp;      long startTime = 0;</b>
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        startTime = System.currentTimeMillis();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (!testDocLanguage(true)) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Test for document language failed: Can&#39;t trigger event: &quot; + sEvent);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      if (&quot;configure&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        closeDialogs();</b>
+<b class="nc">&nbsp;        runOptionsDialog();</b>
+<b class="nc">&nbsp;      } else if (&quot;about&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        if (aboutDialog != null) {</b>
+<b class="nc">&nbsp;          aboutDialog.close();</b>
+<b class="nc">&nbsp;          aboutDialog = null;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        AboutDialogThread aboutThread = new AboutDialogThread(messages, xContext);</b>
+<b class="nc">&nbsp;        aboutThread.start();</b>
+<b class="nc">&nbsp;      } else if (&quot;toggleNoBackgroundCheck&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        if (toggleNoBackgroundCheck()) {</b>
+<b class="nc">&nbsp;          resetCheck(); </b>
+&nbsp;        }
+<b class="nc">&nbsp;      } else if (&quot;ignoreOnce&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        ignoreOnce();</b>
+<b class="nc">&nbsp;      } else if (&quot;deactivateRule&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        deactivateRule();</b>
+<b class="nc">&nbsp;      } else if (sEvent.startsWith(&quot;activateRule_&quot;)) {</b>
+<b class="nc">&nbsp;        String ruleId = sEvent.substring(13);</b>
+<b class="nc">&nbsp;        activateRule(ruleId);</b>
+<b class="nc">&nbsp;      } else if (sEvent.startsWith(&quot;addToDictionary_&quot;)) {</b>
+<b class="nc">&nbsp;        String[] sArray = sEvent.substring(16).split(&quot;:&quot;);</b>
+<b class="nc">&nbsp;        getLtDictionary().addWordToDictionary(sArray[0], sArray[1], xContext);;</b>
+<b class="nc">&nbsp;      } else if (&quot;renewMarkups&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        renewMarkups();</b>
+<b class="nc">&nbsp;      } else if (&quot;checkDialog&quot;.equals(sEvent) || &quot;checkAgainDialog&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        if (useOrginalCheckDialog) {</b>
+<b class="nc">&nbsp;          if (&quot;checkDialog&quot;.equals(sEvent) ) {</b>
+<b class="nc">&nbsp;            OfficeTools.dispatchCmd(&quot;.uno:SpellingAndGrammarDialog&quot;, xContext);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            OfficeTools.dispatchCmd(&quot;.uno:RecheckDocument&quot;, xContext);</b>
+&nbsp;          }
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        closeDialogs();</b>
+<b class="nc">&nbsp;        if (dialogIsRunning) {</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        setLtDialogIsRunning(true);</b>
+<b class="nc">&nbsp;        SpellAndGrammarCheckDialog checkDialog = new SpellAndGrammarCheckDialog(xContext, this, docLanguage);</b>
+<b class="nc">&nbsp;        if (&quot;checkAgainDialog&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;          SingleDocument document = getCurrentDocument();</b>
+<b class="nc">&nbsp;          if (document != null) {</b>
+<b class="nc">&nbsp;            XComponent currentComponent = document.getXComponent();</b>
+<b class="nc">&nbsp;            if (currentComponent != null) {</b>
+<b class="nc">&nbsp;              if (document.getDocumentType() == DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;                ViewCursorTools viewCursor = new ViewCursorTools(currentComponent);</b>
+<b class="nc">&nbsp;                SpellAndGrammarCheckDialog.setTextViewCursor(0, new TextParagraph (DocumentCache.CURSOR_TYPE_TEXT ,0), viewCursor);</b>
+<b class="nc">&nbsp;              } else if (document.getDocumentType() == DocumentType.IMPRESS){</b>
+<b class="nc">&nbsp;                OfficeDrawTools.setCurrentPage(0, currentComponent);</b>
+&nbsp;              } else {
+<b class="nc">&nbsp;                OfficeSpreadsheetTools.setCurrentSheet(0, currentComponent);</b>
+&nbsp;              }
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          resetIgnoredMatches();</b>
+<b class="nc">&nbsp;          resetCheck();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: trigger: Start Spell And Grammar Check Dialog&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        checkDialog.start();</b>
+<b class="nc">&nbsp;      } else if (&quot;nextError&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        if (this.isBackgroundCheckOff()) {</b>
+<b class="nc">&nbsp;          MessageHandler.showMessage(messages.getString(&quot;loExtSwitchOffMessage&quot;));</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        SpellAndGrammarCheckDialog checkDialog = new SpellAndGrammarCheckDialog(xContext, this, docLanguage);</b>
+<b class="nc">&nbsp;        checkDialog.nextError();</b>
+<b class="nc">&nbsp;      } else if (&quot;refreshCheck&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        if (ltDialog != null) {</b>
+<b class="nc">&nbsp;          ltDialog.closeDialog();</b>
+&nbsp;        } 
+<b class="nc">&nbsp;        if (this.isBackgroundCheckOff()) {</b>
+<b class="nc">&nbsp;          MessageHandler.showMessage(messages.getString(&quot;loExtSwitchOffMessage&quot;));</b>
+&nbsp;          return;
+&nbsp;        }
+<b class="nc">&nbsp;        resetIgnoredMatches();</b>
+<b class="nc">&nbsp;        resetDocumentCaches();</b>
+<b class="nc">&nbsp;        resetResultCaches();</b>
+<b class="nc">&nbsp;        resetDocument();</b>
+<b class="nc">&nbsp;      } else if (&quot;writeAnalyzedParagraphs&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        new AnalyzedParagraphsCache(this); </b>
+<b class="nc">&nbsp;      } else if (&quot;remoteHint&quot;.equals(sEvent)) {</b>
+<b class="nc">&nbsp;        if (getConfiguration().useOtherServer()) {</b>
+<b class="nc">&nbsp;          MessageHandler.showMessage(MessageFormat.format(messages.getString(&quot;loRemoteInfoOtherServer&quot;), </b>
+<b class="nc">&nbsp;              getConfiguration().getServerUrl()));</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          MessageHandler.showMessage(messages.getString(&quot;loRemoteInfoDefaultServer&quot;));</b>
+&nbsp;        }
+&nbsp;      } else {
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: trigger: Sorry, don&#39;t know what to do, sEvent = &quot; + sEvent);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to run trigger: &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable e) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Test the language of the document
+&nbsp;   * switch the check to LT if possible and language is supported
+&nbsp;   */
+&nbsp;  boolean testDocLanguage(boolean showMessage) throws Throwable {
+<b class="nc">&nbsp;    if (docLanguage == null) {</b>
+<b class="nc">&nbsp;      if (linguServices == null) {</b>
+<b class="nc">&nbsp;        linguServices = new LinguisticServices(xContext);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (!linguServices.spellCheckerIsActive()) {</b>
+<b class="nc">&nbsp;        if (showMessage) {</b>
+<b class="nc">&nbsp;          MessageHandler.showMessage(&quot;LinguisticServices failed! LanguageTool can not be started!&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: testDocLanguage: LinguisticServices failed! LanguageTool can not be started!&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (xContext == null) {</b>
+<b class="nc">&nbsp;        if (showMessage) { </b>
+<b class="nc">&nbsp;          MessageHandler.showMessage(&quot;There may be a installation problem! \nNo xContext!&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      XComponent xComponent = OfficeTools.getCurrentComponent(xContext);</b>
+<b class="nc">&nbsp;      if (xComponent == null) {</b>
+<b class="nc">&nbsp;        if (showMessage) { </b>
+<b class="nc">&nbsp;          MessageHandler.showMessage(&quot;There may be a installation problem! \nNo xComponent!&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+&nbsp;      Locale locale;
+&nbsp;      DocumentType docType;
+<b class="nc">&nbsp;      if (OfficeDrawTools.isImpressDocument(xComponent)) {</b>
+<b class="nc">&nbsp;        docType = DocumentType.IMPRESS;</b>
+<b class="nc">&nbsp;        checkImpressDocument = true;</b>
+<b class="nc">&nbsp;      } else if (OfficeSpreadsheetTools.isSpreadsheetDocument(xComponent)) {</b>
+<b class="nc">&nbsp;        docType = DocumentType.CALC;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        docType = DocumentType.WRITER;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (docType == DocumentType.IMPRESS) {</b>
+<b class="nc">&nbsp;        locale = OfficeDrawTools.getDocumentLocale(xComponent);</b>
+<b class="nc">&nbsp;      } else if (docType == DocumentType.CALC) {</b>
+<b class="nc">&nbsp;        locale = OfficeSpreadsheetTools.getDocumentLocale(xComponent);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        locale = getDocumentLocale();</b>
+&nbsp;      }
+&nbsp;      try {
+<b class="nc">&nbsp;        int n = 0;</b>
+<b class="nc">&nbsp;        while (locale == null &amp;&amp; n &lt; 100) {</b>
+<b class="nc">&nbsp;          Thread.sleep(500);</b>
+<b class="nc">&nbsp;          if (debugMode) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: testDocLanguage: Try to get locale: n = &quot; + n);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (docType == DocumentType.IMPRESS) {</b>
+<b class="nc">&nbsp;            locale = OfficeDrawTools.getDocumentLocale(xComponent);</b>
+<b class="nc">&nbsp;          } else if (docType == DocumentType.CALC) {</b>
+<b class="nc">&nbsp;            locale = OfficeSpreadsheetTools.getDocumentLocale(xComponent);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            locale = getDocumentLocale();</b>
+&nbsp;          }
+<b class="nc">&nbsp;          n++;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;        MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (locale == null) {</b>
+<b class="nc">&nbsp;        if (showMessage) {</b>
+<b class="nc">&nbsp;          MessageHandler.showMessage(&quot;No Locale! LanguageTool can not be started!&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: testDocLanguage: No Locale! LanguageTool can not be started!&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+<b class="nc">&nbsp;      } else if (!hasLocale(locale)) {</b>
+<b class="nc">&nbsp;        String message = Tools.i18n(messages, &quot;language_not_supported&quot;, locale.Language);</b>
+<b class="nc">&nbsp;        MessageHandler.showMessage(message);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: testDocLanguage: locale: &quot; + locale.Language + &quot;-&quot; + locale.Country);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (!linguServices.setLtAsGrammarService(xContext, locale)) {</b>
+<b class="nc">&nbsp;        if (showMessage) {</b>
+<b class="nc">&nbsp;          MessageHandler.showMessage(&quot;Can not set LT as grammar check service! LanguageTool can not be started!&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: testDocLanguage: Can not set LT as grammar check service! LanguageTool can not be started!&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (docType != DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;        langForShortName = getLanguage(locale);</b>
+<b class="nc">&nbsp;        docLanguage = langForShortName;</b>
+<b class="nc">&nbsp;        this.locale = locale;</b>
+<b class="nc">&nbsp;        extraRemoteRules.clear();</b>
+<b class="nc">&nbsp;        lt = initLanguageTool(true);</b>
+<b class="nc">&nbsp;        initCheck(lt);</b>
+<b class="nc">&nbsp;        initDocuments(true);</b>
+&nbsp;//        setJavaLookAndFeel();
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        resetCheck();</b>
+<b class="nc">&nbsp;        if (showMessage) {</b>
+<b class="nc">&nbsp;          MessageHandler.showMessage(messages.getString(&quot;loNoGrammarCheckWarning&quot;));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Test if the needed java version is installed
+&nbsp;   */
+&nbsp;  public boolean javaVersionOkay() {
+<b class="nc">&nbsp;    String version = System.getProperty(&quot;java.version&quot;);</b>
+<b class="nc">&nbsp;    if (version != null</b>
+<b class="nc">&nbsp;        &amp;&amp; (version.startsWith(&quot;1.0&quot;) || version.startsWith(&quot;1.1&quot;)</b>
+<b class="nc">&nbsp;            || version.startsWith(&quot;1.2&quot;) || version.startsWith(&quot;1.3&quot;)</b>
+<b class="nc">&nbsp;            || version.startsWith(&quot;1.4&quot;) || version.startsWith(&quot;1.5&quot;)</b>
+<b class="nc">&nbsp;            || version.startsWith(&quot;1.6&quot;) || version.startsWith(&quot;1.7&quot;))) {</b>
+<b class="nc">&nbsp;      MessageHandler.showMessage(&quot;Error: LanguageTool requires Java 8 or later. Current version: &quot; + version);</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** Set Look and Feel for Java Swing Components
+&nbsp;   * 
+&nbsp;   */
+&nbsp;  public void setJavaLookAndFeel() {
+&nbsp;    try {
+&nbsp;      // do not set look and feel for on Mac OS X as it causes the following error:
+&nbsp;      // soffice[2149:2703] Apple AWT Java VM was loaded on first thread -- can&#39;t start AWT.
+<b class="nc">&nbsp;      if (!System.getProperty(&quot;os.name&quot;).contains(&quot;OS X&quot;)) {</b>
+&nbsp;         // Cross-Platform Look And Feel @since 3.7
+<b class="nc">&nbsp;         if (System.getProperty(&quot;os.name&quot;).contains(&quot;Linux&quot;)) {</b>
+<b class="nc">&nbsp;           UIManager.setLookAndFeel(&quot;com.sun.java.swing.plaf.gtk.GTKLookAndFeel&quot;);</b>
+&nbsp;         }
+&nbsp;         else {
+<b class="nc">&nbsp;           UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());</b>
+&nbsp;         }
+&nbsp;      }
+<b class="nc">&nbsp;      javaLookAndFeelIsSet = true;</b>
+<b class="nc">&nbsp;    } catch (Exception | AWTError ignored) {</b>
+&nbsp;      // Well, what can we do...
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * heap limit is reached
+&nbsp;   */
+&nbsp;  public boolean heapLimitIsReached() {
+<b class="nc">&nbsp;    return heapLimitReached;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Test if enough heap space is left
+&nbsp;   * Change to single paragraph mode if not
+&nbsp;   * return false if heap space is to small 
+&nbsp;   */
+&nbsp;  public boolean isEnoughHeapSpace() {
+<b class="nc">&nbsp;    double heapRatio = OfficeTools.getCurrentHeapRatio();</b>
+<b class="nc">&nbsp;    if (heapRatio &gt;= 1.0) {</b>
+<b class="nc">&nbsp;      heapLimitReached = true;</b>
+<b class="nc">&nbsp;      setConfigValues(config, lt);</b>
+<b class="nc">&nbsp;      MessageHandler.showMessage(messages.getString(&quot;loExtHeapMessage&quot;));</b>
+<b class="nc">&nbsp;      for (SingleDocument document : documents) {</b>
+<b class="nc">&nbsp;        document.resetResultCache();</b>
+<b class="nc">&nbsp;        document.resetDocumentCache();</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      if (heapRatio &lt; 0.5) {</b>
+<b class="nc">&nbsp;        heapCheckInterval = HEAP_CHECK_INTERVAL;</b>
+<b class="nc">&nbsp;      } else if (heapRatio &gt; 0.9) {</b>
+<b class="nc">&nbsp;        heapCheckInterval = (int) (HEAP_CHECK_INTERVAL / (1.0 - heapCheckInterval));</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * run heap space test, in intervals
+&nbsp;   */
+&nbsp;  private void testHeapSpace() {
+<b class="nc">&nbsp;    if (!heapLimitReached &amp;&amp; config.getNumParasToCheck() != 0) {</b>
+<b class="nc">&nbsp;      if (numSinceHeapTest &gt; heapCheckInterval) {</b>
+<b class="nc">&nbsp;        isEnoughHeapSpace();</b>
+<b class="nc">&nbsp;        numSinceHeapTest = 0;</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        numSinceHeapTest++;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * class to run the about dialog
+&nbsp;   */
+&nbsp;  private class AboutDialogThread extends Thread {
+&nbsp;
+&nbsp;    private final ResourceBundle messages;
+&nbsp;    private final XComponentContext xContext;
+&nbsp;
+<b class="nc">&nbsp;    AboutDialogThread(ResourceBundle messages, XComponentContext xContext) {</b>
+<b class="nc">&nbsp;      this.messages = messages;</b>
+<b class="nc">&nbsp;      this.xContext = xContext;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;      // Note: null can cause the dialog to appear on the wrong screen in a
+&nbsp;      // multi-monitor setup, but we just don&#39;t have a proper java.awt.Component
+&nbsp;      // here which we could use instead:
+<b class="nc">&nbsp;      aboutDialog = new AboutDialog(messages);</b>
+<b class="nc">&nbsp;      aboutDialog.show(xContext);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Called when &quot;Ignore&quot; is selected e.g. in the context menu for an error.
+&nbsp;   */
+&nbsp;  public void ignoreRule(String ruleId, Locale locale) {
+<b class="nc">&nbsp;    addDisabledRule(OfficeTools.localeToString(locale), ruleId);</b>
+<b class="nc">&nbsp;    setRecheck();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Called on rechecking the document - resets the ignore status for rules that
+&nbsp;   * was set in the spelling dialog box or in the context menu.
+&nbsp;   * 
+&nbsp;   * The rules disabled in the config dialog box are left as intact.
+&nbsp;   */
+&nbsp;  public void resetIgnoreRules() {
+<b class="nc">&nbsp;    resetDisabledRules();</b>
+<b class="nc">&nbsp;    setRecheck();</b>
+<b class="nc">&nbsp;    resetIgnoreOnce();</b>
+<b class="nc">&nbsp;    docReset = true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get the displayed service name for LT
+&nbsp;   */
+&nbsp;  public String getServiceDisplayName(Locale locale) {
+<b class="nc">&nbsp;    return &quot;LanguageTool&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * remove internal stored text if document disposes
+&nbsp;   */
+&nbsp;  public void disposing(EventObject source) {
+&nbsp;    //  the data of document will be removed by next call of getNumDocID
+&nbsp;    //  to finish checking thread without crashing
+<b class="nc">&nbsp;    XComponent goneComponent = UnoRuntime.queryInterface(XComponent.class, source.Source);</b>
+<b class="nc">&nbsp;    if (goneComponent == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: disposing: xComponent of closed document is null&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      setContextOfClosedDoc(goneComponent);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Start or stop the shape check loop
+&nbsp;   */
+&nbsp;  public void runShapeCheck (boolean hasShapes, int where) {
+&nbsp;    try {
+&nbsp;//      MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: runShapeCheck: hasShapes: &quot; + hasShapes + &quot; from &quot; + where);
+<b class="nc">&nbsp;      if (hasShapes &amp;&amp; (shapeChangeCheck == null || !shapeChangeCheck.isRunning())) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: runShapeCheck: start&quot;);</b>
+<b class="nc">&nbsp;        shapeChangeCheck = new ShapeChangeCheck();</b>
+<b class="nc">&nbsp;        shapeChangeCheck.start();</b>
+<b class="nc">&nbsp;      } else if (!hasShapes &amp;&amp; shapeChangeCheck != null) {</b>
+<b class="nc">&nbsp;        boolean noShapes = true;</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; documents.size() &amp;&amp; noShapes; i++) {</b>
+<b class="nc">&nbsp;          if (documents.get(i).getDocumentCache().textSize(DocumentCache.CURSOR_TYPE_SHAPE) &gt; 0) {</b>
+<b class="nc">&nbsp;            noShapes = false;</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        if (noShapes) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: runShapeCheck: stop&quot;);</b>
+<b class="nc">&nbsp;          shapeChangeCheck.stopLoop();</b>
+<b class="nc">&nbsp;          shapeChangeCheck = null;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Exception e) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  start a separate thread to add or remove the internal LT dictionary
+&nbsp;   */
+&nbsp;  private void handleLtDictionary() {
+<b class="nc">&nbsp;    HandleLtDictionary handleDictionary = new HandleLtDictionary();</b>
+<b class="nc">&nbsp;    handleDictionary.start();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   *  class to start a separate thread to add or remove the internal LT dictionary
+&nbsp;   */
+<b class="nc">&nbsp;  private class HandleLtDictionary extends Thread {</b>
+&nbsp;    @Override
+&nbsp;    public void run() {
+<b class="nc">&nbsp;      if (config.useLtDictionary()) {</b>
+<b class="nc">&nbsp;        if (dictionary.setLtDictionary(xContext, locale, linguServices)) {</b>
+<b class="nc">&nbsp;          resetCheck();</b>
+&nbsp;        }
+&nbsp;      } else {
+<b class="nc">&nbsp;        if (dictionary.removeLtDictionaries(xContext)) {</b>
+<b class="nc">&nbsp;          resetCheck();</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * class to test for text changes in shapes 
+&nbsp;   */
+<b class="nc">&nbsp;  private class ShapeChangeCheck extends Thread {</b>
+&nbsp;
+<b class="nc">&nbsp;    boolean runLoop = true;</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;      try {
+<b class="nc">&nbsp;        while (runLoop) {</b>
+&nbsp;          try {
+<b class="nc">&nbsp;            for (int i = 0; i &lt; documents.size(); i++) {</b>
+<b class="nc">&nbsp;              documents.get(i).addShapeQueueEntries();</b>
+&nbsp;            }
+<b class="nc">&nbsp;            Thread.sleep(OfficeTools.CHECK_SHAPES_TIME);</b>
+<b class="nc">&nbsp;          } catch (Throwable t) {</b>
+<b class="nc">&nbsp;            MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;          }</b>
+&nbsp;        }
+<b class="nc">&nbsp;      } catch (Throwable e) {</b>
+<b class="nc">&nbsp;        MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      runLoop = false;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public void stopLoop() {
+<b class="nc">&nbsp;      runLoop = false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isRunning() {
+<b class="nc">&nbsp;      return runLoop;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;  }
+&nbsp;
+&nbsp;  /** class to start a separate thread to check for Impress documents
+&nbsp;   */
+<b class="nc">&nbsp;  private class LtHelper extends Thread {</b>
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;      try {
+<b class="nc">&nbsp;        SingleDocument currentDocument = null;</b>
+<b class="nc">&nbsp;        while (currentDocument == null) {</b>
+<b class="nc">&nbsp;          Thread.sleep(1000);</b>
+<b class="nc">&nbsp;          currentDocument = getCurrentDocument();</b>
+<b class="nc">&nbsp;          if (currentDocument != null &amp;&amp; currentDocument.getDocumentType() == DocumentType.IMPRESS) {</b>
+<b class="nc">&nbsp;            checkImpressDocument = true;</b>
+<b class="nc">&nbsp;            locale = OfficeDrawTools.getDocumentLocale(currentDocument.getXComponent());</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;MultiDocumentsHandler: LtHelper: local: &quot; + OfficeTools.localeToString(locale));</b>
+<b class="nc">&nbsp;            langForShortName = getLanguage(locale);</b>
+<b class="nc">&nbsp;            docLanguage = langForShortName;</b>
+<b class="nc">&nbsp;            lt = initLanguageTool(true);</b>
+<b class="nc">&nbsp;            initCheck(lt);</b>
+<b class="nc">&nbsp;            initDocuments(false);</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;      } catch (Throwable e) {</b>
+<b class="nc">&nbsp;        MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

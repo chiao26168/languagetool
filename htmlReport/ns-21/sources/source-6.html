@@ -1,0 +1,2205 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > DocumentCache</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: DocumentCache (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DocumentCache</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/65)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/862)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1021)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">DocumentCache$ChangedRange</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">DocumentCache$SerialLocale</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">DocumentCache$TextParagraph</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/73)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/896)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1042)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.io.Serializable;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.concurrent.locks.ReentrantReadWriteLock;
+&nbsp;
+&nbsp;import org.languagetool.JLanguageTool;
+&nbsp;import org.languagetool.openoffice.DocumentCursorTools.DocumentText;
+&nbsp;import org.languagetool.openoffice.FlatParagraphTools.FlatParagraphContainer;
+&nbsp;import org.languagetool.openoffice.OfficeDrawTools.ParagraphContainer;
+&nbsp;import org.languagetool.openoffice.OfficeTools.DocumentType;
+&nbsp;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class to store the Text of a LO document (document cache)
+&nbsp; * 
+&nbsp; * @since 5.0
+&nbsp; * @author Fred Kruse
+&nbsp; */
+&nbsp;public class DocumentCache implements Serializable {
+&nbsp;
+&nbsp;  private static final long serialVersionUID = 10L;
+&nbsp;
+&nbsp;  public final static int CURSOR_TYPE_UNKNOWN = -1;
+&nbsp;  public final static int CURSOR_TYPE_ENDNOTE = 0;
+&nbsp;  public final static int CURSOR_TYPE_FOOTNOTE = 1;
+&nbsp;  public final static int CURSOR_TYPE_HEADER_FOOTER = 2;
+&nbsp;//  public final static int CURSOR_TYPE_FRAME = 3;
+&nbsp;  public final static int CURSOR_TYPE_SHAPE = 3;
+&nbsp;  public final static int CURSOR_TYPE_TEXT = 4;
+&nbsp;  public final static int CURSOR_TYPE_TABLE = 5;
+&nbsp;
+&nbsp;  public static final int NUMBER_CURSOR_TYPES = 6;
+&nbsp;  
+&nbsp;  private static final int MAX_NOTE_CHAR = 7;       //  supports Roman numbers to 87
+&nbsp;  private static final int MAX_PRINTED_PARAS = 3;   //  maximal printed paragraphs to log file
+&nbsp;
+&nbsp;  private static boolean debugMode;     // should be false except for testing
+&nbsp;  private static boolean debugModeTm;   // time measurement should be false except for testing
+&nbsp;
+<b class="nc">&nbsp;  private final List&lt;String&gt; paragraphs = new ArrayList&lt;String&gt;(); // stores the flat paratoTextMappinggraphs of</b>
+&nbsp;                                                                   // document
+&nbsp;
+<b class="nc">&nbsp;  private final List&lt;List&lt;Integer&gt;&gt; chapterBegins = new ArrayList&lt;List&lt;Integer&gt;&gt;(); // stores the paragraphs formated as</b>
+&nbsp;                                                                                    // headings; is used to subdivide
+&nbsp;                                                                                    // the document in chapters
+<b class="nc">&nbsp;  private final List&lt;Integer&gt; automaticParagraphs = new ArrayList&lt;Integer&gt;(); // stores the paragraphs automatic generated (will not be checked)</b>
+<b class="nc">&nbsp;  private final List&lt;SerialLocale&gt; locales = new ArrayList&lt;SerialLocale&gt;(); // stores the language of the paragraphs;</b>
+<b class="nc">&nbsp;  private final List&lt;int[]&gt; footnotes = new ArrayList&lt;int[]&gt;();             // stores the footnotes of the paragraphs;</b>
+<b class="nc">&nbsp;  private final List&lt;List&lt;Integer&gt;&gt; deletedCharacters = new ArrayList&lt;List&lt;Integer&gt;&gt;(); // stores the deleted characters (report changes) of the paragraphs;</b>
+<b class="nc">&nbsp;  private final List&lt;TextParagraph&gt; toTextMapping = new ArrayList&lt;&gt;(); // Mapping from FlatParagraph to DocumentCursor</b>
+<b class="nc">&nbsp;  private final List&lt;List&lt;Integer&gt;&gt; toParaMapping = new ArrayList&lt;&gt;(); // Mapping from DocumentCursor to FlatParagraph</b>
+&nbsp;  private final DocumentType docType;                 // stores the document type (Writer, Impress, Calc)
+<b class="nc">&nbsp;  private List&lt;Integer&gt; sortedTextIds = null;           // stores the node index of the paragraphs (since LO 7.5 / else null)</b>
+<b class="nc">&nbsp;  private boolean isReset = false;</b>
+<b class="nc">&nbsp;  private boolean isDirty = false;</b>
+<b class="nc">&nbsp;  private int documentElementsCount = -1;</b>
+<b class="nc">&nbsp;  private int nEndnote = 0;</b>
+<b class="nc">&nbsp;  private int nFootnote = 0;</b>
+<b class="nc">&nbsp;  private int nHeaderFooter = 0;</b>
+&nbsp;//  private int nFrame = 0;
+<b class="nc">&nbsp;  private int nShape = 0;</b>
+<b class="nc">&nbsp;  private int nText = 0;</b>
+<b class="nc">&nbsp;  private int nTable = 0;</b>
+&nbsp;  
+<b class="nc">&nbsp;  private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();</b>
+&nbsp;
+<b class="nc">&nbsp;  DocumentCache(DocumentType docType) {</b>
+<b class="nc">&nbsp;    debugMode = OfficeTools.DEBUG_MODE_DC;</b>
+<b class="nc">&nbsp;    debugModeTm = OfficeTools.DEBUG_MODE_TM;</b>
+<b class="nc">&nbsp;    this.docType = docType;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  DocumentCache(SingleDocument document, Locale fixedLocale, Locale docLocale,
+<b class="nc">&nbsp;      XComponent xComponent, DocumentType docType) {</b>
+<b class="nc">&nbsp;    debugMode = OfficeTools.DEBUG_MODE_DC;</b>
+<b class="nc">&nbsp;    debugModeTm = OfficeTools.DEBUG_MODE_TM;</b>
+<b class="nc">&nbsp;    this.docType = docType;</b>
+<b class="nc">&nbsp;    refresh(document, fixedLocale, docLocale, xComponent, 0);</b>
+&nbsp;  }
+&nbsp;
+<b class="nc">&nbsp;  DocumentCache(DocumentCache in) {</b>
+&nbsp;//    MessageHandler.printToLogFile(&quot;DocumentCache: init: Number waiting: &quot; + rwLock.getQueueLength());
+&nbsp;//    MessageHandler.printToLogFile(&quot;DocumentCache: init: &quot; + rwLock.getWriteHoldCount() + &quot; writer is writing: &quot;+ Thread.currentThread().getName());
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      isReset = true;</b>
+<b class="nc">&nbsp;      debugMode = OfficeTools.DEBUG_MODE_DC;</b>
+<b class="nc">&nbsp;      debugModeTm = OfficeTools.DEBUG_MODE_TM;</b>
+<b class="nc">&nbsp;      if (in.paragraphs != null &amp;&amp; in.paragraphs.size() &gt; 0) {</b>
+<b class="nc">&nbsp;        add(in);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      docType = in.docType;</b>
+<b class="nc">&nbsp;      isReset = false;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set the cache only for test use
+&nbsp;   */
+&nbsp;  public void setForTest(List&lt;String&gt; paragraphs, List&lt;List&lt;String&gt;&gt; textParagraphs, List&lt;int[]&gt; footnotes,
+&nbsp;      List&lt;List&lt;Integer&gt;&gt; chapterBegins, Locale locale) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      isReset = true;</b>
+<b class="nc">&nbsp;      debugMode = OfficeTools.DEBUG_MODE_DC;</b>
+<b class="nc">&nbsp;      debugModeTm = OfficeTools.DEBUG_MODE_TM;</b>
+<b class="nc">&nbsp;      this.paragraphs.addAll(paragraphs);</b>
+<b class="nc">&nbsp;      this.footnotes.addAll(footnotes);</b>
+<b class="nc">&nbsp;      this.chapterBegins.addAll(chapterBegins);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; paragraphs.size(); i++) {</b>
+<b class="nc">&nbsp;        locales.add(new SerialLocale(locale));</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        toParaMapping.add(new ArrayList&lt;Integer&gt;());</b>
+&nbsp;      }
+<b class="nc">&nbsp;      nText = textParagraphs.get(CURSOR_TYPE_TEXT).size();</b>
+<b class="nc">&nbsp;      nTable = textParagraphs.get(CURSOR_TYPE_TABLE).size();</b>
+&nbsp;//      nFrame = textParagraphs.get(CURSOR_TYPE_FRAME).size();
+<b class="nc">&nbsp;      nShape = textParagraphs.get(CURSOR_TYPE_SHAPE).size();</b>
+<b class="nc">&nbsp;      nFootnote = textParagraphs.get(CURSOR_TYPE_FOOTNOTE).size();</b>
+<b class="nc">&nbsp;      nEndnote = textParagraphs.get(CURSOR_TYPE_ENDNOTE).size();</b>
+<b class="nc">&nbsp;      nHeaderFooter = textParagraphs.get(CURSOR_TYPE_HEADER_FOOTER).size();</b>
+<b class="nc">&nbsp;      mapParagraphs(this.paragraphs, toTextMapping, toParaMapping, this.chapterBegins, locales, footnotes, textParagraphs, deletedCharacters, null);</b>
+<b class="nc">&nbsp;      isReset = false;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Refresh the cache
+&nbsp;   */
+&nbsp;  public void refresh(SingleDocument document, Locale fixedLocale, Locale docLocale, XComponent xComponent, int fromWhere) {
+<b class="nc">&nbsp;    if (isReset) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;DocumentCache:refresh: isReset == true: return&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+&nbsp;//    MessageHandler.printToLogFile(&quot;DocumentCache: refresh: Number waiting: &quot; + rwLock.getQueueLength());
+&nbsp;//    MessageHandler.printToLogFile(&quot;DocumentCache: refresh: &quot; + rwLock.getWriteHoldCount() + &quot; writer is writing: &quot;+ Thread.currentThread().getName());
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+<b class="nc">&nbsp;    isReset = true;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;DocumentCache: refresh: Called from: &quot; + fromWhere);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (docType != DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;        refreshImpressCalcCache(xComponent);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        refreshWriterCache(document, fixedLocale, docLocale, fromWhere);</b>
+&nbsp;      }
+&nbsp;    } finally {
+<b class="nc">&nbsp;      isReset = false;</b>
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * reset the document cache load the actual state of the document into the cache
+&nbsp;   * is only used for writer documents
+&nbsp;   */
+&nbsp;  private void refreshWriterCache(SingleDocument document, Locale fixedLocale, Locale docLocale, int fromWhere) {
+&nbsp;    try {
+<b class="nc">&nbsp;      long startTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;      DocumentCursorTools docCursor = document.getDocumentCursorTools();</b>
+<b class="nc">&nbsp;      FlatParagraphTools flatPara = document.getFlatParagraphTools();</b>
+<b class="nc">&nbsp;      List&lt;String&gt; paragraphs = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;      List&lt;List&lt;Integer&gt;&gt; chapterBegins = new ArrayList&lt;List&lt;Integer&gt;&gt;();</b>
+<b class="nc">&nbsp;      List&lt;List&lt;Integer&gt;&gt; deletedCharacters = new ArrayList&lt;List&lt;Integer&gt;&gt;();</b>
+<b class="nc">&nbsp;      List&lt;SerialLocale&gt; locales = new ArrayList&lt;SerialLocale&gt;();</b>
+<b class="nc">&nbsp;      List&lt;int[]&gt; footnotes = new ArrayList&lt;int[]&gt;();</b>
+<b class="nc">&nbsp;      List&lt;TextParagraph&gt; toTextMapping = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      List&lt;List&lt;Integer&gt;&gt; toParaMapping = new ArrayList&lt;&gt;();</b>
+&nbsp;      List&lt;Integer&gt; sortedTextIds;
+<b class="nc">&nbsp;      clear();</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        toParaMapping.add(new ArrayList&lt;Integer&gt;());</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;DocumentText&gt; documentTexts = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        documentTexts.add(null);</b>
+&nbsp;      }
+&nbsp;//      MessageHandler.printToLogFile(&quot;DocumentCache: refreshWriterCache: call getAllText&quot;);
+<b class="nc">&nbsp;      documentTexts.set(CURSOR_TYPE_TEXT, docCursor.getAllTextParagraphs());</b>
+&nbsp;//      MessageHandler.printToLogFile(&quot;DocumentCache: refreshWriterCache: call getAllTable&quot;);
+<b class="nc">&nbsp;      documentTexts.set(CURSOR_TYPE_TABLE, docCursor.getTextOfAllTables());</b>
+&nbsp;//      MessageHandler.printToLogFile(&quot;DocumentCache: refreshWriterCache: call getAllFrame&quot;);
+&nbsp;//      documentTexts.set(CURSOR_TYPE_FRAME, docCursor.getTextOfAllFrames());
+&nbsp;//      MessageHandler.printToLogFile(&quot;DocumentCache: refreshWriterCache: call getAllShape&quot;);
+<b class="nc">&nbsp;      documentTexts.set(CURSOR_TYPE_SHAPE, docCursor.getTextOfAllShapes());</b>
+&nbsp;//      MessageHandler.printToLogFile(&quot;DocumentCache: refreshWriterCache: call getAllFootnote&quot;);
+<b class="nc">&nbsp;      documentTexts.set(CURSOR_TYPE_FOOTNOTE, docCursor.getTextOfAllFootnotes());</b>
+&nbsp;//      MessageHandler.printToLogFile(&quot;DocumentCache: refreshWriterCache: call getAllEndnote&quot;);
+<b class="nc">&nbsp;      documentTexts.set(CURSOR_TYPE_ENDNOTE, docCursor.getTextOfAllEndnotes());</b>
+&nbsp;//      MessageHandler.printToLogFile(&quot;DocumentCache: refreshWriterCache: call getAllHeader&quot;);
+<b class="nc">&nbsp;      documentTexts.set(CURSOR_TYPE_HEADER_FOOTER, docCursor.getTextOfAllHeadersAndFooters());</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        if(documentTexts.get(i) == null) {</b>
+<b class="nc">&nbsp;          documentTexts.set(i, new DocumentText());</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      nText = documentTexts.get(CURSOR_TYPE_TEXT).paragraphs.size();</b>
+<b class="nc">&nbsp;      nTable = documentTexts.get(CURSOR_TYPE_TABLE).paragraphs.size();</b>
+&nbsp;//      nFrame = documentTexts.get(CURSOR_TYPE_FRAME).paragraphs.size();
+<b class="nc">&nbsp;      nShape = documentTexts.get(CURSOR_TYPE_SHAPE).paragraphs.size();</b>
+<b class="nc">&nbsp;      nFootnote = documentTexts.get(CURSOR_TYPE_FOOTNOTE).paragraphs.size();</b>
+<b class="nc">&nbsp;      nEndnote = documentTexts.get(CURSOR_TYPE_ENDNOTE).paragraphs.size();</b>
+<b class="nc">&nbsp;      nHeaderFooter = documentTexts.get(CURSOR_TYPE_HEADER_FOOTER).paragraphs.size();</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;          if (documentTexts.get(i) == null) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;DocumentCache: refresh: CursorType: &quot; + i + &quot;; Document Text is Null!&quot;);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;DocumentCache: refresh: CursorType: &quot; + i + &quot;; Number of paragraphs: &quot;</b>
+<b class="nc">&nbsp;                + documentTexts.get(i).paragraphs.size());</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      FlatParagraphContainer paragraphContainer = null;</b>
+<b class="nc">&nbsp;      List&lt;List&lt;List&lt;Integer&gt;&gt;&gt; deletedChars = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      for (DocumentText documentText : documentTexts) {</b>
+<b class="nc">&nbsp;        chapterBegins.add(documentText.headingNumbers);</b>
+<b class="nc">&nbsp;        deletedChars.add(documentText.deletedCharacters);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;//        MessageHandler.printToLogFile(&quot;DocumentCache: refreshWriterCache: call getAllFlatParagraphs&quot;);
+<b class="nc">&nbsp;      paragraphContainer = flatPara.getAllFlatParagraphs(fixedLocale);</b>
+<b class="nc">&nbsp;      if (paragraphContainer == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(</b>
+&nbsp;            &quot;WARNING: DocumentCache: refresh: paragraphContainer == null - ParagraphCache not initialised&quot;);
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      if (paragraphContainer.paragraphs == null) {</b>
+<b class="nc">&nbsp;        MessageHandler</b>
+<b class="nc">&nbsp;            .printToLogFile(&quot;WARNING: DocumentCache: refresh: paragraphs in paragraphContainer == null - ParagraphCache not initialised&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      paragraphs.addAll(paragraphContainer.paragraphs);</b>
+<b class="nc">&nbsp;      for (Locale locale : paragraphContainer.locales) {</b>
+<b class="nc">&nbsp;        locales.add(new SerialLocale(locale));</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      footnotes.addAll(paragraphContainer.footnotePositions);</b>
+<b class="nc">&nbsp;      sortedTextIds = paragraphContainer.sortedTextIds;</b>
+&nbsp;      
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        int unknown = 0;</b>
+<b class="nc">&nbsp;        for (DocumentText documentText : documentTexts) {</b>
+<b class="nc">&nbsp;          if (documentText != null &amp;&amp; documentText.paragraphs != null) {</b>
+<b class="nc">&nbsp;            unknown += documentText.paragraphs.size();</b>
+&nbsp;          }
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        unknown = paragraphs.size() - unknown;</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;DocumentCache: refresh: unkonwn paragraphs: &quot; + unknown);</b>
+<b class="nc">&nbsp;        if (sortedTextIds == null) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;DocumentCache: refresh: paragraphContainer.sortedTextIds == null&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          for (DocumentText documentText : documentTexts) {</b>
+<b class="nc">&nbsp;            if (documentText != null &amp;&amp; documentText.sortedTextIds != null) {</b>
+<b class="nc">&nbsp;              for (int n : documentText.sortedTextIds) {</b>
+<b class="nc">&nbsp;                if (!sortedTextIds.contains(n)) {</b>
+<b class="nc">&nbsp;                  MessageHandler.printToLogFile(&quot;DocumentCache: refresh: sortedTextId not in flatparagraph: &quot; + n);</b>
+&nbsp;                }
+<b class="nc">&nbsp;              }</b>
+&nbsp;            }
+<b class="nc">&nbsp;          }</b>
+<b class="nc">&nbsp;          for (int n : sortedTextIds) {</b>
+<b class="nc">&nbsp;            boolean found = false;</b>
+<b class="nc">&nbsp;            for (DocumentText documentText : documentTexts) {</b>
+<b class="nc">&nbsp;              if (documentText != null &amp;&amp; documentText.sortedTextIds != null &amp;&amp; documentText.sortedTextIds.contains(n)) {</b>
+<b class="nc">&nbsp;                found = true;</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;              }
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            if (!found) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;DocumentCache: refresh: sortedTextId not in documentText: &quot; + n);</b>
+&nbsp;            }
+<b class="nc">&nbsp;          }</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (sortedTextIds == null) {</b>
+<b class="nc">&nbsp;        List&lt;List&lt;String&gt;&gt; textParas = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (DocumentText documentText : documentTexts) {</b>
+<b class="nc">&nbsp;          textParas.add(documentText.paragraphs);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        mapParagraphs(paragraphs, toTextMapping, toParaMapping, chapterBegins, locales, footnotes, textParas, deletedCharacters, deletedChars);</b>
+<b class="nc">&nbsp;      } else {</b>
+<b class="nc">&nbsp;        documentElementsCount = paragraphContainer.documentElementsCount;</b>
+<b class="nc">&nbsp;        List&lt;List&lt;Integer&gt;&gt; textSortedTextIds = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (DocumentText documentText : documentTexts) {</b>
+<b class="nc">&nbsp;          textSortedTextIds.add(documentText.sortedTextIds);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        mapParagraphsWNI(paragraphs, toTextMapping, toParaMapping, chapterBegins, locales, footnotes, textSortedTextIds, sortedTextIds, deletedCharacters, deletedChars);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      actualizeCache (paragraphs, chapterBegins, locales, footnotes, toTextMapping, toParaMapping, </b>
+<b class="nc">&nbsp;          deletedCharacters, documentTexts.get(CURSOR_TYPE_TEXT).automaticTextParagraphs, sortedTextIds);</b>
+<b class="nc">&nbsp;      document.getMultiDocumentsHandler().runShapeCheck(hasUnsupportedText(), fromWhere);</b>
+<b class="nc">&nbsp;      if (fromWhere != 2 || debugModeTm) { //  do not write time to log for text level queue</b>
+<b class="nc">&nbsp;        long endTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Time to generate cache(&quot; + fromWhere + &quot;): &quot; + (endTime - startTime));</b>
+&nbsp;      }
+&nbsp;    } finally {
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Actualize cache
+&nbsp;   */
+&nbsp;  private void actualizeCache (List&lt;String&gt; paragraphs, List&lt;List&lt;Integer&gt;&gt; chapterBegins, List&lt;SerialLocale&gt; locales, 
+&nbsp;      List&lt;int[]&gt; footnotes, List&lt;TextParagraph&gt; toTextMapping, List&lt;List&lt;Integer&gt;&gt; toParaMapping, 
+&nbsp;      List&lt;List&lt;Integer&gt;&gt; deletedCharacters, List&lt;Integer&gt; automaticParagraphs, List&lt;Integer&gt; sortedTextIds) {
+<b class="nc">&nbsp;    this.paragraphs.clear();</b>
+<b class="nc">&nbsp;    this.paragraphs.addAll(paragraphs);</b>
+<b class="nc">&nbsp;    this.chapterBegins.clear();</b>
+<b class="nc">&nbsp;    this.chapterBegins.addAll(chapterBegins);</b>
+<b class="nc">&nbsp;    this.locales.clear();</b>
+<b class="nc">&nbsp;    this.locales.addAll(locales);</b>
+<b class="nc">&nbsp;    this.footnotes.clear();</b>
+<b class="nc">&nbsp;    this.footnotes.addAll(footnotes);</b>
+<b class="nc">&nbsp;    this.toTextMapping.clear();</b>
+<b class="nc">&nbsp;    this.toTextMapping.addAll(toTextMapping);</b>
+<b class="nc">&nbsp;    this.toParaMapping.addAll(toParaMapping);</b>
+<b class="nc">&nbsp;    this.deletedCharacters.clear();</b>
+<b class="nc">&nbsp;    this.deletedCharacters.addAll(deletedCharacters);</b>
+<b class="nc">&nbsp;    this.automaticParagraphs.addAll(automaticParagraphs);</b>
+<b class="nc">&nbsp;    if (sortedTextIds != null) {</b>
+<b class="nc">&nbsp;      if (this.sortedTextIds == null) {</b>
+<b class="nc">&nbsp;        this.sortedTextIds = new ArrayList&lt;&gt;();</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        this.sortedTextIds.clear();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      this.sortedTextIds.addAll(sortedTextIds);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  private static boolean isEqualTextWithoutZeroSpace(String flatPara, String textPara) {
+<b class="nc">&nbsp;    if (flatPara.isEmpty() &amp;&amp; textPara.isEmpty()) {</b>
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    flatPara = removeZeroWidthSpace(flatPara);</b>
+<b class="nc">&nbsp;    textPara = removeZeroWidthSpace(textPara);</b>
+<b class="nc">&nbsp;    if (flatPara.isEmpty() &amp;&amp; textPara.isEmpty()) {</b>
+<b class="nc">&nbsp;      return true;</b>
+<b class="nc">&nbsp;    } else if (flatPara.length() != textPara.length()) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return flatPara.equals(textPara);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public boolean hasUnsupportedText() {
+<b class="nc">&nbsp;    if (toParaMapping.get(CURSOR_TYPE_SHAPE).size() &gt; 0) {</b>
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    boolean hasUnsupported = false;</b>
+<b class="nc">&nbsp;    for (TextParagraph tPara : toTextMapping) {</b>
+<b class="nc">&nbsp;      if (tPara.type == CURSOR_TYPE_TEXT) {</b>
+<b class="nc">&nbsp;        break;</b>
+<b class="nc">&nbsp;      } else if (tPara.type == CURSOR_TYPE_TABLE) {</b>
+<b class="nc">&nbsp;        hasUnsupported = true;</b>
+<b class="nc">&nbsp;        break;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return hasUnsupported;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  private static boolean isEqualWithoutFootnotes(String flatPara, String textPara, int[] footnotes, int[] n, int level) {
+&nbsp;    //  NOTE: flat paragraphs contain footnotes and endnotes as zero space characters
+&nbsp;    //        text paragraphs contain footnotes and endnotes as digits or Roman characters
+<b class="nc">&nbsp;    for(n[level] = 1; n[level] &lt;= MAX_NOTE_CHAR; n[level]++) {</b>
+<b class="nc">&nbsp;      if (level == 0) {</b>
+<b class="nc">&nbsp;        String textP = textPara;</b>
+<b class="nc">&nbsp;        for (int i = footnotes.length - 1; i &gt;= 0; i--) {</b>
+<b class="nc">&nbsp;          int nDif = 0;</b>
+<b class="nc">&nbsp;          for (int j = 0; j &lt; i; j++) {</b>
+<b class="nc">&nbsp;            nDif += n[j] - 1;</b>
+&nbsp;          }
+<b class="nc">&nbsp;          int k = footnotes[i] + nDif;</b>
+<b class="nc">&nbsp;          if (k + n[i] &gt; textPara.length()) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;          }
+<b class="nc">&nbsp;          textP = textP.substring(0, k) + (k &lt; textP.length() - n[i] ? textP.substring(k + n[i]) : &quot;&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        boolean isEqual = isEqualTextWithoutZeroSpace(flatPara, textP);</b>
+<b class="nc">&nbsp;        if (isEqual) {</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      } else {</b>
+<b class="nc">&nbsp;        boolean isEqual = isEqualWithoutFootnotes(flatPara, textPara, footnotes, n, level - 1);</b>
+<b class="nc">&nbsp;        if (isEqual) {</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public static boolean isEqualText(String flatPara, String textPara, int[] footnotes) {
+<b class="nc">&nbsp;    if (footnotes == null || footnotes.length == 0) {</b>
+<b class="nc">&nbsp;      return isEqualTextWithoutZeroSpace(flatPara, textPara);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    flatPara = SingleCheck.removeFootnotes(flatPara, footnotes, null);</b>
+<b class="nc">&nbsp;    if (textPara.isEmpty() || flatPara.length() &gt; textPara.length() || flatPara.length() &lt; (textPara.length() - (footnotes.length * MAX_NOTE_CHAR))) {</b>
+&nbsp;      //  NOTE: size of footnote sign is assumed as &lt;= MAX_NOTE_CHAR
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    int[] n = new int[footnotes.length];</b>
+<b class="nc">&nbsp;    for(int j = 0; j &lt; n.length; j++) {</b>
+<b class="nc">&nbsp;      n[j] = 1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return isEqualWithoutFootnotes(flatPara, textPara, footnotes, n, n.length - 1);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  private static int[] getFootnotes(List&lt;int[]&gt; footnotes, int i) {
+<b class="nc">&nbsp;    return footnotes != null &amp;&amp; i &lt; footnotes.size() ? footnotes.get(i) : null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Correct header/footer or table 
+&nbsp;   */
+&nbsp;  
+&nbsp;  private void correctNegativeNumberEntries(int type, List&lt;List&lt;String&gt;&gt; textParas, List&lt;String&gt; paragraphs, 
+&nbsp;      List&lt;List&lt;Integer&gt;&gt; toParaMapping, List&lt;TextParagraph&gt; toTextMapping)  {
+<b class="nc">&nbsp;    boolean isRemoved = false;</b>
+<b class="nc">&nbsp;    for (int j = textParas.get(type).size() - 1; j &gt;= 0; j--) {</b>
+<b class="nc">&nbsp;      if (toParaMapping.get(type).get(j) &lt; 0) {</b>
+<b class="nc">&nbsp;        boolean isMapped = false;</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; toTextMapping.size() &amp;&amp; !isMapped; i++) {</b>
+<b class="nc">&nbsp;          if (toTextMapping.get(i).type == CURSOR_TYPE_UNKNOWN</b>
+<b class="nc">&nbsp;              &amp;&amp; isEqualText(paragraphs.get(i), textParas.get(type).get(j), getFootnotes(footnotes, i))) {</b>
+<b class="nc">&nbsp;            toParaMapping.get(type).set(j, i);</b>
+<b class="nc">&nbsp;            toTextMapping.set(i, new TextParagraph(type, j));</b>
+<b class="nc">&nbsp;            isMapped = true;</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        if (!isMapped) {</b>
+<b class="nc">&nbsp;          toParaMapping.get(type).remove(j);</b>
+<b class="nc">&nbsp;          isRemoved = true;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (isRemoved) {</b>
+<b class="nc">&nbsp;      for (int j = 0; j &lt; toParaMapping.get(type).size(); j++) {</b>
+<b class="nc">&nbsp;        int i = toParaMapping.get(type).get(j);</b>
+<b class="nc">&nbsp;        if (toTextMapping.get(i).number != j) {</b>
+<b class="nc">&nbsp;          toTextMapping.set(i, new TextParagraph(type, j));</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  void correctParaMapping (int type, List&lt;List&lt;Integer&gt;&gt; toParaMapping) {
+<b class="nc">&nbsp;    if (type != CURSOR_TYPE_TEXT) {</b>
+<b class="nc">&nbsp;      for (int i = toParaMapping.get(type).size() - 1; i &gt;= 0; i--) {</b>
+<b class="nc">&nbsp;        if (toParaMapping.get(type).get(i) &lt; 0) {</b>
+<b class="nc">&nbsp;          toParaMapping.get(type).remove(i);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Map Text inside a loop of all text paragraphs of a cursor type
+&nbsp;   * NOTE: This is needed for all types of cursor other than text and frame because they can be inside a frame disturbing the usual order 
+&nbsp;   */
+&nbsp;  
+&nbsp;  private boolean mapTextParagraphsPerLoop(int type, int nFlat, List&lt;String&gt; paragraphs, List&lt;int[]&gt; footnotes, 
+&nbsp;      List&lt;List&lt;String&gt;&gt; textParas, List&lt;TextParagraph&gt; toTextMapping, List&lt;List&lt;Integer&gt;&gt; toParaMapping, 
+&nbsp;      List&lt;List&lt;Integer&gt;&gt; nMapped, List&lt;Integer&gt; nNext) {
+<b class="nc">&nbsp;    if (nMapped.get(type).size() &lt; textParas.get(type).size()) {</b>
+<b class="nc">&nbsp;      for (int k = nNext.get(type); k &lt; textParas.get(type).size(); k++) {</b>
+<b class="nc">&nbsp;        if (!nMapped.get(type).contains(k) &amp;&amp; isEqualText(paragraphs.get(nFlat), textParas.get(type).get(k), getFootnotes(footnotes, nFlat))) {</b>
+<b class="nc">&nbsp;          toTextMapping.add(new TextParagraph(type, k));</b>
+<b class="nc">&nbsp;          toParaMapping.get(type).set(k, nFlat);</b>
+<b class="nc">&nbsp;          nMapped.get(type).add(k);</b>
+<b class="nc">&nbsp;          nNext.set(type, k &lt; textParas.get(type).size() - 1 ? k + 1 : 0);</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      for (int k = 0; k &lt; nNext.get(type); k++) {</b>
+<b class="nc">&nbsp;        if (!nMapped.get(type).contains(k) &amp;&amp; isEqualText(paragraphs.get(nFlat), textParas.get(type).get(k),getFootnotes(footnotes, nFlat))) {</b>
+<b class="nc">&nbsp;          toTextMapping.add(new TextParagraph(type, k));</b>
+<b class="nc">&nbsp;          toParaMapping.get(type).set(k, nFlat);</b>
+<b class="nc">&nbsp;          nMapped.get(type).add(k);</b>
+<b class="nc">&nbsp;          nNext.set(type, k &lt; textParas.get(type).size() - 1 ? k + 1 : 0);</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Map text paragraphs to flat paragraphs is only used for writer documents
+&nbsp;   * Use a heuristic procedure
+&nbsp;   */
+&nbsp;  private void mapParagraphs(List&lt;String&gt; paragraphs, List&lt;TextParagraph&gt; toTextMapping, List&lt;List&lt;Integer&gt;&gt; toParaMapping,
+&nbsp;        List&lt;List&lt;Integer&gt;&gt; chapterBegins, List&lt;SerialLocale&gt; locales, List&lt;int[]&gt; footnotes, List&lt;List&lt;String&gt;&gt; textParas, 
+&nbsp;        List&lt;List&lt;Integer&gt;&gt; deletedCharacters, List&lt;List&lt;List&lt;Integer&gt;&gt;&gt; deletedChars) {
+&nbsp;//    MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs called&quot;);
+<b class="nc">&nbsp;    if (textParas != null &amp;&amp; !textParas.isEmpty()) {</b>
+<b class="nc">&nbsp;      List&lt;List&lt;Integer&gt;&gt; nMapped = new ArrayList&lt;&gt;();  // Mapped paragraphs per cursor type</b>
+<b class="nc">&nbsp;      List&lt;Integer&gt; nNext = new ArrayList&lt;&gt;();          //  Next assumed paragraph number for cursor type</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; textParas.size(); i++) {</b>
+<b class="nc">&nbsp;        nMapped.add(new ArrayList&lt;&gt;());</b>
+<b class="nc">&nbsp;        nNext.add(0);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int nUnknown = 0;</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        nUnknown += textParas.get(i).size();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      nUnknown = paragraphs.size() - nUnknown;  // nUnknown: number of headings of graphic elements</b>
+<b class="nc">&nbsp;      int printCount = 0;</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: Unknown paragraphs: &quot; + nUnknown);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int j = 0; j &lt; NUMBER_CURSOR_TYPES; j++) {</b>
+&nbsp;//        if (j != CURSOR_TYPE_TEXT &amp;&amp; j != CURSOR_TYPE_FRAME) {
+<b class="nc">&nbsp;        if (j != CURSOR_TYPE_TEXT) {</b>
+<b class="nc">&nbsp;          for (int i = 0; i &lt; textParas.get(j).size(); i++) {</b>
+<b class="nc">&nbsp;            toParaMapping.get(j).add(-1);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;          for (int j = 0; j &lt; textParas.get(i).size(); j++) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: type: &quot; + i + &quot;; text: &quot; + textParas.get(i).get(j));</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      int numUnknown = 0;</b>
+<b class="nc">&nbsp;      boolean thirdTextDone = false;</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; paragraphs.size(); i++) {</b>
+<b class="nc">&nbsp;        boolean isMapped = false;</b>
+<b class="nc">&nbsp;        boolean firstTextDone = nMapped.get(CURSOR_TYPE_ENDNOTE).size() == textParas.get(CURSOR_TYPE_ENDNOTE).size()</b>
+<b class="nc">&nbsp;            &amp;&amp; nMapped.get(CURSOR_TYPE_FOOTNOTE).size() == textParas.get(CURSOR_TYPE_FOOTNOTE).size();</b>
+<b class="nc">&nbsp;        boolean secondTextDone = firstTextDone </b>
+&nbsp;//            &amp;&amp; toParaMapping.get(CURSOR_TYPE_FRAME).size() == textParas.get(CURSOR_TYPE_FRAME).size()
+<b class="nc">&nbsp;            &amp;&amp; nMapped.get(CURSOR_TYPE_SHAPE).size() == textParas.get(CURSOR_TYPE_SHAPE).size()</b>
+<b class="nc">&nbsp;            &amp;&amp; nMapped.get(CURSOR_TYPE_HEADER_FOOTER).size() == textParas.get(CURSOR_TYPE_HEADER_FOOTER).size();</b>
+&nbsp;        //  test for footnote, endnote, frame or header/footer
+&nbsp;        //  listed before text or embedded tables
+<b class="nc">&nbsp;        if (!firstTextDone) {</b>
+&nbsp;          // test for footnote or endnote
+<b class="nc">&nbsp;          for (int n = 0; n &lt; 2; n++) {</b>
+<b class="nc">&nbsp;            if (mapTextParagraphsPerLoop(n, i, paragraphs, footnotes, textParas, toTextMapping, toParaMapping, nMapped, nNext)) {</b>
+<b class="nc">&nbsp;              isMapped = true;</b>
+<b class="nc">&nbsp;              break;</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          if (isMapped) {</b>
+<b class="nc">&nbsp;            continue;</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        if (!secondTextDone &amp;&amp; firstTextDone) {</b>
+&nbsp;          // test for header/footer, frame or shape
+<b class="nc">&nbsp;          for (int n = 2; n &lt; NUMBER_CURSOR_TYPES - 2; n++) {</b>
+&nbsp;/*
+&nbsp;            if (n == CURSOR_TYPE_FRAME) {
+&nbsp;              int j = nNext.get(n);
+&nbsp;              if (j &lt; textParas.get(n).size()) {
+&nbsp;                if (isEqualText(paragraphs.get(i), textParas.get(n).get(j), getFootnotes(footnotes, i))) {
+&nbsp;                  isMapped = true;
+&nbsp;                  toTextMapping.add(new TextParagraph(n, j));
+&nbsp;                  toParaMapping.get(n).add(i);
+&nbsp;                  nNext.set(n, j + 1);
+&nbsp;                  break;
+&nbsp;                }
+&nbsp;              }
+&nbsp;            } else {
+&nbsp;*/            
+<b class="nc">&nbsp;              if (mapTextParagraphsPerLoop(n, i, paragraphs, footnotes, textParas, toTextMapping, toParaMapping, nMapped, nNext)) {</b>
+<b class="nc">&nbsp;                isMapped = true;</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;              }
+&nbsp;//            }
+&nbsp;          }
+<b class="nc">&nbsp;          if (isMapped) {</b>
+<b class="nc">&nbsp;            continue;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;        //  test for movable tables
+&nbsp;        //  listed before text or embedded tables
+<b class="nc">&nbsp;        if ((!secondTextDone || !thirdTextDone) &amp;&amp; firstTextDone &amp;&amp; nMapped.get(CURSOR_TYPE_TABLE).size() &lt; textParas.get(CURSOR_TYPE_TABLE).size()) {</b>
+<b class="nc">&nbsp;          if (!secondTextDone || textParas.get(CURSOR_TYPE_TEXT).isEmpty() || </b>
+<b class="nc">&nbsp;              !isEqualText(paragraphs.get(i), textParas.get(CURSOR_TYPE_TEXT).get(0), getFootnotes(footnotes, i))) {</b>
+<b class="nc">&nbsp;            if (mapTextParagraphsPerLoop(CURSOR_TYPE_TABLE, i, paragraphs, footnotes, textParas, toTextMapping, toParaMapping, nMapped, nNext)) {</b>
+<b class="nc">&nbsp;              continue;</b>
+<b class="nc">&nbsp;            } else if (secondTextDone) {</b>
+<b class="nc">&nbsp;              nNext.set(CURSOR_TYPE_TABLE, 0);</b>
+<b class="nc">&nbsp;              thirdTextDone = true;</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;        //  there are unknown paragraphs before text paragraphs
+<b class="nc">&nbsp;        if (!secondTextDone) {</b>
+<b class="nc">&nbsp;          toTextMapping.add(new TextParagraph(CURSOR_TYPE_UNKNOWN, -1));</b>
+<b class="nc">&nbsp;          numUnknown++;</b>
+<b class="nc">&nbsp;          if (debugMode) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;WARNING: DocumentCache: Could not map Paragraph(&quot; + i + &quot;): &#39;&quot; + paragraphs.get(i) +</b>
+&nbsp;                &quot;&#39;; secondTextDone: &quot; + secondTextDone);
+<b class="nc">&nbsp;            String msg = &quot;DocumentCache: mapParagraphs:\n&quot;;</b>
+<b class="nc">&nbsp;            for (int k = 0; k &lt; NUMBER_CURSOR_TYPES; k++) {</b>
+&nbsp;//              if (k == CURSOR_TYPE_TEXT || k == CURSOR_TYPE_FRAME) {
+<b class="nc">&nbsp;              if (k == CURSOR_TYPE_TEXT) {</b>
+<b class="nc">&nbsp;                msg += &quot;Actual Cursor Paragraph (Type &quot; + k + &quot;): &quot; + </b>
+<b class="nc">&nbsp;                        (nNext.get(k) &lt; textParas.get(k).size() ? textParas.get(k).get(nNext.get(k)) : &quot;no paragraph left&quot;) + &quot;\n&quot;;</b>
+&nbsp;              } else {
+<b class="nc">&nbsp;                msg += &quot;Actual Cursor Paragraph (Type &quot; + k + &quot;): &quot; + </b>
+<b class="nc">&nbsp;                    (nMapped.get(k).size() &lt; textParas.get(k).size() ? textParas.get(k).get(nNext.get(k)) : &quot;no paragraph left&quot;) + &quot;\n&quot;;</b>
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(msg);</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Unknown Paragraphs: &quot; + (numUnknown - 1) + &quot; from &quot; + nUnknown);</b>
+<b class="nc">&nbsp;          }</b>
+&nbsp;          continue;
+&nbsp;        }
+<b class="nc">&nbsp;        int j = nNext.get(CURSOR_TYPE_TEXT);</b>
+<b class="nc">&nbsp;        if (j == textParas.get(CURSOR_TYPE_TEXT).size() &amp;&amp; nMapped.get(CURSOR_TYPE_TABLE).size() == textParas.get(CURSOR_TYPE_TABLE).size()) {</b>
+&nbsp;          //  no text and tables left ==&gt; unknown paragraph
+<b class="nc">&nbsp;          toTextMapping.add(new TextParagraph(CURSOR_TYPE_UNKNOWN, -1));</b>
+<b class="nc">&nbsp;          numUnknown++;</b>
+<b class="nc">&nbsp;          if (debugMode &amp;&amp; (!paragraphs.get(i).isEmpty() &amp;&amp; printCount &lt; MAX_PRINTED_PARAS)) {</b>
+<b class="nc">&nbsp;            printCount++;</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(</b>
+<b class="nc">&nbsp;                &quot;Warning: DocumentCache: Could not map Paragraph(&quot; + i + &quot;): &#39;&quot; + paragraphs.get(i) + &quot;&#39;; secondTextDone: &quot; + secondTextDone);</b>
+&nbsp;          }
+&nbsp;          continue;
+<b class="nc">&nbsp;        } else if (nMapped.get(CURSOR_TYPE_TABLE).size() == textParas.get(CURSOR_TYPE_TABLE).size() &amp;&amp; numUnknown &gt;= nUnknown) {</b>
+&nbsp;          //  no tables left / text assumed
+<b class="nc">&nbsp;          toTextMapping.add(new TextParagraph(CURSOR_TYPE_TEXT, j));</b>
+<b class="nc">&nbsp;          toParaMapping.get(CURSOR_TYPE_TEXT).add(i);</b>
+<b class="nc">&nbsp;          nNext.set(CURSOR_TYPE_TEXT, j + 1);</b>
+<b class="nc">&nbsp;          continue;</b>
+<b class="nc">&nbsp;        } else if (j == textParas.get(CURSOR_TYPE_TEXT).size() &amp;&amp; numUnknown &gt;= nUnknown) {</b>
+&nbsp;          //  no text left / table assumed
+<b class="nc">&nbsp;          int k = nNext.get(CURSOR_TYPE_TABLE);</b>
+<b class="nc">&nbsp;          for (; k &lt; textParas.get(CURSOR_TYPE_TABLE).size() &amp;&amp; !nMapped.get(CURSOR_TYPE_TABLE).contains(k); k++); </b>
+<b class="nc">&nbsp;          if (k == textParas.get(CURSOR_TYPE_TABLE).size()) {</b>
+<b class="nc">&nbsp;            for (k = 0; k &lt; nNext.get(CURSOR_TYPE_TABLE) &amp;&amp; !nMapped.get(CURSOR_TYPE_TABLE).contains(k); k++);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          nMapped.get(CURSOR_TYPE_TABLE).add(k);</b>
+<b class="nc">&nbsp;          nNext.set(CURSOR_TYPE_TABLE, k + 1);</b>
+<b class="nc">&nbsp;          toTextMapping.add(new TextParagraph(CURSOR_TYPE_TABLE, k));</b>
+<b class="nc">&nbsp;          toParaMapping.get(CURSOR_TYPE_TABLE).set(k, i);</b>
+<b class="nc">&nbsp;          continue;</b>
+&nbsp;        } else {
+&nbsp;          //  test for table
+<b class="nc">&nbsp;          int k = nNext.get(CURSOR_TYPE_TABLE);</b>
+<b class="nc">&nbsp;          for (; k &lt; textParas.get(CURSOR_TYPE_TABLE).size(); k++) {</b>
+<b class="nc">&nbsp;            if (!nMapped.get(CURSOR_TYPE_TABLE).contains(k)) {</b>
+<b class="nc">&nbsp;              break;</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          if (k &lt; textParas.get(CURSOR_TYPE_TABLE).size() &amp;&amp; </b>
+<b class="nc">&nbsp;              isEqualText(paragraphs.get(i), textParas.get(CURSOR_TYPE_TABLE).get(k), getFootnotes(footnotes, i))) {</b>
+<b class="nc">&nbsp;            boolean equalTable = true;</b>
+<b class="nc">&nbsp;            boolean equalText = j &lt; textParas.get(CURSOR_TYPE_TEXT).size() &amp;&amp;</b>
+<b class="nc">&nbsp;                isEqualText(paragraphs.get(i), textParas.get(CURSOR_TYPE_TEXT).get(j), getFootnotes(footnotes, i));</b>
+&nbsp;            //  test if table and text are equal
+&nbsp;/*  TODO: remove after tests            
+&nbsp;            MessageHandler.printToLogFile(&quot;\nDocumentCache: mapParagraphs: equal  flat(&quot; + i + &quot;): &quot; + paragraphs.get(i));
+&nbsp;            MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: equal  text(&quot; + j + &quot;): &quot; + textParas.get(CURSOR_TYPE_TEXT).get(j));
+&nbsp;            MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: equal table(&quot; + k + &quot;): &quot; + textParas.get(CURSOR_TYPE_TABLE).get(k));
+&nbsp;            MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: equalText: &quot; + equalText + &quot;; equalTable: &quot; + equalTable);
+&nbsp;*/
+<b class="nc">&nbsp;            int mk = k;</b>
+<b class="nc">&nbsp;            int mj = j;</b>
+<b class="nc">&nbsp;            int mi = i;</b>
+<b class="nc">&nbsp;            while (equalTable &amp;&amp; equalText &amp;&amp; mi &lt; paragraphs.size() - 1) {</b>
+<b class="nc">&nbsp;              mi++;</b>
+<b class="nc">&nbsp;              mk++;</b>
+<b class="nc">&nbsp;              if (mk &lt; textParas.get(CURSOR_TYPE_TABLE).size() &amp;&amp; !nMapped.get(CURSOR_TYPE_TABLE).contains(mk)) {</b>
+<b class="nc">&nbsp;                equalTable = isEqualText(paragraphs.get(mi), textParas.get(CURSOR_TYPE_TABLE).get(mk), getFootnotes(footnotes, mi));</b>
+&nbsp;              } else {
+<b class="nc">&nbsp;                equalTable = false;</b>
+&nbsp;              }
+<b class="nc">&nbsp;              mj++;</b>
+<b class="nc">&nbsp;              if (mj &lt; textParas.get(CURSOR_TYPE_TEXT).size()) {</b>
+<b class="nc">&nbsp;                equalText = isEqualText(paragraphs.get(mi), textParas.get(CURSOR_TYPE_TEXT).get(mj), getFootnotes(footnotes, mi));</b>
+&nbsp;              } else {
+<b class="nc">&nbsp;                equalText = false;</b>
+&nbsp;              }
+&nbsp;            }
+&nbsp;/*  TODO: remove after tests            
+&nbsp;            MessageHandler.printToLogFile(&quot;\nDocumentCache: mapParagraphs: equal  flat(&quot; + mi + &quot;): &quot; + paragraphs.get(mi));
+&nbsp;            MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: equal  text(&quot; + mj + &quot;): &quot; + textParas.get(CURSOR_TYPE_TEXT).get(mj));
+&nbsp;            MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: equal table(&quot; + mk + &quot;): &quot; + textParas.get(CURSOR_TYPE_TABLE).get(mk));
+&nbsp;            MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: equalText: &quot; + equalText + &quot;; equalTable: &quot; + equalTable);
+&nbsp;*/
+<b class="nc">&nbsp;            if (!equalText) {</b>
+<b class="nc">&nbsp;              nMapped.get(CURSOR_TYPE_TABLE).add(k);</b>
+<b class="nc">&nbsp;              nNext.set(CURSOR_TYPE_TABLE, k + 1);</b>
+<b class="nc">&nbsp;              toTextMapping.add(new TextParagraph(CURSOR_TYPE_TABLE, k));</b>
+<b class="nc">&nbsp;              toParaMapping.get(CURSOR_TYPE_TABLE).set(k, i);</b>
+<b class="nc">&nbsp;              continue;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            isMapped = true;</b>
+&nbsp;          }
+&nbsp;          //  test for text
+<b class="nc">&nbsp;          if (!isMapped) {</b>
+<b class="nc">&nbsp;            if (j &lt; textParas.get(CURSOR_TYPE_TEXT).size() &amp;&amp; isEqualText(paragraphs.get(i), textParas.get(CURSOR_TYPE_TEXT).get(j), getFootnotes(footnotes, i))) {</b>
+<b class="nc">&nbsp;              isMapped = true;</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          if (isMapped) {</b>
+<b class="nc">&nbsp;            toTextMapping.add(new TextParagraph(CURSOR_TYPE_TEXT, j));</b>
+<b class="nc">&nbsp;            toParaMapping.get(CURSOR_TYPE_TEXT).add(i);</b>
+<b class="nc">&nbsp;            nNext.set(CURSOR_TYPE_TEXT, j + 1);</b>
+<b class="nc">&nbsp;            continue;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;        //  unknown paragraph
+<b class="nc">&nbsp;        toTextMapping.add(new TextParagraph(CURSOR_TYPE_UNKNOWN, -1));</b>
+<b class="nc">&nbsp;        numUnknown++;</b>
+<b class="nc">&nbsp;        if (debugMode &amp;&amp; (!paragraphs.get(i).isEmpty() &amp;&amp; printCount &lt; MAX_PRINTED_PARAS)) {</b>
+<b class="nc">&nbsp;          printCount++;</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(</b>
+<b class="nc">&nbsp;              &quot;Warning: DocumentCache: Could not map Paragraph(&quot; + i + &quot;): &#39;&quot; + paragraphs.get(i) + &quot;&#39;; secondTextDone: &quot; + secondTextDone);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          if (nNext.get(CURSOR_TYPE_TABLE) &gt;= textParas.get(CURSOR_TYPE_TABLE).size()) {</b>
+<b class="nc">&nbsp;            nNext.set(CURSOR_TYPE_TABLE, 0);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          String msg = &quot;DocumentCache: mapParagraphs:\n&quot;;</b>
+<b class="nc">&nbsp;          for (int k = 0; k &lt; NUMBER_CURSOR_TYPES; k++) {</b>
+&nbsp;//            if (k == CURSOR_TYPE_TEXT || k == CURSOR_TYPE_FRAME) {
+<b class="nc">&nbsp;            if (k == CURSOR_TYPE_TEXT) {</b>
+<b class="nc">&nbsp;              msg += &quot;Actual Cursor Paragraph (Type &quot; + k + &quot;): &quot; + </b>
+<b class="nc">&nbsp;                      (nNext.get(k) &lt; textParas.get(k).size() ? textParas.get(k).get(nNext.get(k)) : &quot;no paragraph left&quot;) + &quot;\n&quot;;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              msg += &quot;Actual Cursor Paragraph (Type &quot; + k + &quot;): &quot; + </b>
+<b class="nc">&nbsp;                  (nMapped.get(k).size() &lt; textParas.get(k).size() ? textParas.get(k).get(nNext.get(k)) : &quot;no paragraph left&quot;) + &quot;\n&quot;;</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(msg);</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Unknown Paragraphs: &quot; + (numUnknown - 1) + &quot; from &quot; + nUnknown);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      boolean isCorrectNonText = true;</b>
+<b class="nc">&nbsp;      boolean isCorrectMapping = true;</b>
+<b class="nc">&nbsp;      int nMap = 0;</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        if (i != CURSOR_TYPE_TEXT) {</b>
+<b class="nc">&nbsp;          nMap += nMapped.get(i).size();</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      nMap += toParaMapping.get(CURSOR_TYPE_TEXT).size();</b>
+<b class="nc">&nbsp;      if (nMap == paragraphs.size()) {</b>
+&nbsp;        //  remove unmapped entries in to paraMapping
+<b class="nc">&nbsp;        for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;          correctParaMapping(i, toParaMapping);</b>
+&nbsp;        }
+&nbsp;      } else {
+<b class="nc">&nbsp;        isCorrectNonText = nMapped.get(CURSOR_TYPE_ENDNOTE).size() == textParas.get(CURSOR_TYPE_ENDNOTE).size()</b>
+<b class="nc">&nbsp;            &amp;&amp; nMapped.get(CURSOR_TYPE_FOOTNOTE).size() == textParas.get(CURSOR_TYPE_FOOTNOTE).size()</b>
+<b class="nc">&nbsp;            &amp;&amp; nMapped.get(CURSOR_TYPE_SHAPE).size() == textParas.get(CURSOR_TYPE_SHAPE).size()</b>
+<b class="nc">&nbsp;            &amp;&amp; nMapped.get(CURSOR_TYPE_HEADER_FOOTER).size() == textParas.get(CURSOR_TYPE_HEADER_FOOTER).size()</b>
+<b class="nc">&nbsp;            &amp;&amp; nMapped.get(CURSOR_TYPE_TABLE).size() == textParas.get(CURSOR_TYPE_TABLE).size();</b>
+&nbsp;  //          &amp;&amp; toParaMapping.get(CURSOR_TYPE_FRAME).size() == textParas.get(CURSOR_TYPE_FRAME).size();
+<b class="nc">&nbsp;        if (!isCorrectNonText) {</b>
+&nbsp;          //  Try to repair incorrect header/footer mapping
+<b class="nc">&nbsp;          for (int k = 0; k &lt; NUMBER_CURSOR_TYPES; k++) {</b>
+<b class="nc">&nbsp;            if (k != CURSOR_TYPE_TEXT) {</b>
+<b class="nc">&nbsp;              if (nMapped.get(k).size() &lt; textParas.get(k).size()) {</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;Warning: document cache mapping failed: Try to repair mapping of paragraph type &quot; + k);</b>
+<b class="nc">&nbsp;                correctNegativeNumberEntries(k, textParas, paragraphs, toParaMapping, toTextMapping);</b>
+&nbsp;              }
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          isCorrectNonText = toParaMapping.get(CURSOR_TYPE_ENDNOTE).size() == textParas.get(CURSOR_TYPE_ENDNOTE).size()</b>
+<b class="nc">&nbsp;              &amp;&amp; toParaMapping.get(CURSOR_TYPE_FOOTNOTE).size() == textParas.get(CURSOR_TYPE_FOOTNOTE).size()</b>
+&nbsp;  //            &amp;&amp; toParaMapping.get(CURSOR_TYPE_FRAME).size() == textParas.get(CURSOR_TYPE_FRAME).size()
+<b class="nc">&nbsp;              &amp;&amp; toParaMapping.get(CURSOR_TYPE_SHAPE).size() == textParas.get(CURSOR_TYPE_SHAPE).size()</b>
+<b class="nc">&nbsp;              &amp;&amp; toParaMapping.get(CURSOR_TYPE_HEADER_FOOTER).size() == textParas.get(CURSOR_TYPE_HEADER_FOOTER).size()</b>
+<b class="nc">&nbsp;              &amp;&amp; toParaMapping.get(CURSOR_TYPE_TABLE).size() == textParas.get(CURSOR_TYPE_TABLE).size();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        isCorrectMapping = isCorrectNonText &amp;&amp; toParaMapping.get(CURSOR_TYPE_TEXT).size() == textParas.get(CURSOR_TYPE_TEXT).size();</b>
+<b class="nc">&nbsp;        if (!isCorrectMapping &amp;&amp; isCorrectNonText) {</b>
+&nbsp;          //  Try to repair incorrect text mapping
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;\nWarning: document cache mapping failed: Try to repair mapping of paragraph type text&quot;);</b>
+<b class="nc">&nbsp;          printCount = 0;</b>
+<b class="nc">&nbsp;          toParaMapping.get(CURSOR_TYPE_TEXT).clear();</b>
+<b class="nc">&nbsp;          for (int i = 0; i &lt; paragraphs.size(); i++) {</b>
+<b class="nc">&nbsp;            if (toTextMapping.get(i).type == CURSOR_TYPE_TEXT) {</b>
+<b class="nc">&nbsp;              toTextMapping.set(i, new TextParagraph(CURSOR_TYPE_UNKNOWN, -1));</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          boolean allmapped = true;</b>
+<b class="nc">&nbsp;          for (int j = 0; j &lt; textParas.get(CURSOR_TYPE_TEXT).size(); j++) {</b>
+<b class="nc">&nbsp;            boolean ismapped = false;</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; paragraphs.size() &amp;&amp; !ismapped; i++) {</b>
+<b class="nc">&nbsp;              if ((toTextMapping.get(i).type == CURSOR_TYPE_UNKNOWN) &amp;&amp; </b>
+<b class="nc">&nbsp;                  isEqualText(paragraphs.get(i), textParas.get(CURSOR_TYPE_TEXT).get(j), getFootnotes(footnotes, i))) {</b>
+<b class="nc">&nbsp;                toTextMapping.set(i, new TextParagraph(CURSOR_TYPE_TEXT, j));</b>
+<b class="nc">&nbsp;                toParaMapping.get(CURSOR_TYPE_TEXT).add(i);</b>
+<b class="nc">&nbsp;                ismapped = true;</b>
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;            if (!ismapped) {</b>
+<b class="nc">&nbsp;              allmapped = false;</b>
+<b class="nc">&nbsp;              if (debugMode || printCount &lt; MAX_PRINTED_PARAS) {</b>
+<b class="nc">&nbsp;                printCount++;</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;Warning: Could not map text paragraph: &quot; + textParas.get(CURSOR_TYPE_TEXT).get(j));</b>
+&nbsp;              }
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          if (!allmapped) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Warning: unknow non empty paragraphs (max. &quot; + MAX_PRINTED_PARAS + &quot; printed):&quot;);</b>
+<b class="nc">&nbsp;            printCount = 0;</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; paragraphs.size() &amp;&amp; printCount &lt; MAX_PRINTED_PARAS; i++) {</b>
+<b class="nc">&nbsp;              if (toTextMapping.get(i).type == CURSOR_TYPE_UNKNOWN &amp;&amp; !paragraphs.get(i).isEmpty()) {</b>
+<b class="nc">&nbsp;                printCount++;</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(i + &quot;: &quot; + paragraphs.get(i));</b>
+<b class="nc">&nbsp;                for(int j = 0; j &lt; paragraphs.get(i).length(); j++) {</b>
+<b class="nc">&nbsp;                  if (!Character.isLetterOrDigit(paragraphs.get(i).codePointAt(j)) &amp;&amp; paragraphs.get(i).charAt(j) != &#39; &#39;  &amp;&amp; paragraphs.get(i).charAt(j) != &#39;\t&#39;) {</b>
+<b class="nc">&nbsp;                    MessageHandler.printToLogFile(&quot;CharAt(&quot; + j + &quot;): &quot; + paragraphs.get(i).codePointAt(j));</b>
+&nbsp;                  }
+&nbsp;                }
+&nbsp;              }
+&nbsp;            }  
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        isCorrectMapping = isCorrectNonText &amp;&amp; toParaMapping.get(CURSOR_TYPE_TEXT).size() == textParas.get(CURSOR_TYPE_TEXT).size();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (!isCorrectMapping) {</b>
+<b class="nc">&nbsp;        numUnknown = 0;</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;          numUnknown += toParaMapping.get(i).size();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        numUnknown = paragraphs.size() - numUnknown;  // nUnknown: number of headings of graphic elements</b>
+<b class="nc">&nbsp;        String msg = &quot;An error has occurred in LanguageTool &quot;</b>
+&nbsp;            + JLanguageTool.VERSION + &quot; (&quot; + JLanguageTool.BUILD_DATE + &quot;):\nDocument cache mapping failed:\nParagraphs:\n&quot;
+<b class="nc">&nbsp;            + &quot;Endnotes: &quot; + toParaMapping.get(CURSOR_TYPE_ENDNOTE).size() + &quot; / &quot; + textParas.get(CURSOR_TYPE_ENDNOTE).size() + &quot;\n&quot;</b>
+<b class="nc">&nbsp;            + &quot;Footnotes: &quot; + toParaMapping.get(CURSOR_TYPE_FOOTNOTE).size() + &quot; / &quot; + textParas.get(CURSOR_TYPE_FOOTNOTE).size() + &quot;\n&quot;</b>
+<b class="nc">&nbsp;            + &quot;Headers/Footers: &quot; + toParaMapping.get(CURSOR_TYPE_HEADER_FOOTER).size() + &quot; / &quot; + textParas.get(CURSOR_TYPE_HEADER_FOOTER).size() + &quot;\n&quot;</b>
+&nbsp;//            + &quot;Frames: &quot; + toParaMapping.get(CURSOR_TYPE_FRAME).size() + &quot; / &quot; + textParas.get(CURSOR_TYPE_FRAME).size() + &quot;\n&quot;
+<b class="nc">&nbsp;            + &quot;Shapes: &quot; + toParaMapping.get(CURSOR_TYPE_SHAPE).size() + &quot; / &quot; + textParas.get(CURSOR_TYPE_SHAPE).size() + &quot;\n&quot;</b>
+<b class="nc">&nbsp;            + &quot;Tables: &quot; + toParaMapping.get(CURSOR_TYPE_TABLE).size() + &quot; / &quot; + textParas.get(CURSOR_TYPE_TABLE).size() + &quot;\n&quot;</b>
+<b class="nc">&nbsp;            + &quot;Text: &quot; + toParaMapping.get(CURSOR_TYPE_TEXT).size() + &quot; / &quot; + textParas.get(CURSOR_TYPE_TEXT).size() + &quot;\n&quot;</b>
+&nbsp;            + &quot;Unknown: &quot; + numUnknown + &quot; / &quot; + nUnknown;
+&nbsp;//        MessageHandler.showMessage(msg);
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(msg);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      nText = toParaMapping.get(CURSOR_TYPE_TEXT).size();</b>
+<b class="nc">&nbsp;      nTable = toParaMapping.get(CURSOR_TYPE_TABLE).size();</b>
+<b class="nc">&nbsp;      nShape = toParaMapping.get(CURSOR_TYPE_SHAPE).size();</b>
+<b class="nc">&nbsp;      nFootnote = toParaMapping.get(CURSOR_TYPE_FOOTNOTE).size();</b>
+<b class="nc">&nbsp;      nEndnote = toParaMapping.get(CURSOR_TYPE_ENDNOTE).size();</b>
+<b class="nc">&nbsp;      nHeaderFooter = toParaMapping.get(CURSOR_TYPE_HEADER_FOOTER).size();</b>
+<b class="nc">&nbsp;      mapDeletedCharacters(deletedCharacters, paragraphs, deletedChars, toTextMapping);</b>
+<b class="nc">&nbsp;      prepareChapterBeginsForText(chapterBegins, toTextMapping, locales);</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;\nDocumentCache: mapParagraphs: toParaMapping:&quot;);</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; NUMBER_CURSOR_TYPES; n++) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Cursor Type: &quot; + n);</b>
+<b class="nc">&nbsp;          for (int i = 0; i &lt; toParaMapping.get(n).size(); i++) {</b>
+<b class="nc">&nbsp;            MessageHandler</b>
+<b class="nc">&nbsp;                .printToLogFile(&quot;DocumentCache: mapParagraphs: Doc: &quot; + i + &quot; Flat: &quot; + toParaMapping.get(n).get(i));</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;\nDocumentCache: mapParagraphs: toTextMapping:&quot;);</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; toTextMapping.size(); i++) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: Flat: &quot; + i + &quot; Doc: &quot;</b>
+<b class="nc">&nbsp;              + toTextMapping.get(i).number + &quot; Type: &quot; + toTextMapping.get(i).type + &quot;; locale: &quot;</b>
+<b class="nc">&nbsp;              + locales.get(i).Language + &quot;-&quot; + locales.get(i).Country </b>
+<b class="nc">&nbsp;              + &quot;; Deleted Chars size: &quot; + (deletedCharacters.get(i) == null ? &quot;null&quot; : deletedCharacters.get(i).size())</b>
+<b class="nc">&nbsp;              + &quot;; &#39;&quot; + paragraphs.get(i) + &quot;&#39;&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;\nDocumentCache: mapParagraphs: headings:&quot;);</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; NUMBER_CURSOR_TYPES; n++) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;\nDocumentCache: mapParagraphs: Cursor Type: &quot; + n);</b>
+<b class="nc">&nbsp;          for (int i = 0; i &lt; chapterBegins.get(n).size(); i++) {</b>
+<b class="nc">&nbsp;            MessageHandler</b>
+<b class="nc">&nbsp;                .printToLogFile(&quot;DocumentCache: mapParagraphs: Num: &quot; + i + &quot; Heading: &quot; + chapterBegins.get(n).get(i));</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: Number of Flat Paragraphs: &quot; + paragraphs.size());</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(</b>
+<b class="nc">&nbsp;            &quot;DocumentCache: mapParagraphs: Number of Text Paragraphs: &quot; + toParaMapping.get(CURSOR_TYPE_TEXT).size());</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: Number of footnotes: &quot; + footnotes.size());</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: Number of locales: &quot; + locales.size());</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: Number of Deleted Chars: &quot; + deletedCharacters.size());</b>
+&nbsp;      }
+&nbsp;/*
+&nbsp;      for (int i = 0; i &lt; locales.size(); i++) {
+&nbsp;        MessageHandler.printToLogFile(&quot;DocumentCache: mapParagraphs: Num: &quot; + i + &quot; locale: &quot; + locales.get(i).toString());
+&nbsp;      }
+&nbsp;*/
+&nbsp;    }
+&nbsp;  }
+&nbsp;  /**
+&nbsp;   * Map text paragraphs to flat paragraphs is only used for writer documents
+&nbsp;   * Use node indexes of paragraphs (since LO 7.5)
+&nbsp;   */
+&nbsp;  private void mapParagraphsWNI(List&lt;String&gt; paragraphs, List&lt;TextParagraph&gt; toTextMapping, List&lt;List&lt;Integer&gt;&gt; toParaMapping,
+&nbsp;        List&lt;List&lt;Integer&gt;&gt; chapterBegins, List&lt;SerialLocale&gt; locales, List&lt;int[]&gt; footnotes, List&lt;List&lt;Integer&gt;&gt; textSortedTextIds, 
+&nbsp;        List&lt;Integer&gt; sortedTextIds, List&lt;List&lt;Integer&gt;&gt; deletedCharacters, List&lt;List&lt;List&lt;Integer&gt;&gt;&gt; deletedChars) {
+<b class="nc">&nbsp;    isDirty = false;</b>
+<b class="nc">&nbsp;    List&lt;Integer&gt; nMapped = new ArrayList&lt;&gt;();  // Mapped paragraphs per cursor type</b>
+<b class="nc">&nbsp;    int nUnknown = 0;</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;      nMapped.add(0);</b>
+<b class="nc">&nbsp;      if (textSortedTextIds.get(i) == null) {</b>
+<b class="nc">&nbsp;        textSortedTextIds.set(i, new ArrayList&lt;&gt;());</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Document cache: mapParagraphsWNI: Empty textSortedTextIds for type: &quot; + i);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      nUnknown += textSortedTextIds.get(i).size();</b>
+<b class="nc">&nbsp;      for (int j = 0; j &lt; textSortedTextIds.get(i).size(); j++) {</b>
+<b class="nc">&nbsp;        toParaMapping.get(i).add(-1);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    nUnknown = sortedTextIds.size() - nUnknown;</b>
+<b class="nc">&nbsp;    if (nUnknown &lt; 0) {</b>
+<b class="nc">&nbsp;      isDirty = true;</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;WARNING cache is dirty (map on basis of node index); unknown paragraphs:&quot; + nUnknown);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;\nDocument cache: mapParagraphsWNI: node indexes for type: &quot; + i);</b>
+<b class="nc">&nbsp;        for (int j = 0; j &lt; textSortedTextIds.get(i).size(); j++) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Document cache: mapParagraphsWNI: node index: &quot; + textSortedTextIds.get(i).get(j));</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;\nDocument cache: mapParagraphsWNI: unknown paragraphs: &quot; + nUnknown);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    int notMapped = 0;</b>
+<b class="nc">&nbsp;    for (int n = 0; n &lt; sortedTextIds.size(); n++) {</b>
+<b class="nc">&nbsp;      boolean found = false;</b>
+&nbsp;//      for (int i = 0; !found &amp;&amp; i &lt; NUMBER_CURSOR_TYPES &amp;&amp; nMapped.get(i) &lt; textSortedTextIds.get(i).size(); i++) {
+<b class="nc">&nbsp;      for (int i = 0; !found &amp;&amp; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        List&lt;Integer&gt; txtNdIndexes = textSortedTextIds.get(i);</b>
+<b class="nc">&nbsp;        for (int j = 0; !found &amp;&amp; j &lt; txtNdIndexes.size(); j++) {</b>
+<b class="nc">&nbsp;          if (((int)txtNdIndexes.get(j)) == ((int)sortedTextIds.get(n))) {</b>
+<b class="nc">&nbsp;            found = true;</b>
+<b class="nc">&nbsp;            toParaMapping.get(i).set(j, n);</b>
+<b class="nc">&nbsp;            toTextMapping.add(new TextParagraph(i, j));</b>
+&nbsp;//            nMapped.set(i, nMapped.get(i) + 1);
+&nbsp;//          } else if(sortedTextIds.get(n) == 129) {
+&nbsp;//            MessageHandler.printToLogFile(&quot;Document cache: mapParagraphsWNI: not equal: sortedTextId: &quot; + sortedTextIds.get(n) +
+&nbsp;//                &quot;; txtNdIndexes: &quot; + txtNdIndexes.get(j) + &quot;; type: &quot; + i);
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (!found) {</b>
+<b class="nc">&nbsp;        toTextMapping.add(new TextParagraph(CURSOR_TYPE_UNKNOWN, -1));</b>
+<b class="nc">&nbsp;        notMapped++;</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Document cache: mapParagraphsWNI: Not found node: &quot; + sortedTextIds.get(n));</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (notMapped &gt; 0 &amp;&amp; notMapped != nUnknown) {</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;WARNING not mapped paragraphs (map on basis of node index); notmapped known paragraphs: &quot; + (notMapped - nUnknown)</b>
+&nbsp;          + &quot;; unknown paragraphs: &quot; + nUnknown);
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (isDirty) {</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        for (int j = toParaMapping.get(i).size() - 1; j &gt;= 0; j--) {</b>
+<b class="nc">&nbsp;          if (toParaMapping.get(i).get(j) &lt; 0) {</b>
+<b class="nc">&nbsp;            toParaMapping.get(i).remove(j);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      nText = toParaMapping.get(CURSOR_TYPE_TEXT).size();</b>
+<b class="nc">&nbsp;      nTable = toParaMapping.get(CURSOR_TYPE_TABLE).size();</b>
+<b class="nc">&nbsp;      nShape = toParaMapping.get(CURSOR_TYPE_SHAPE).size();</b>
+<b class="nc">&nbsp;      nFootnote = toParaMapping.get(CURSOR_TYPE_FOOTNOTE).size();</b>
+<b class="nc">&nbsp;      nEndnote = toParaMapping.get(CURSOR_TYPE_ENDNOTE).size();</b>
+<b class="nc">&nbsp;      nHeaderFooter = toParaMapping.get(CURSOR_TYPE_HEADER_FOOTER).size();</b>
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    mapDeletedCharacters(deletedCharacters, paragraphs, deletedChars, toTextMapping);</b>
+<b class="nc">&nbsp;    prepareChapterBeginsForText(chapterBegins, toTextMapping, locales);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * reset the document cache for impress documents
+&nbsp;   */
+&nbsp;  private void refreshImpressCalcCache(XComponent xComponent) {
+&nbsp;    try {
+<b class="nc">&nbsp;      isDirty = false;</b>
+&nbsp;      ParagraphContainer container;
+<b class="nc">&nbsp;      if (docType == DocumentType.IMPRESS) {</b>
+<b class="nc">&nbsp;        container = OfficeDrawTools.getAllParagraphs(xComponent);</b>
+<b class="nc">&nbsp;      } else if (docType == DocumentType.CALC) {</b>
+<b class="nc">&nbsp;        container = OfficeSpreadsheetTools.getAllParagraphs(xComponent);</b>
+&nbsp;      } else {
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      clear();</b>
+<b class="nc">&nbsp;      paragraphs.addAll(container.paragraphs);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES - 1; i++) {</b>
+<b class="nc">&nbsp;        chapterBegins.add(new ArrayList&lt;Integer&gt;());</b>
+&nbsp;      }
+<b class="nc">&nbsp;      chapterBegins.get(CURSOR_TYPE_TEXT).addAll(container.pageBegins);</b>
+<b class="nc">&nbsp;      for (Locale locale : container.locales) {</b>
+<b class="nc">&nbsp;        locales.add(new SerialLocale(locale));</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;        toParaMapping.add(new ArrayList&lt;Integer&gt;());</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = 0; i &lt; paragraphs.size(); i++) {</b>
+<b class="nc">&nbsp;        toTextMapping.add(new TextParagraph(CURSOR_TYPE_TEXT, i));</b>
+<b class="nc">&nbsp;        toParaMapping.get(CURSOR_TYPE_TEXT).add(i);</b>
+<b class="nc">&nbsp;        footnotes.add(new int[0]);</b>
+<b class="nc">&nbsp;        deletedCharacters.add(null);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      nText = toParaMapping.get(CURSOR_TYPE_TEXT).size();</b>
+<b class="nc">&nbsp;      nTable = toParaMapping.get(CURSOR_TYPE_TABLE).size();</b>
+<b class="nc">&nbsp;      nShape = toParaMapping.get(CURSOR_TYPE_SHAPE).size();</b>
+<b class="nc">&nbsp;      nFootnote = toParaMapping.get(CURSOR_TYPE_FOOTNOTE).size();</b>
+<b class="nc">&nbsp;      nEndnote = toParaMapping.get(CURSOR_TYPE_ENDNOTE).size();</b>
+<b class="nc">&nbsp;      nHeaderFooter = toParaMapping.get(CURSOR_TYPE_HEADER_FOOTER).size();</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;DocumentCache: reset: isImpress: Number of paragraphse: &quot; + paragraphs.size());</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;DocumentCache: reset: CursorType: &quot; + i + &quot;; Number of paragraphs: &quot; + toParaMapping.get(i).size());</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      isDirty = true;</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * wait till reset is finished
+&nbsp;   */
+&nbsp;  public boolean isResetRunning() {
+<b class="nc">&nbsp;    return isReset;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * wait till reset is finished
+&nbsp;   */
+&nbsp;  public boolean isFinished() {
+<b class="nc">&nbsp;    while (isReset) {</b>
+&nbsp;      try {
+<b class="nc">&nbsp;        Thread.sleep(5);</b>
+<b class="nc">&nbsp;      } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;        MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;        return false;</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return paragraphs == null ? false : true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get Flat Paragraph by Index
+&nbsp;   */
+&nbsp;  public String getFlatParagraph(int n) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      String para = n &lt; 0 || n &gt;= locales.size() ? null : paragraphs.get(n);</b>
+<b class="nc">&nbsp;      return para;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;}
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set Flat Paragraph at Index
+&nbsp;   */
+&nbsp;  public void setFlatParagraph(int n, String sPara) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      paragraphs.set(n, sPara);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set Flat Paragraph and Locale at Index
+&nbsp;   */
+&nbsp;  public void setFlatParagraph(int n, String sPara, Locale locale) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      paragraphs.set(n, sPara);</b>
+<b class="nc">&nbsp;      locales.set(n, new SerialLocale(locale));</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * is multilingual Flat Paragraph
+&nbsp;   */
+&nbsp;  public boolean isMultilingualFlatParagraph(int n) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return n &lt; 0 || n &gt;= locales.size() ? false : locales.get(n).Variant.startsWith(OfficeTools.MULTILINGUAL_LABEL);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set multilingual flag to Flat Paragraph
+&nbsp;   */
+&nbsp;  public void setMultilingualFlatParagraph(int n) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      SerialLocale locale = locales.get(n);</b>
+<b class="nc">&nbsp;      if (!locale.Variant.startsWith(OfficeTools.MULTILINGUAL_LABEL)) {</b>
+<b class="nc">&nbsp;        locale.Variant = OfficeTools.MULTILINGUAL_LABEL + locale.Variant;</b>
+<b class="nc">&nbsp;        locales.set(n, locale);</b>
+&nbsp;      }
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get Locale of Flat Paragraph by Index
+&nbsp;   */
+&nbsp;  public Locale getFlatParagraphLocale(int n) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return locales.get(n).toLocaleWithoutLabel();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set Locale of Flat Paragraph by Index
+&nbsp;   */
+&nbsp;  public void setFlatParagraphLocale(int n, Locale locale) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      locales.set(n, new SerialLocale(locale));</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get footnotes of Flat Paragraph by Index
+&nbsp;   */
+&nbsp;  public int[] getFlatParagraphFootnotes(int n) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return footnotes.get(n);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set footnotes of Flat Paragraph by Index
+&nbsp;   */
+&nbsp;  public void setFlatParagraphFootnotes(int n, int[] footnotePos) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      footnotes.set(n, footnotePos);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get deleted characters (report changes) of Flat Paragraph by Index
+&nbsp;   */
+&nbsp;  public List&lt;Integer&gt; getFlatParagraphDeletedCharacters(int n) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return deletedCharacters.get(n);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get deleted characters (report changes) of Flat Paragraph by Index
+&nbsp;   */
+&nbsp;  public boolean isAutomaticGenerated(int n) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (n &gt;= 0 &amp;&amp; n &lt; toTextMapping.size()) {</b>
+<b class="nc">&nbsp;        if (locales.get(n).Language.equals(OfficeTools.IGNORE_LANGUAGE)) {</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        TextParagraph tPara = getNumberOfTextParagraph(n);</b>
+<b class="nc">&nbsp;        if (tPara.type == CURSOR_TYPE_TEXT &amp;&amp; automaticParagraphs.contains(tPara.number)) {</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set deleted characters (report changes) of Flat Paragraph by Index
+&nbsp;   */
+&nbsp;  public void setFlatParagraphDeletedCharacters(int n, List&lt;Integer&gt; deletedChars) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      deletedCharacters.set(n, deletedChars);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * correct a start point to change of flat paragraph by zero space characters
+&nbsp;   */
+&nbsp;  public int correctStartPoint(int nStart, int nFPara) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      int cor = 0;</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; nStart; i++) {</b>
+<b class="nc">&nbsp;        if (paragraphs.get(nFPara).charAt(i) == OfficeTools.ZERO_WIDTH_SPACE_CHAR) {</b>
+<b class="nc">&nbsp;          boolean isFootnote = false;</b>
+<b class="nc">&nbsp;          for (int n : footnotes.get(nFPara)) {</b>
+<b class="nc">&nbsp;            if (n == i) {</b>
+<b class="nc">&nbsp;              isFootnote = true;</b>
+<b class="nc">&nbsp;              break;</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          if (!isFootnote) {</b>
+<b class="nc">&nbsp;            cor++;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return nStart - cor;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * clear document cache
+&nbsp;   */
+&nbsp;  private void clear() {
+<b class="nc">&nbsp;    paragraphs.clear();</b>
+<b class="nc">&nbsp;    chapterBegins.clear();</b>
+<b class="nc">&nbsp;    locales.clear();</b>
+<b class="nc">&nbsp;    footnotes.clear();</b>
+<b class="nc">&nbsp;    toTextMapping.clear();</b>
+<b class="nc">&nbsp;    toParaMapping.clear();</b>
+<b class="nc">&nbsp;    deletedCharacters.clear();</b>
+<b class="nc">&nbsp;    if (sortedTextIds != null) {</b>
+<b class="nc">&nbsp;      sortedTextIds.clear();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Add a document Cache
+&nbsp;   */
+&nbsp;  private void add(DocumentCache in) {
+<b class="nc">&nbsp;    paragraphs.addAll(in.paragraphs);</b>
+<b class="nc">&nbsp;    chapterBegins.addAll(in.chapterBegins);</b>
+<b class="nc">&nbsp;    locales.addAll(in.locales);</b>
+<b class="nc">&nbsp;    footnotes.addAll(in.footnotes);</b>
+<b class="nc">&nbsp;    toTextMapping.addAll(in.toTextMapping);</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; NUMBER_CURSOR_TYPES; i++) {</b>
+<b class="nc">&nbsp;      toParaMapping.add(new ArrayList&lt;Integer&gt;(in.toParaMapping.get(i)));</b>
+&nbsp;    }
+<b class="nc">&nbsp;    deletedCharacters.addAll(in.deletedCharacters);</b>
+<b class="nc">&nbsp;    if (in.sortedTextIds != null) {</b>
+<b class="nc">&nbsp;      sortedTextIds = new ArrayList&lt;&gt;(in.sortedTextIds);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    documentElementsCount = in.documentElementsCount;</b>
+<b class="nc">&nbsp;    nText = in.nText;</b>
+<b class="nc">&nbsp;    nTable = in.nTable;</b>
+&nbsp;//    nFrame = in.nFrame;
+<b class="nc">&nbsp;    nShape = in.nShape;</b>
+<b class="nc">&nbsp;    nFootnote = in.nFootnote;</b>
+<b class="nc">&nbsp;    nEndnote = in.nEndnote;</b>
+<b class="nc">&nbsp;    nHeaderFooter = in.nHeaderFooter;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Replace a document Cache
+&nbsp;   */
+&nbsp;  public void put(DocumentCache in) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      clear();</b>
+<b class="nc">&nbsp;      add(in);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * is DocumentCache empty
+&nbsp;   */
+&nbsp;  public boolean isEmpty() {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return paragraphs == null || paragraphs.isEmpty();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * has no content
+&nbsp;   */
+&nbsp;  public boolean hasNoContent(boolean lock) {
+<b class="nc">&nbsp;    if (lock) {</b>
+<b class="nc">&nbsp;      rwLock.readLock().lock();</b>
+&nbsp;    }
+&nbsp;    try {
+<b class="nc">&nbsp;      return paragraphs == null || paragraphs.isEmpty() || (paragraphs.size() == 1 &amp;&amp; paragraphs.get(0).isEmpty());</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      if (lock) {</b>
+<b class="nc">&nbsp;        rwLock.readLock().unlock();</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * size of document cache (number of all flat paragraphs)
+&nbsp;   */
+&nbsp;  public int size() {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return paragraphs == null ? 0 : paragraphs.size();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get the Content of a Text Paragraph
+&nbsp;   */
+&nbsp;  public String getTextParagraph(TextParagraph textParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return textParagraph.type == CURSOR_TYPE_UNKNOWN ? null : paragraphs.get(toParaMapping.get(textParagraph.type).get(textParagraph.number));</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get Number of Flat Paragraph from Number of Text Paragraph
+&nbsp;   */
+&nbsp;  public int getFlatParagraphNumber(TextParagraph textParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return textParagraph.type == CURSOR_TYPE_UNKNOWN || toParaMapping.get(textParagraph.type).size() &lt;= textParagraph.number ? </b>
+<b class="nc">&nbsp;        -1 : toParaMapping.get(textParagraph.type).get(textParagraph.number);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get Locale of Text Paragraph by Index
+&nbsp;   */
+&nbsp;  public Locale getTextParagraphLocale(TextParagraph textParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return textParagraph.type == CURSOR_TYPE_UNKNOWN ? </b>
+<b class="nc">&nbsp;        null : locales.get(toParaMapping.get(textParagraph.type).get(textParagraph.number)).toLocaleWithoutLabel();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get deleted Characters of Text Paragraph
+&nbsp;   */
+&nbsp;  public List&lt;Integer&gt; getTextParagraphDeletedCharacters(TextParagraph textParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return textParagraph.type == CURSOR_TYPE_UNKNOWN ?</b>
+<b class="nc">&nbsp;        null : deletedCharacters.get(toParaMapping.get(textParagraph.type).get(textParagraph.number));</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get footnotes of Text Paragraph by Index
+&nbsp;   */
+&nbsp;  public int[] getTextParagraphFootnotes(TextParagraph textParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return textParagraph.type == CURSOR_TYPE_UNKNOWN ? </b>
+<b class="nc">&nbsp;        new int[0] : footnotes.get(toParaMapping.get(textParagraph.type).get(textParagraph.number));</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set footnotes of Text Paragraph
+&nbsp;   */
+&nbsp;  public void setTextParagraphFootnotes(TextParagraph textParagraph, int[] footnotePos) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (textParagraph.type != CURSOR_TYPE_UNKNOWN) {</b>
+<b class="nc">&nbsp;        footnotes.set(toParaMapping.get(textParagraph.type).get(textParagraph.number), footnotePos);</b>
+&nbsp;      }
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get Number of Text Paragraph from Number of Flat Paragraph
+&nbsp;   */
+&nbsp;  public TextParagraph getNumberOfTextParagraph(int numberOfFlatParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (numberOfFlatParagraph &lt; 0 || numberOfFlatParagraph &gt;= toTextMapping.size()) {</b>
+<b class="nc">&nbsp;        return new TextParagraph(CURSOR_TYPE_UNKNOWN, -1);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return toTextMapping.get(numberOfFlatParagraph);</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get Type of Paragraph from flat paragraph number
+&nbsp;   */
+&nbsp;  public int getParagraphType(int numberOfFlatParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return toTextMapping.get(numberOfFlatParagraph).type;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * size of text cache for a type of text
+&nbsp;   */
+&nbsp;  public int textSize(int type) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return (type &lt; 0 || type &gt;= toParaMapping.size()) ? 0 : toParaMapping.get(type).size();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * size of text cache for a type of text
+&nbsp;   */
+&nbsp;  public int textSize(TextParagraph textParagraph) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return (textParagraph.type == CURSOR_TYPE_UNKNOWN || textParagraph.type &gt;= toParaMapping.size()) ?</b>
+<b class="nc">&nbsp;        0 : toParaMapping.get(textParagraph.type).size();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Text and local are equal to cache
+&nbsp;   */
+&nbsp;  public boolean isEqual(int n, String text, Locale locale) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return ((n &lt; 0 || n &gt;= locales.size() || locales.get(n) == null) ? false</b>
+<b class="nc">&nbsp;        : ((isMultilingualFlatParagraph(n) || locales.get(n).equalsLocale(locale)) &amp;&amp; text.equals(paragraphs.get(n))));</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Text, deleted chars and local are equal to cache
+&nbsp;   */
+&nbsp;  public boolean isEqual(int n, String text, Locale locale, List&lt;Integer&gt; delChars) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (n &lt; 0 || n &gt;= locales.size() || locales.get(n) == null) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (!isMultilingualFlatParagraph(n) &amp;&amp; !locales.get(n).equalsLocale(locale)) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if ((delChars != null &amp;&amp; deletedCharacters.get(n) == null) || (delChars == null &amp;&amp; deletedCharacters.get(n) != null) </b>
+<b class="nc">&nbsp;         || (delChars != null &amp;&amp; deletedCharacters.get(n) != null &amp;&amp; delChars.size() != deletedCharacters.get(n).size())) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return text.equals(paragraphs.get(n));</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * size of cache has changed?
+&nbsp;   */
+&nbsp;  public boolean isEqualCacheSize(DocumentCursorTools docCursor) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (nText != docCursor.getNumberOfAllTextParagraphs()) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (nTable != docCursor.getNumberOfAllTables()) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+&nbsp;/*
+&nbsp;      if (nFrame != docCursor.getNumberOfAllFrames()) {
+&nbsp;        return false;
+&nbsp;      }
+&nbsp;*/
+<b class="nc">&nbsp;      if (nShape != docCursor.getNumberOfAllShapes()) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (nFootnote != docCursor.getNumberOfAllFootnotes()) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (nEndnote != docCursor.getNumberOfAllEndnotes()) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (nHeaderFooter != docCursor.getNumberOfAllHeadersAndFooters()) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get all paragraphs within unsupported text types (shapes, tables in frames)
+&nbsp;   * change the cache to new value
+&nbsp;   * return all changed paragraphs
+&nbsp;   */
+&nbsp;  public List&lt;Integer&gt; getChangedUnsupportedParagraphs(FlatParagraphTools flatPara, ResultCache firstResultCache) {
+<b class="nc">&nbsp;    rwLock.writeLock().lock();</b>
+<b class="nc">&nbsp;    List&lt;Integer&gt; nChanged = new ArrayList&lt;&gt;();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (flatPara == null) {</b>
+<b class="nc">&nbsp;        return nChanged;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (toParaMapping.get(CURSOR_TYPE_SHAPE).isEmpty() &amp;&amp; toParaMapping.get(CURSOR_TYPE_TABLE).isEmpty()) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;Integer&gt; nParas = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; paragraphs.size() &amp;&amp; toTextMapping.get(i).type != CURSOR_TYPE_TEXT; i++) {</b>
+<b class="nc">&nbsp;        if (toTextMapping.get(i).type == CURSOR_TYPE_SHAPE || toTextMapping.get(i).type == CURSOR_TYPE_TABLE) {</b>
+<b class="nc">&nbsp;          nParas.add(i);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;String&gt; fParas = flatPara.getFlatParagraphs(nParas);</b>
+<b class="nc">&nbsp;      if (fParas == null) {</b>
+<b class="nc">&nbsp;        return nChanged;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = 0; i &lt; fParas.size(); i++) {</b>
+<b class="nc">&nbsp;        int nFPara = nParas.get(i);</b>
+<b class="nc">&nbsp;        if (firstResultCache.getCacheEntry(nFPara) == null || !paragraphs.get(nFPara).equals(fParas.get(i))) {</b>
+<b class="nc">&nbsp;          paragraphs.set(nFPara, fParas.get(i));</b>
+<b class="nc">&nbsp;          nChanged.add(nFPara);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.writeLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return nChanged;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Gives back the start paragraph for text level check
+&nbsp;   */
+&nbsp;  public int getStartOfParaCheck(TextParagraph textParagraph, int parasToCheck, boolean checkOnlyParagraph,
+&nbsp;      boolean useQueue, boolean addParas) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (textParagraph.number &lt; 0 || toParaMapping.get(textParagraph.type).size() &lt;= textParagraph.number) {</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (parasToCheck &lt; -1) { // check all flat paragraphs</b>
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (parasToCheck == 0) {</b>
+<b class="nc">&nbsp;        return textParagraph.number;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int headingBefore = 0;</b>
+<b class="nc">&nbsp;      for (int heading : chapterBegins.get(textParagraph.type)) {</b>
+<b class="nc">&nbsp;        if (heading &gt; textParagraph.number) {</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        headingBefore = heading;</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (headingBefore == textParagraph.number || parasToCheck &lt; 0 || (useQueue &amp;&amp; !checkOnlyParagraph)) {</b>
+<b class="nc">&nbsp;        return headingBefore;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int startPos = textParagraph.number - parasToCheck;</b>
+<b class="nc">&nbsp;      if (addParas) {</b>
+<b class="nc">&nbsp;        startPos -= parasToCheck;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (startPos &lt; headingBefore) {</b>
+<b class="nc">&nbsp;        startPos = headingBefore;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return startPos;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Gives back the end paragraph for text level check
+&nbsp;   */
+&nbsp;  public int getEndOfParaCheck(TextParagraph textParagraph, int parasToCheck, boolean checkOnlyParagraph,
+&nbsp;      boolean useQueue, boolean addParas) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (textParagraph.number &lt; 0 || toParaMapping.get(textParagraph.type).size() &lt;= textParagraph.number) {</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (parasToCheck &lt; -1) { // check all flat paragraphs</b>
+<b class="nc">&nbsp;        return size();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int headingAfter = -1;</b>
+<b class="nc">&nbsp;      if (parasToCheck == 0) {</b>
+<b class="nc">&nbsp;        return textParagraph.number + 1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int heading : chapterBegins.get(textParagraph.type)) {</b>
+<b class="nc">&nbsp;        headingAfter = heading;</b>
+<b class="nc">&nbsp;        if (heading &gt; textParagraph.number) {</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      if (headingAfter &lt;= textParagraph.number || headingAfter &gt; toParaMapping.get(textParagraph.type).size()) {</b>
+<b class="nc">&nbsp;        headingAfter = toParaMapping.get(textParagraph.type).size();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (parasToCheck &lt; 0 || (useQueue &amp;&amp; !checkOnlyParagraph)) {</b>
+<b class="nc">&nbsp;        return headingAfter;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int endPos = textParagraph.number + 1 + parasToCheck;</b>
+<b class="nc">&nbsp;      if (!checkOnlyParagraph) {</b>
+<b class="nc">&nbsp;        endPos += parasToCheck * OfficeTools.CHECK_MULTIPLIKATOR;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (addParas) {</b>
+<b class="nc">&nbsp;        endPos += parasToCheck;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (endPos &gt; headingAfter) {</b>
+<b class="nc">&nbsp;        endPos = headingAfter;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return endPos;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Gives Back the full Text as String
+&nbsp;   */
+&nbsp;  public String getDocAsString(TextParagraph textParagraph, int parasToCheck, boolean checkOnlyParagraph,
+&nbsp;      boolean useQueue, boolean hasFootnotes) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      int startPos = getStartOfParaCheck(textParagraph, parasToCheck, checkOnlyParagraph, useQueue, true);</b>
+<b class="nc">&nbsp;      int endPos = getEndOfParaCheck(textParagraph, parasToCheck, checkOnlyParagraph, useQueue, true);</b>
+&nbsp;      StringBuilder docText;
+<b class="nc">&nbsp;      if (parasToCheck &lt; -1) { // check all flat paragraphs</b>
+<b class="nc">&nbsp;        if (startPos &lt; 0 || endPos &lt; 0</b>
+<b class="nc">&nbsp;            || (hasFootnotes &amp;&amp; getFlatParagraph(startPos).isEmpty() &amp;&amp; getFlatParagraphFootnotes(startPos).length &gt; 0)) {</b>
+<b class="nc">&nbsp;          return &quot;&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        docText = new StringBuilder(fixLinebreak(SingleCheck.removeFootnotes(getFlatParagraph(startPos),</b>
+<b class="nc">&nbsp;            (hasFootnotes ? getFlatParagraphFootnotes(startPos) : null), getFlatParagraphDeletedCharacters(startPos))));</b>
+<b class="nc">&nbsp;        for (int i = startPos + 1; i &lt; endPos; i++) {</b>
+<b class="nc">&nbsp;          docText.append(OfficeTools.END_OF_PARAGRAPH).append(fixLinebreak(</b>
+<b class="nc">&nbsp;              SingleCheck.removeFootnotes(getFlatParagraph(i), (hasFootnotes ? getFlatParagraphFootnotes(i) : null), getFlatParagraphDeletedCharacters(i))));</b>
+&nbsp;        }
+&nbsp;      } else {
+<b class="nc">&nbsp;        TextParagraph startPara = new TextParagraph(textParagraph.type, startPos);</b>
+<b class="nc">&nbsp;        if (startPos &lt; 0 || endPos &lt; 0 || (hasFootnotes &amp;&amp; getTextParagraph(startPara).isEmpty()</b>
+<b class="nc">&nbsp;            &amp;&amp; getTextParagraphFootnotes(startPara).length &gt; 0)) {</b>
+<b class="nc">&nbsp;          return &quot;&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        docText = new StringBuilder(fixLinebreak(SingleCheck.removeFootnotes(getTextParagraph(startPara),</b>
+<b class="nc">&nbsp;            (hasFootnotes ? getTextParagraphFootnotes(startPara) : null), getTextParagraphDeletedCharacters(startPara))));</b>
+<b class="nc">&nbsp;        for (int i = startPos + 1; i &lt; endPos; i++) {</b>
+<b class="nc">&nbsp;          TextParagraph tPara = new TextParagraph(textParagraph.type, i);</b>
+<b class="nc">&nbsp;          docText.append(OfficeTools.END_OF_PARAGRAPH).append(fixLinebreak(SingleCheck</b>
+<b class="nc">&nbsp;              .removeFootnotes(getTextParagraph(tPara), (hasFootnotes ? getTextParagraphFootnotes(tPara) : null), getTextParagraphDeletedCharacters(tPara))));</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return docText.toString();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Change manual linebreak to distinguish from end of paragraph
+&nbsp;   */
+&nbsp;  public static String fixLinebreak(String text) {
+<b class="nc">&nbsp;    return text.replaceAll(OfficeTools.SINGLE_END_OF_PARAGRAPH, OfficeTools.MANUAL_LINEBREAK);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Change manual linebreak to distinguish from end of paragraph
+&nbsp;   */
+&nbsp;  public static String removeZeroWidthSpace(String text) {
+<b class="nc">&nbsp;    return text.replaceAll(OfficeTools.ZERO_WIDTH_SPACE, &quot;&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Gives Back the StartPosition of Paragraph
+&nbsp;   */
+&nbsp;  public int getStartOfParagraph(int nPara, TextParagraph textParagraph, int parasToCheck, boolean checkOnlyParagraph,
+&nbsp;      boolean useQueue, boolean hasFootnotes) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (nPara &lt; 0 || (parasToCheck &gt; -2 &amp;&amp; toParaMapping.get(textParagraph.type).size() &lt;= nPara)</b>
+<b class="nc">&nbsp;          || (parasToCheck &lt; -1 &amp;&amp; paragraphs.size() &lt;= nPara)) {</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int startPos = getStartOfParaCheck(textParagraph, parasToCheck, checkOnlyParagraph, useQueue, true);</b>
+<b class="nc">&nbsp;      if (startPos &lt; 0) {</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int pos = 0;</b>
+<b class="nc">&nbsp;      if (parasToCheck &lt; -1) {</b>
+<b class="nc">&nbsp;        for (int i = startPos; i &lt; nPara; i++) {</b>
+<b class="nc">&nbsp;          pos += SingleCheck.removeFootnotes(getFlatParagraph(i), </b>
+<b class="nc">&nbsp;                  (hasFootnotes ? getFlatParagraphFootnotes(i) : null), getFlatParagraphDeletedCharacters(i)).length() + OfficeTools.NUMBER_PARAGRAPH_CHARS;</b>
+&nbsp;        }
+&nbsp;      } else {
+<b class="nc">&nbsp;        for (int i = startPos; i &lt; nPara; i++) {</b>
+<b class="nc">&nbsp;          TextParagraph tPara = new TextParagraph(textParagraph.type, i);</b>
+<b class="nc">&nbsp;          pos += SingleCheck.removeFootnotes(getTextParagraph(tPara), </b>
+<b class="nc">&nbsp;                  (hasFootnotes ? getTextParagraphFootnotes(tPara) : null), getTextParagraphDeletedCharacters(tPara)).length() + OfficeTools.NUMBER_PARAGRAPH_CHARS;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return pos;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Map deleted characters to flat paragraphs
+&nbsp;   */
+&nbsp;  private void mapDeletedCharacters(List&lt;List&lt;Integer&gt;&gt; deletedCharacters, List&lt;String&gt; paragraphs,
+&nbsp;      List&lt;List&lt;List&lt;Integer&gt;&gt;&gt; deletedChars, List&lt;TextParagraph&gt; toTextMapping) {
+<b class="nc">&nbsp;    if (deletedChars == null) {</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; toTextMapping.size(); i++) {</b>
+<b class="nc">&nbsp;        deletedCharacters.add(null);</b>
+&nbsp;      }
+&nbsp;    } else {
+<b class="nc">&nbsp;      for (int i = 0; i &lt; toTextMapping.size(); i++) {</b>
+<b class="nc">&nbsp;        if (toTextMapping.get(i).type == CURSOR_TYPE_UNKNOWN) {</b>
+<b class="nc">&nbsp;          deletedCharacters.add(null);</b>
+<b class="nc">&nbsp;          if (debugMode || !paragraphs.get(i).isEmpty()) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;Warning: CURSOR_TYPE_UNKNOWN at Paragraph &quot; + i + &quot;: deleted Characters set to null&quot;);</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;         Paragraph : &#39;&quot; + paragraphs.get(i) + &quot;&#39;&quot;);</b>
+&nbsp;          }
+&nbsp;        } else {
+<b class="nc">&nbsp;          deletedCharacters.add(deletedChars.get(toTextMapping.get(i).type).get(toTextMapping.get(i).number));</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * For cursor type text: Add the next chapter begin after Heading and changes of
+&nbsp;   * language to the chapter begins
+&nbsp;   */
+&nbsp;  private void prepareChapterBeginsForText(List&lt;List&lt;Integer&gt;&gt; chapterBegins, List&lt;TextParagraph&gt; toTextMapping, List&lt;SerialLocale&gt; locales) {
+<b class="nc">&nbsp;    List&lt;Integer&gt; prepChBegins = new ArrayList&lt;Integer&gt;(chapterBegins.get(CURSOR_TYPE_TEXT));</b>
+<b class="nc">&nbsp;    for (int begin : chapterBegins.get(CURSOR_TYPE_TEXT)) {</b>
+<b class="nc">&nbsp;      if (!prepChBegins.contains(begin + 1)) {</b>
+<b class="nc">&nbsp;        prepChBegins.add(begin + 1);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (locales.size() &gt; 0) {</b>
+<b class="nc">&nbsp;      SerialLocale lastLocale = locales.get(0);</b>
+<b class="nc">&nbsp;      for (int i = 1; i &lt; locales.size(); i++) {</b>
+<b class="nc">&nbsp;        if (locales != null &amp;&amp; !locales.get(i).equalsLocale(lastLocale)) {</b>
+<b class="nc">&nbsp;          TextParagraph nText = toTextMapping.get(i);</b>
+<b class="nc">&nbsp;          if (nText.type == CURSOR_TYPE_TEXT &amp;&amp; nText.number &gt;= 0) {</b>
+<b class="nc">&nbsp;            if (!prepChBegins.contains(nText.number)) {</b>
+<b class="nc">&nbsp;              prepChBegins.add(nText.number);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            lastLocale = locales.get(i);</b>
+<b class="nc">&nbsp;            if (debugMode) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(</b>
+&nbsp;                  &quot;DocumentCache: prepareChapterBeginsForText: Paragraph(&quot; + i + &quot;): Locale changed to: &quot;
+<b class="nc">&nbsp;                      + lastLocale.Language + (lastLocale.Country == null ? &quot;&quot; : (&quot;-&quot; + lastLocale.Country)));</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    prepChBegins.sort(null);</b>
+<b class="nc">&nbsp;    chapterBegins.set(CURSOR_TYPE_TEXT, prepChBegins);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public TextParagraph createTextParagraph(int type, int paragraph) {
+<b class="nc">&nbsp;    return new TextParagraph(type, paragraph);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Refresh the cache and compare with the old
+&nbsp;   * Give back the range of difference and size
+&nbsp;   */
+&nbsp;  public ChangedRange refreshAndCompare(SingleDocument document, Locale fixedLocale, Locale docLocale, XComponent xComponent, int fromWhere) {
+<b class="nc">&nbsp;    DocumentCache oldCache = new DocumentCache(this);</b>
+<b class="nc">&nbsp;    refresh(document, fixedLocale, docLocale, xComponent, fromWhere);</b>
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (paragraphs == null || paragraphs.isEmpty()) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int from = 0;</b>
+<b class="nc">&nbsp;      int to = 1;</b>
+&nbsp;      // to prevent spontaneous recheck of nearly the whole text
+&nbsp;      // the change of text contents has to be checked first
+&nbsp;      // ignore headers and footers and the change of function inside of them
+<b class="nc">&nbsp;      while (from &lt; paragraphs.size() &amp;&amp; from &lt; oldCache.paragraphs.size()</b>
+<b class="nc">&nbsp;          &amp;&amp; (toTextMapping.get(from).type == CURSOR_TYPE_HEADER_FOOTER</b>
+<b class="nc">&nbsp;          || paragraphs.get(from).equals(oldCache.paragraphs.get(from)))) {</b>
+<b class="nc">&nbsp;        from++;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      boolean isTextChange = from &lt; paragraphs.size() &amp;&amp; from &lt; oldCache.paragraphs.size();</b>
+<b class="nc">&nbsp;      if (isTextChange) {</b>
+&nbsp;        // if change in text is found check the number of text paragraphs which have changed
+<b class="nc">&nbsp;        while (to &lt;= paragraphs.size() &amp;&amp; to &lt;= oldCache.paragraphs.size()</b>
+<b class="nc">&nbsp;            &amp;&amp; (toTextMapping.get(paragraphs.size() - to).type == DocumentCache.CURSOR_TYPE_HEADER_FOOTER</b>
+<b class="nc">&nbsp;            || paragraphs.get(paragraphs.size() - to).equals(</b>
+<b class="nc">&nbsp;                    oldCache.paragraphs.get(oldCache.paragraphs.size() - to)))) {</b>
+<b class="nc">&nbsp;          to++;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        to = paragraphs.size() - to + 1;</b>
+<b class="nc">&nbsp;        if (to &lt; 0) {</b>
+<b class="nc">&nbsp;          to = 0;</b>
+&nbsp;        }
+&nbsp;      } else {
+&nbsp;        // if no change in text is found check the number of header and footer paragraphs which have changed
+<b class="nc">&nbsp;        from = 0;</b>
+<b class="nc">&nbsp;        while (from &lt; paragraphs.size() &amp;&amp; from &lt; oldCache.paragraphs.size()</b>
+<b class="nc">&nbsp;            &amp;&amp; (toTextMapping.get(from).type != DocumentCache.CURSOR_TYPE_HEADER_FOOTER</b>
+<b class="nc">&nbsp;            || paragraphs.get(from).equals(oldCache.paragraphs.get(from)))) {</b>
+<b class="nc">&nbsp;          from++;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        while (to &lt;= paragraphs.size() &amp;&amp; to &lt;= oldCache.paragraphs.size()</b>
+<b class="nc">&nbsp;            &amp;&amp; (toTextMapping.get(paragraphs.size() - to).type != DocumentCache.CURSOR_TYPE_HEADER_FOOTER</b>
+<b class="nc">&nbsp;            || paragraphs.get(paragraphs.size() - to).equals(</b>
+<b class="nc">&nbsp;                oldCache.paragraphs.get(oldCache.paragraphs.size() - to)))) {</b>
+<b class="nc">&nbsp;          to++;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        to = paragraphs.size() - to + 1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return new ChangedRange(from, to, oldCache.paragraphs.size(), paragraphs.size());</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Return Number of flat Paragraph from node index
+&nbsp;   */
+&nbsp;  public int getFlatparagraphFromSortedTextId(int sortedTextId) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (sortedTextIds == null) {</b>
+&nbsp;//        MessageHandler.printToLogFile(&quot;DocumentCache:isActual: sortedTextIds == null: return -1&quot;); 
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = 0; i &lt; sortedTextIds.size(); i++) {</b>
+<b class="nc">&nbsp;        if (sortedTextIds.get(i) == sortedTextId) {</b>
+&nbsp;//          MessageHandler.printToLogFile(&quot;DocumentCache:isActual: return &quot; + i + &quot; for sortedTextId &quot; + sortedTextId); 
+<b class="nc">&nbsp;          return i;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;//      MessageHandler.printToLogFile(&quot;DocumentCache:isActual: sortedTextId &quot; + sortedTextId + &quot; not found: return -1&quot;); 
+<b class="nc">&nbsp;      return -1;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Return false if cache has to be actualized
+&nbsp;   */
+&nbsp;  public boolean isActual(int documentElementsCount) {
+<b class="nc">&nbsp;    rwLock.readLock().lock();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (isDirty || sortedTextIds == null || documentElementsCount == -1 || this.documentElementsCount != documentElementsCount) {</b>
+&nbsp;//        MessageHandler.printToLogFile(&quot;DocumentCache:isActual: FALSE; isDirty: &quot; + isDirty + 
+&nbsp;//            &quot;, old documentElementsCount: &quot; + this.documentElementsCount + &quot;, new documentElementsCount: &quot; + documentElementsCount + 
+&nbsp;//            &quot;, sortedTextIds &quot; + (sortedTextIds == null ? &quot;==&quot; : &quot;!=&quot;) + &quot; null&quot;); 
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+&nbsp;//      MessageHandler.printToLogFile(&quot;DocumentCache:isActual: TRUE&quot;); 
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      rwLock.readLock().unlock();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  class ChangedRange {
+&nbsp;    final public int from;
+&nbsp;    final public int to;
+&nbsp;    final public int oldSize;
+&nbsp;    final public int newSize;
+&nbsp;    
+<b class="nc">&nbsp;    ChangedRange(int from, int to, int oldSize, int newSize) {</b>
+<b class="nc">&nbsp;      this.from = from;</b>
+<b class="nc">&nbsp;      this.to = to;</b>
+<b class="nc">&nbsp;      this.oldSize = oldSize;</b>
+<b class="nc">&nbsp;      this.newSize = newSize;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  static class TextParagraph implements Serializable {
+&nbsp;    private static final long serialVersionUID = 1L;
+&nbsp;    int type;
+&nbsp;    int number;
+&nbsp;
+<b class="nc">&nbsp;    TextParagraph(int type, int number) {</b>
+<b class="nc">&nbsp;      this.type = type;</b>
+<b class="nc">&nbsp;      this.number = number;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Class of serializable locale needed to save cache
+&nbsp;   */
+&nbsp;  private class SerialLocale implements Serializable {
+&nbsp;
+&nbsp;    private static final long serialVersionUID = 1L;
+&nbsp;    String Country;
+&nbsp;    String Language;
+&nbsp;    String Variant;
+&nbsp;
+<b class="nc">&nbsp;    SerialLocale(Locale locale) {</b>
+<b class="nc">&nbsp;      this.Country = locale.Country;</b>
+<b class="nc">&nbsp;      this.Language = locale.Language;</b>
+<b class="nc">&nbsp;      this.Variant = locale.Variant;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * return the language as Locale
+&nbsp;     */
+&nbsp;    Locale toLocale() {
+<b class="nc">&nbsp;      return new Locale(Language, Country, Variant);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  Get a String from SerialLocale
+&nbsp;     */
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;      return Language + (Country.isEmpty() ? &quot;&quot; : &quot;-&quot; + Country) + (Variant.isEmpty() ? &quot;&quot; : &quot;-&quot; + Variant);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * return the Locale as String
+&nbsp;     */
+&nbsp;    Locale toLocaleWithoutLabel() {
+<b class="nc">&nbsp;      if (Variant.startsWith(OfficeTools.MULTILINGUAL_LABEL)) {</b>
+<b class="nc">&nbsp;        return new Locale(Language, Country, Variant.substring(OfficeTools.MULTILINGUAL_LABEL.length()));</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return new Locale(Language, Country, Variant);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * True if the Language is the same as Locale
+&nbsp;     */
+&nbsp;    boolean equalsLocale(Locale locale) {
+<b class="nc">&nbsp;      return ((locale == null || Language == null || Country == null || Variant == null) ? false</b>
+<b class="nc">&nbsp;          : Language.equals(locale.Language) &amp;&amp; Country.equals(locale.Country) &amp;&amp; Variant.equals(locale.Variant));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    boolean equalsLocale(SerialLocale locale) {
+<b class="nc">&nbsp;      return ((locale == null || Language == null || Country == null || Variant == null) ? false</b>
+<b class="nc">&nbsp;          : Language.equals(locale.Language) &amp;&amp; Country.equals(locale.Country) &amp;&amp; Variant.equals(locale.Variant));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

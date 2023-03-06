@@ -1,0 +1,292 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ArabicSynthesizer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.synthesis.ar</a>
+</div>
+
+<h1>Coverage Summary for Class: ArabicSynthesizer (org.languagetool.synthesis.ar)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ArabicSynthesizer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/50)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2019 Sohaib Afifi, Taha Zerrouki
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.synthesis.ar;
+&nbsp;
+&nbsp;import morfologik.stemming.IStemmer;
+&nbsp;import morfologik.stemming.WordData;
+&nbsp;import org.languagetool.AnalyzedToken;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.synthesis.BaseSynthesizer;
+&nbsp;import org.languagetool.tagging.ar.ArabicTagManager;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.regex.Matcher;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;
+&nbsp;/**
+&nbsp; * Arabic word form synthesizer.
+&nbsp; * Based on part-of-speech lists in Public Domain. See readme.txt for details,
+&nbsp; * the POS tagset is described in arabic_tags_description.txt.
+&nbsp; * &lt;p&gt;
+&nbsp; * There are two special additions:
+&nbsp; * &lt;ol&gt;
+&nbsp; *    &lt;li&gt;+GF - tag that adds  feminine gender to word&lt;/li&gt;
+&nbsp; *    &lt;li&gt;+GM - a tag that adds masculine gender to word&lt;/li&gt;
+&nbsp; * &lt;/ol&gt;
+&nbsp; *
+&nbsp; * @author Taha Zerrouki
+&nbsp; * @since 4.9
+&nbsp; */
+&nbsp;public class ArabicSynthesizer extends BaseSynthesizer {
+&nbsp;
+&nbsp;  private static final String RESOURCE_FILENAME = &quot;/ar/arabic_synth.dict&quot;;
+&nbsp;  private static final String TAGS_FILE_NAME = &quot;/ar/arabic_tags.txt&quot;;
+&nbsp;
+<b class="nc">&nbsp;  private final ArabicTagManager tagmanager = new ArabicTagManager();</b>
+&nbsp;
+<b class="nc">&nbsp;  public static final ArabicSynthesizer INSTANCE = new ArabicSynthesizer();</b>
+&nbsp;
+&nbsp;  /** @deprecated use {@link #INSTANCE} */
+&nbsp;  public ArabicSynthesizer(Language lang) {
+<b class="nc">&nbsp;    this();</b>
+&nbsp;  }
+&nbsp;  private ArabicSynthesizer() {
+<b class="nc">&nbsp;    super(RESOURCE_FILENAME, TAGS_FILE_NAME, &quot;ar&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get a form of a given AnalyzedToken, where the form is defined by a
+&nbsp;   * part-of-speech tag.
+&nbsp;   *
+&nbsp;   * @param token  AnalyzedToken to be inflected.
+&nbsp;   * @param posTag A desired part-of-speech tag.
+&nbsp;   * @return String value - inflected word.
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public String[] synthesize(AnalyzedToken token, String posTag) {
+<b class="nc">&nbsp;    IStemmer synthesizer = createStemmer();</b>
+<b class="nc">&nbsp;    List&lt;WordData&gt; wordData = synthesizer.lookup(token.getLemma() + &quot;|&quot; + posTag);</b>
+<b class="nc">&nbsp;    List&lt;String&gt; wordForms = new ArrayList&lt;&gt;();</b>
+&nbsp;    String stem;
+<b class="nc">&nbsp;    for (WordData wd : wordData) {</b>
+&nbsp;      // ajust some stems
+<b class="nc">&nbsp;      stem = correctStem(wd.getStem().toString(), posTag);</b>
+<b class="nc">&nbsp;      wordForms.add(stem);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return wordForms.toArray(new String[0]);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Special English regexp based synthesizer that allows adding articles
+&nbsp;   * when the regexp-based tag ends with a special signature {@code \\+INDT} or {@code \\+DT}.
+&nbsp;   *
+&nbsp;   * @since 2.5
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public String[] synthesize(AnalyzedToken token, String posTag,
+&nbsp;                             boolean posTagRegExp) throws IOException {
+&nbsp;
+<b class="nc">&nbsp;    if (posTag != null &amp;&amp; posTagRegExp) {</b>
+<b class="nc">&nbsp;      String myPosTag = posTag;</b>
+<b class="nc">&nbsp;      initPossibleTags();</b>
+<b class="nc">&nbsp;      myPosTag = correctTag(myPosTag);</b>
+&nbsp;
+<b class="nc">&nbsp;      Pattern p = Pattern.compile(myPosTag);</b>
+<b class="nc">&nbsp;      List&lt;String&gt; results = new ArrayList&lt;&gt;();</b>
+&nbsp;      String stem;
+<b class="nc">&nbsp;      for (String tag : possibleTags) {</b>
+<b class="nc">&nbsp;        Matcher m = p.matcher(tag);</b>
+<b class="nc">&nbsp;        if (m.matches() &amp;&amp; token.getLemma() != null) {</b>
+&nbsp;          // local result
+<b class="nc">&nbsp;          List&lt;String&gt; result_one = lookup(token.getLemma(), tag);</b>
+<b class="nc">&nbsp;          for (String wd : result_one) {</b>
+&nbsp;            // adjust some stems according to original postag
+<b class="nc">&nbsp;            stem = correctStem(wd, posTag);</b>
+<b class="nc">&nbsp;            results.add(stem);</b>
+<b class="nc">&nbsp;          }</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return results.toArray(new String[0]);</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    return synthesize(token, posTag);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;  /* correct tags  */
+&nbsp;
+&nbsp;  public String correctTag(String postag) {
+<b class="nc">&nbsp;    String mypostag = postag;</b>
+<b class="nc">&nbsp;    if (postag == null) return null;</b>
+&nbsp;    // remove attached pronouns
+<b class="nc">&nbsp;    mypostag = tagmanager.setConjunction(mypostag, &quot;-&quot;);</b>
+&nbsp;
+&nbsp;    // remove Alef Lam definite article
+<b class="nc">&nbsp;    mypostag = tagmanager.setDefinite(mypostag, &quot;-&quot;);</b>
+&nbsp;
+&nbsp;    // change all pronouns to one kind
+<b class="nc">&nbsp;    mypostag = tagmanager.unifyPronounTag(mypostag);</b>
+&nbsp;
+<b class="nc">&nbsp;    return mypostag;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getPosTagCorrection(String posTag) {
+<b class="nc">&nbsp;    return correctTag(posTag);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;
+&nbsp;  /* correct stem to generate stems to be attached with pronouns  */
+&nbsp;  public String correctStem(String stem, String postag) {
+<b class="nc">&nbsp;    String correct_stem = stem;</b>
+<b class="nc">&nbsp;    if (postag == null) return stem;</b>
+<b class="nc">&nbsp;    if (tagmanager.isAttached(postag)) {</b>
+<b class="nc">&nbsp;      correct_stem = correct_stem.replaceAll(&quot;ه$&quot;, &quot;&quot;);</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    if (tagmanager.isDefinite(postag)) {</b>
+<b class="nc">&nbsp;      String prefix = tagmanager.getDefinitePrefix(postag);// can handle ال &amp; لل</b>
+<b class="nc">&nbsp;      correct_stem = prefix + correct_stem;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (tagmanager.hasJar(postag)) {</b>
+<b class="nc">&nbsp;      String prefix = tagmanager.getJarPrefix(postag);</b>
+<b class="nc">&nbsp;      correct_stem = prefix + correct_stem;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (tagmanager.hasConjunction(postag)) {</b>
+<b class="nc">&nbsp;      String prefix = tagmanager.getConjunctionPrefix(postag);</b>
+<b class="nc">&nbsp;      correct_stem = prefix + correct_stem;</b>
+&nbsp;
+&nbsp;    }
+<b class="nc">&nbsp;    return correct_stem;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;
+&nbsp;}
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

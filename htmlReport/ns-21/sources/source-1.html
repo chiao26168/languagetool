@@ -1,0 +1,489 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > AboutDialog</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: AboutDialog (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AboutDialog</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/208)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2007 Daniel Naber (http://www.danielnaber.de)
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.awt.Color;
+&nbsp;import java.awt.Container;
+&nbsp;import java.awt.Desktop;
+&nbsp;import java.awt.Dimension;
+&nbsp;import java.awt.Font;
+&nbsp;import java.awt.Frame;
+&nbsp;import java.awt.GridBagConstraints;
+&nbsp;import java.awt.GridBagLayout;
+&nbsp;import java.awt.Image;
+&nbsp;import java.awt.Insets;
+&nbsp;import java.awt.Toolkit;
+&nbsp;import java.awt.datatransfer.Clipboard;
+&nbsp;import java.awt.datatransfer.StringSelection;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.TreeMap;
+&nbsp;import javax.swing.BorderFactory;
+&nbsp;import javax.swing.BoxLayout;
+&nbsp;import javax.swing.ImageIcon;
+&nbsp;import javax.swing.JButton;
+&nbsp;import javax.swing.JDialog;
+&nbsp;import javax.swing.JLabel;
+&nbsp;import javax.swing.JOptionPane;
+&nbsp;import javax.swing.JPanel;
+&nbsp;import javax.swing.JScrollPane;
+&nbsp;import javax.swing.JTextPane;
+&nbsp;import org.languagetool.JLanguageTool;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.LanguageMaintainedState;
+&nbsp;import org.languagetool.Languages;
+&nbsp;import org.languagetool.gui.Tools;
+&nbsp;import org.languagetool.language.Contributor;
+&nbsp;import org.languagetool.openoffice.OfficeTools.OfficeProductInfo;
+&nbsp;
+&nbsp;import com.sun.star.uno.XComponentContext;
+&nbsp;
+&nbsp;/**
+&nbsp; * A dialog with version and copyright information.
+&nbsp; * 
+&nbsp; * @author Daniel Naber
+&nbsp; */
+&nbsp;public class AboutDialog {
+&nbsp;
+&nbsp;  private final ResourceBundle messages;
+<b class="nc">&nbsp;  private final JDialog dialog = new JDialog();</b>
+&nbsp;
+<b class="nc">&nbsp;  public AboutDialog(ResourceBundle messages) {</b>
+<b class="nc">&nbsp;    this.messages = messages;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public void show(XComponentContext xContext) {
+&nbsp;    try {
+<b class="nc">&nbsp;      String aboutText = Tools.getLabel(messages.getString(&quot;guiMenuAbout&quot;));</b>
+&nbsp;      
+<b class="nc">&nbsp;      dialog.setName(aboutText);</b>
+<b class="nc">&nbsp;      dialog.setTitle(aboutText);</b>
+<b class="nc">&nbsp;      dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);</b>
+<b class="nc">&nbsp;      Image ltImage = OfficeTools.getLtImage();</b>
+<b class="nc">&nbsp;      ((Frame) dialog.getOwner()).setIconImage(ltImage);</b>
+&nbsp;  
+<b class="nc">&nbsp;      ImageIcon icon = OfficeTools.getLtImageIcon(true);</b>
+<b class="nc">&nbsp;      JLabel headerLabel = new JLabel(icon);</b>
+<b class="nc">&nbsp;      JTextPane headerText = new JTextPane();</b>
+<b class="nc">&nbsp;      headerText.setBackground(new Color(0, 0, 0, 0));</b>
+<b class="nc">&nbsp;      headerText.setBorder(BorderFactory.createEmptyBorder());</b>
+<b class="nc">&nbsp;      headerText.setContentType(&quot;text/html&quot;);</b>
+<b class="nc">&nbsp;      headerText.setEditable(false);</b>
+<b class="nc">&nbsp;      headerText.setOpaque(false);</b>
+<b class="nc">&nbsp;      headerText.setText(&quot;&lt;html&gt;&lt;b&gt;LanguageTool&lt;/b&gt;&lt;br&gt;&quot; + messages.getString(&quot;loAboutLtDesc&quot;) + &quot;&lt;/html&gt;&quot;);</b>
+<b class="nc">&nbsp;      JPanel headerPanel = new JPanel();</b>
+<b class="nc">&nbsp;      headerPanel.add(headerLabel);</b>
+<b class="nc">&nbsp;      headerPanel.add(headerText);</b>
+&nbsp;  
+<b class="nc">&nbsp;      JTextPane licensePane = new JTextPane();</b>
+<b class="nc">&nbsp;      licensePane.setBackground(new Color(0, 0, 0, 0));</b>
+<b class="nc">&nbsp;      licensePane.setBorder(BorderFactory.createEmptyBorder());</b>
+<b class="nc">&nbsp;      licensePane.setContentType(&quot;text/html&quot;);</b>
+<b class="nc">&nbsp;      licensePane.setEditable(false);</b>
+<b class="nc">&nbsp;      licensePane.setOpaque(false);</b>
+<b class="nc">&nbsp;      licensePane.setText(&quot;&lt;html&gt;&quot;</b>
+&nbsp;              + &quot;&lt;p&gt;Copyright (C) 2005-2022 the LanguageTool community and Daniel Naber.&lt;br&gt;&quot;
+&nbsp;              + &quot;This software is licensed under the GNU Lesser General Public License.&lt;br&gt;&quot;
+&nbsp;              + &quot;&lt;a href=\&quot;https://www.languagetool.org\&quot;&gt;https://www.languagetool.org&lt;/a&gt;&lt;br&gt;&quot;
+&nbsp;              + &quot;&lt;/html&gt;&quot;);
+<b class="nc">&nbsp;      Tools.addHyperlinkListener(licensePane);</b>
+&nbsp;
+<b class="nc">&nbsp;      OfficeProductInfo officeInfo = OfficeTools.getOfficeProductInfo(xContext);</b>
+<b class="nc">&nbsp;      JTextPane techPane = new JTextPane();</b>
+<b class="nc">&nbsp;      techPane.setBackground(new Color(0, 0, 0, 0));</b>
+<b class="nc">&nbsp;      techPane.setBorder(BorderFactory.createEmptyBorder());</b>
+<b class="nc">&nbsp;      techPane.setContentType(&quot;text/html&quot;);</b>
+<b class="nc">&nbsp;      techPane.setEditable(false);</b>
+<b class="nc">&nbsp;      techPane.setOpaque(false);</b>
+<b class="nc">&nbsp;      techPane.setText(String.format(&quot;&lt;html&gt;&quot;</b>
+&nbsp;          + &quot;&lt;p&gt;LanguageTool %s (%s, %s)&lt;br&gt;&quot;
+&nbsp;          + &quot;OS: %s %s (%s)&lt;br&gt;&quot;
+&nbsp;          + &quot;%s %s%s (%s), %s&lt;br&gt;&quot;
+&nbsp;          + &quot;Java version: %s (%s)&lt;br&gt;&quot;
+&nbsp;          + &quot;Java max/total/free memory: %sMB, %sMB, %sMB&lt;/p&gt;&quot;
+&nbsp;          + &quot;&lt;/html&gt;&quot;, 
+&nbsp;           JLanguageTool.VERSION,
+&nbsp;           JLanguageTool.BUILD_DATE,
+&nbsp;           JLanguageTool.GIT_SHORT_ID,
+<b class="nc">&nbsp;           System.getProperty(&quot;os.name&quot;),</b>
+<b class="nc">&nbsp;           System.getProperty(&quot;os.version&quot;),</b>
+<b class="nc">&nbsp;           System.getProperty(&quot;os.arch&quot;),</b>
+&nbsp;           officeInfo.ooName,
+&nbsp;           officeInfo.ooVersion,
+&nbsp;           officeInfo.ooExtension,
+&nbsp;           officeInfo.ooVendor,
+&nbsp;           officeInfo.ooLocale,
+<b class="nc">&nbsp;           System.getProperty(&quot;java.version&quot;),</b>
+<b class="nc">&nbsp;           System.getProperty(&quot;java.vm.vendor&quot;),</b>
+<b class="nc">&nbsp;           Runtime.getRuntime().maxMemory()/1024/1024,</b>
+<b class="nc">&nbsp;           Runtime.getRuntime().totalMemory()/1024/1024,</b>
+<b class="nc">&nbsp;           Runtime.getRuntime().freeMemory()/1024/1024));</b>
+&nbsp;
+<b class="nc">&nbsp;      JTextPane aboutPane = new JTextPane();</b>
+<b class="nc">&nbsp;      aboutPane.setBackground(new Color(0, 0, 0, 0));</b>
+<b class="nc">&nbsp;      aboutPane.setBorder(BorderFactory.createEmptyBorder());</b>
+<b class="nc">&nbsp;      aboutPane.setContentType(&quot;text/html&quot;);</b>
+<b class="nc">&nbsp;      aboutPane.setEditable(false);</b>
+<b class="nc">&nbsp;      aboutPane.setOpaque(false);</b>
+<b class="nc">&nbsp;      aboutPane.setText(String.format(&quot;&lt;html&gt;&quot;</b>
+&nbsp;          + &quot;&lt;p&gt;Maintainer of the office extension: %s&lt;/p&gt;&quot;
+&nbsp;          + &quot;&lt;p&gt;Maintainers or former maintainers of the language modules -&lt;br&gt;&quot;
+&nbsp;          + &quot;(*) means language is unmaintained in LanguageTool:&lt;/p&gt;&lt;br&gt;&quot;
+&nbsp;          + &quot;&lt;/html&gt;&quot;, OfficeTools.EXTENSION_MAINTAINER));
+&nbsp;
+<b class="nc">&nbsp;      JTextPane maintainersPane = new JTextPane();</b>
+<b class="nc">&nbsp;      maintainersPane.setBackground(new Color(0, 0, 0, 0));</b>
+<b class="nc">&nbsp;      maintainersPane.setBorder(BorderFactory.createEmptyBorder());</b>
+<b class="nc">&nbsp;      maintainersPane.setContentType(&quot;text/html&quot;);</b>
+<b class="nc">&nbsp;      maintainersPane.setEditable(false);</b>
+<b class="nc">&nbsp;      maintainersPane.setOpaque(false);</b>
+&nbsp;  
+<b class="nc">&nbsp;      maintainersPane.setText(getMaintainers());</b>
+&nbsp;  
+<b class="nc">&nbsp;      int prefWidth = Math.max(520, maintainersPane.getPreferredSize().width);</b>
+<b class="nc">&nbsp;      int maxHeight = Toolkit.getDefaultToolkit().getScreenSize().height / 2;</b>
+<b class="nc">&nbsp;      maxHeight = Math.min(maintainersPane.getPreferredSize().height, maxHeight);</b>
+<b class="nc">&nbsp;      maintainersPane.setPreferredSize(new Dimension(prefWidth, maxHeight));</b>
+&nbsp;  
+<b class="nc">&nbsp;      JScrollPane scrollPane = new JScrollPane(maintainersPane);</b>
+<b class="nc">&nbsp;      scrollPane.setBorder(BorderFactory.createEmptyBorder());</b>
+&nbsp;      
+<b class="nc">&nbsp;      JButton copyToClipboard = new JButton(messages.getString(&quot;loCopyToClipBoardDesc&quot;));</b>
+<b class="nc">&nbsp;      copyToClipboard.addActionListener(e -&gt; {</b>
+&nbsp;/*
+&nbsp;        String str = &quot;LanguageTool &quot; + messages.getString(&quot;loAboutLtDesc&quot;) + &quot;\n&quot;;
+&nbsp;        str += &quot;\nCopyright (C) 2005-2022 the LanguageTool community and Daniel Naber.\n&quot;
+&nbsp;            + &quot;This software is licensed under the GNU Lesser General Public License.\n&quot;
+&nbsp;            + &quot;https://www.languagetool.org\n&quot;;
+&nbsp;*/
+<b class="nc">&nbsp;        String str = String.format(&quot;\nLanguageTool %s (%s, %s)\n&quot;</b>
+&nbsp;            + &quot;OS: %s %s (%s)\n&quot;
+&nbsp;            + &quot;%s %s%s (%s), %s\n&quot;
+&nbsp;            + &quot;Java version: %s (%s)\n&quot;
+&nbsp;            + &quot;Java max/total/free memory: %sMB, %sMB, %sMB\n&quot;,
+&nbsp;             JLanguageTool.VERSION,
+&nbsp;             JLanguageTool.BUILD_DATE,
+&nbsp;             JLanguageTool.GIT_SHORT_ID,
+<b class="nc">&nbsp;             System.getProperty(&quot;os.name&quot;),</b>
+<b class="nc">&nbsp;             System.getProperty(&quot;os.version&quot;),</b>
+<b class="nc">&nbsp;             System.getProperty(&quot;os.arch&quot;),</b>
+&nbsp;             officeInfo.ooName,
+&nbsp;             officeInfo.ooVersion,
+&nbsp;             officeInfo.ooExtension,
+&nbsp;             officeInfo.ooVendor,
+&nbsp;             officeInfo.ooLocale,
+<b class="nc">&nbsp;             System.getProperty(&quot;java.version&quot;),</b>
+<b class="nc">&nbsp;             System.getProperty(&quot;java.vm.vendor&quot;),</b>
+<b class="nc">&nbsp;             Runtime.getRuntime().maxMemory()/1024/1024,</b>
+<b class="nc">&nbsp;             Runtime.getRuntime().totalMemory()/1024/1024,</b>
+<b class="nc">&nbsp;             Runtime.getRuntime().freeMemory()/1024/1024);</b>
+&nbsp;/*
+&nbsp;        str += String.format(&quot;\nMaintainer of the office extension: %s\n&quot;
+&nbsp;            + &quot;\nMaintainers or former maintainers of the language modules -\n&quot;
+&nbsp;            + &quot;(*) means language is unmaintained in LanguageTool:\n\n&quot;,
+&nbsp;            OfficeTools.EXTENSION_MAINTAINER);
+&nbsp;        str += getMaintainersAsText();
+&nbsp;*/
+<b class="nc">&nbsp;        Toolkit toolkit = Toolkit.getDefaultToolkit();</b>
+<b class="nc">&nbsp;        Clipboard clipboard = toolkit.getSystemClipboard();</b>
+<b class="nc">&nbsp;        StringSelection strSel = new StringSelection(str);</b>
+<b class="nc">&nbsp;        clipboard.setContents(strSel, null);</b>
+<b class="nc">&nbsp;        close();</b>
+&nbsp;      });
+&nbsp;
+<b class="nc">&nbsp;      JButton OpenLogFilePath = new JButton(messages.getString(&quot;loOpenLogFolderDesc&quot;));</b>
+<b class="nc">&nbsp;      OpenLogFilePath.addActionListener(e -&gt; {</b>
+<b class="nc">&nbsp;        File logDir = OfficeTools.getLOConfigDir();</b>
+<b class="nc">&nbsp;        close();</b>
+&nbsp;        try {
+<b class="nc">&nbsp;          Desktop.getDesktop().open(logDir);</b>
+<b class="nc">&nbsp;        } catch (IOException e1) {</b>
+<b class="nc">&nbsp;          MessageHandler.showError(e1);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;      });
+&nbsp;      
+<b class="nc">&nbsp;      JButton close = new JButton(messages.getString(&quot;guiOOoCloseButton&quot;));</b>
+<b class="nc">&nbsp;      close.addActionListener(e -&gt; {</b>
+<b class="nc">&nbsp;        close();</b>
+&nbsp;      });
+&nbsp;
+<b class="nc">&nbsp;      JPanel versionButtonPanel = new JPanel();</b>
+<b class="nc">&nbsp;      versionButtonPanel.setLayout(new GridBagLayout());</b>
+<b class="nc">&nbsp;      GridBagConstraints cons = new GridBagConstraints();</b>
+<b class="nc">&nbsp;      cons.insets = new Insets(6, 0, 0, 15);</b>
+<b class="nc">&nbsp;      cons.gridx = 0;</b>
+<b class="nc">&nbsp;      cons.gridy = 0;</b>
+<b class="nc">&nbsp;      cons.anchor = GridBagConstraints.WEST;</b>
+<b class="nc">&nbsp;      cons.fill = GridBagConstraints.NONE;</b>
+<b class="nc">&nbsp;      cons.weightx = 1.0f;</b>
+<b class="nc">&nbsp;      cons.weighty = 1.0f;</b>
+<b class="nc">&nbsp;      JLabel versionLabel = new JLabel(messages.getString(&quot;loVersionInformation&quot;) + &quot;: &quot;);</b>
+<b class="nc">&nbsp;      Font f = versionLabel.getFont();</b>
+<b class="nc">&nbsp;      versionLabel.setFont(f.deriveFont(f.getStyle() | Font.BOLD));</b>
+<b class="nc">&nbsp;      versionButtonPanel.add(versionLabel, cons);</b>
+<b class="nc">&nbsp;      cons.gridx++;</b>
+<b class="nc">&nbsp;      versionButtonPanel.add(copyToClipboard, cons);</b>
+<b class="nc">&nbsp;      cons.anchor = GridBagConstraints.EAST;</b>
+<b class="nc">&nbsp;      cons.gridx++;</b>
+<b class="nc">&nbsp;      versionButtonPanel.add(OpenLogFilePath, cons);</b>
+&nbsp;      
+<b class="nc">&nbsp;      JPanel closeButtonPanel = new JPanel();</b>
+<b class="nc">&nbsp;      closeButtonPanel.setLayout(new GridBagLayout());</b>
+<b class="nc">&nbsp;      cons = new GridBagConstraints();</b>
+<b class="nc">&nbsp;      cons.insets = new Insets(6, 12, 0, 15);</b>
+<b class="nc">&nbsp;      cons.gridx = 0;</b>
+<b class="nc">&nbsp;      cons.gridy = 0;</b>
+<b class="nc">&nbsp;      cons.anchor = GridBagConstraints.EAST;</b>
+<b class="nc">&nbsp;      cons.fill = GridBagConstraints.NONE;</b>
+<b class="nc">&nbsp;      cons.weightx = 1.0f;</b>
+<b class="nc">&nbsp;      cons.weighty = 1.0f;</b>
+<b class="nc">&nbsp;      closeButtonPanel.add(close, cons);</b>
+&nbsp;      
+<b class="nc">&nbsp;      JPanel panel = new JPanel();</b>
+<b class="nc">&nbsp;      panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));</b>
+<b class="nc">&nbsp;      panel.add(headerPanel);</b>
+<b class="nc">&nbsp;      panel.add(licensePane);</b>
+<b class="nc">&nbsp;      panel.add(versionButtonPanel);</b>
+<b class="nc">&nbsp;      panel.add(techPane);</b>
+<b class="nc">&nbsp;      panel.add(aboutPane);</b>
+<b class="nc">&nbsp;      panel.add(scrollPane);</b>
+<b class="nc">&nbsp;      panel.add(closeButtonPanel);</b>
+<b class="nc">&nbsp;      Container contentPane = dialog.getContentPane();</b>
+<b class="nc">&nbsp;      contentPane.setLayout(new GridBagLayout());</b>
+<b class="nc">&nbsp;      cons = new GridBagConstraints();</b>
+<b class="nc">&nbsp;      cons.insets = new Insets(8, 8, 8, 8);</b>
+<b class="nc">&nbsp;      cons.gridx = 0;</b>
+<b class="nc">&nbsp;      cons.gridy = 0;</b>
+<b class="nc">&nbsp;      cons.weightx = 10.0f;</b>
+<b class="nc">&nbsp;      cons.weighty = 10.0f;</b>
+<b class="nc">&nbsp;      cons.fill = GridBagConstraints.BOTH;</b>
+<b class="nc">&nbsp;      cons.anchor = GridBagConstraints.NORTHWEST;</b>
+<b class="nc">&nbsp;      contentPane.add(panel, cons);</b>
+<b class="nc">&nbsp;      dialog.pack();</b>
+<b class="nc">&nbsp;      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();</b>
+<b class="nc">&nbsp;      Dimension frameSize = dialog.getSize();</b>
+<b class="nc">&nbsp;      dialog.setLocation(screenSize.width / 2 - frameSize.width / 2,</b>
+&nbsp;          screenSize.height / 2 - frameSize.height / 2);
+<b class="nc">&nbsp;      dialog.setLocationByPlatform(true);</b>
+<b class="nc">&nbsp;      dialog.setAutoRequestFocus(true);</b>
+<b class="nc">&nbsp;      dialog.setVisible(true);</b>
+<b class="nc">&nbsp;      dialog.setAlwaysOnTop(true);</b>
+<b class="nc">&nbsp;      dialog.toFront();</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private String getMaintainers() {
+<b class="nc">&nbsp;    TreeMap&lt;String, Language&gt; list = new TreeMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (Language lang : Languages.get()) {</b>
+<b class="nc">&nbsp;      if (!lang.isVariant()) {</b>
+<b class="nc">&nbsp;        if (lang.getMaintainers() != null) {</b>
+<b class="nc">&nbsp;          list.put(messages.getString(lang.getShortCode()), lang);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    StringBuilder str = new StringBuilder();</b>
+<b class="nc">&nbsp;    str.append(&quot;&lt;table border=0 cellspacing=0 cellpadding=0&gt;&quot;);</b>
+<b class="nc">&nbsp;    for (Map.Entry&lt;String, Language&gt; entry : list.entrySet()) {</b>
+<b class="nc">&nbsp;      str.append(&quot;&lt;tr valign=\&quot;top\&quot;&gt;&lt;td&gt;&quot;);</b>
+<b class="nc">&nbsp;      str.append(entry.getKey());</b>
+<b class="nc">&nbsp;      if (entry.getValue().getMaintainedState() == LanguageMaintainedState.LookingForNewMaintainer) {</b>
+<b class="nc">&nbsp;        str.append(&quot;(*)&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      str.append(&quot;:&lt;/td&gt;&quot;);</b>
+<b class="nc">&nbsp;      str.append(&quot;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&quot;);</b>
+<b class="nc">&nbsp;      str.append(&quot;&lt;td&gt;&quot;);</b>
+<b class="nc">&nbsp;      int i = 0;</b>
+<b class="nc">&nbsp;      Contributor[] maintainers = list.get(entry.getKey()).getMaintainers();</b>
+<b class="nc">&nbsp;      if (maintainers != null) {</b>
+<b class="nc">&nbsp;        for (Contributor contributor : maintainers) {</b>
+<b class="nc">&nbsp;          if (i &gt; 0) {</b>
+<b class="nc">&nbsp;            str.append(&quot;, &quot;);</b>
+<b class="nc">&nbsp;            if (i % 3 == 0) {</b>
+<b class="nc">&nbsp;              str.append(&quot;&lt;br&gt;&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          str.append(contributor.getName());</b>
+<b class="nc">&nbsp;          i++;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      str.append(&quot;&lt;/td&gt;&lt;/tr&gt;&quot;);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    str.append(&quot;&lt;/table&gt;&quot;);</b>
+<b class="nc">&nbsp;    return str.toString();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  private String getMaintainersAsText() {
+<b class="nc">&nbsp;    TreeMap&lt;String, Language&gt; list = new TreeMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (Language lang : Languages.get()) {</b>
+<b class="nc">&nbsp;      if (!lang.isVariant()) {</b>
+<b class="nc">&nbsp;        if (lang.getMaintainers() != null) {</b>
+<b class="nc">&nbsp;          list.put(messages.getString(lang.getShortCode()), lang);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    StringBuilder str = new StringBuilder();</b>
+<b class="nc">&nbsp;    for (Map.Entry&lt;String, Language&gt; entry : list.entrySet()) {</b>
+<b class="nc">&nbsp;      str.append(entry.getKey());</b>
+<b class="nc">&nbsp;      if (entry.getValue().getMaintainedState() == LanguageMaintainedState.LookingForNewMaintainer) {</b>
+<b class="nc">&nbsp;        str.append(&quot;(*)&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      str.append(&quot;: &quot;);</b>
+<b class="nc">&nbsp;      int i = 0;</b>
+<b class="nc">&nbsp;      Contributor[] maintainers = list.get(entry.getKey()).getMaintainers();</b>
+<b class="nc">&nbsp;      if (maintainers != null) {</b>
+<b class="nc">&nbsp;        for (Contributor contributor : maintainers) {</b>
+<b class="nc">&nbsp;          if (i &gt; 0) {</b>
+<b class="nc">&nbsp;            str.append(&quot;, &quot;);</b>
+&nbsp;//            if (i % 3 == 0) {
+&nbsp;//              str.append(&quot;\n&quot;);
+&nbsp;//            }
+&nbsp;          }
+<b class="nc">&nbsp;          str.append(contributor.getName());</b>
+<b class="nc">&nbsp;          i++;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      str.append(&quot;\n&quot;);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return str.toString();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public void close() {
+<b class="nc">&nbsp;    dialog.setVisible(false);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,901 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > TextLevelCheckQueue</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: TextLevelCheckQueue (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TextLevelCheckQueue</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/156)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/170)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TextLevelCheckQueue$QueueEntry</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/78)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/33)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">TextLevelCheckQueue$QueueIterator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/78)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/118)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/33)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/312)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/321)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2017 Fred Kruse
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.openoffice.DocumentCache.TextParagraph;
+&nbsp;import org.languagetool.openoffice.OfficeTools.DocumentType;
+&nbsp;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class of a queue to handle parallel check of text level rules
+&nbsp; * @since 4.9
+&nbsp; * @author Fred Kruse
+&nbsp; */
+<b class="nc">&nbsp;public class TextLevelCheckQueue {</b>
+&nbsp;  
+&nbsp;  public static final int NO_FLAG = 0;
+&nbsp;  public static final int RESET_FLAG = 1;
+&nbsp;  public static final int STOP_FLAG = 2;
+&nbsp;  public static final int DISPOSE_FLAG = 3;
+&nbsp;
+&nbsp;  private static final int MAX_WAIT = 5000;
+&nbsp;  
+&nbsp;  private static final int HEAP_CHECK_INTERVAL = 50;
+&nbsp;
+<b class="nc">&nbsp;  private List&lt;QueueEntry&gt; textRuleQueue = Collections.synchronizedList(new ArrayList&lt;QueueEntry&gt;());  //  Queue to check text rules in a separate thread</b>
+<b class="nc">&nbsp;  private Object queueWakeup = new Object();</b>
+&nbsp;  private MultiDocumentsHandler multiDocHandler;
+<b class="nc">&nbsp;  private SortedTextRules sortedTextRules = null;</b>
+&nbsp;
+&nbsp;  private QueueIterator queueIterator;
+<b class="nc">&nbsp;  private TextParagraph lastStart = null;</b>
+<b class="nc">&nbsp;  private TextParagraph lastEnd = null;</b>
+<b class="nc">&nbsp;  private int lastCache = -1;</b>
+<b class="nc">&nbsp;  private String lastDocId = null;</b>
+<b class="nc">&nbsp;  private Language lastLanguage = null;</b>
+<b class="nc">&nbsp;  private boolean interruptCheck = false;</b>
+<b class="nc">&nbsp;  private boolean queueRuns = false;</b>
+<b class="nc">&nbsp;  private boolean queueWaits = false;</b>
+&nbsp;  
+<b class="nc">&nbsp;  private int numSinceHeapTest = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;  private static boolean debugMode = false;   //  should be false except for testing</b>
+&nbsp;  private static boolean debugModeTm;         // time measurement should be false except for testing
+&nbsp;  
+<b class="nc">&nbsp;  TextLevelCheckQueue(MultiDocumentsHandler multiDocumentsHandler) {</b>
+<b class="nc">&nbsp;    multiDocHandler = multiDocumentsHandler;</b>
+<b class="nc">&nbsp;    queueIterator = new QueueIterator();</b>
+<b class="nc">&nbsp;    queueIterator.start();</b>
+<b class="nc">&nbsp;    debugMode = OfficeTools.DEBUG_MODE_TQ;</b>
+<b class="nc">&nbsp;    debugModeTm = OfficeTools.DEBUG_MODE_TM;</b>
+&nbsp;  }
+&nbsp; 
+&nbsp; /**
+&nbsp;  * Add a new entry to queue
+&nbsp;  * add it only if the new entry is not identical with the last entry or the running
+&nbsp;  */
+&nbsp;  public void addQueueEntry(TextParagraph nStart, TextParagraph nEnd, int nCache, int nCheck, String docId, boolean overrideRunning) {
+<b class="nc">&nbsp;    if (nStart.type != nEnd.type || nStart.number &lt; 0 || nEnd.number &lt;= nStart.number || nCache &lt; 0 || docId == null) {</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: addQueueEntry: Return without add to queue: nCache = &quot; + nCache</b>
+&nbsp;            + &quot;, nStart = &quot; + nStart + &quot;, nEnd = &quot; + nEnd 
+&nbsp;            + &quot;, nCheck = &quot; + nCheck + &quot;, docId = &quot; + docId + &quot;, overrideRunning = &quot; + overrideRunning);
+&nbsp;      }
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    QueueEntry queueEntry = new QueueEntry(nStart, nEnd, nCache, nCheck, docId, overrideRunning);</b>
+<b class="nc">&nbsp;    if (!textRuleQueue.isEmpty()) {</b>
+<b class="nc">&nbsp;      if (!overrideRunning &amp;&amp; lastStart != null &amp;&amp; nStart.type == lastStart.type &amp;&amp; nStart.number &gt;= lastStart.number </b>
+<b class="nc">&nbsp;          &amp;&amp; nEnd.number &lt;= lastEnd.number &amp;&amp; nCache == lastCache &amp;&amp; docId.equals(lastDocId)) {</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      synchronized(textRuleQueue) {</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; textRuleQueue.size(); i++) {</b>
+<b class="nc">&nbsp;          QueueEntry entry = textRuleQueue.get(i);</b>
+<b class="nc">&nbsp;          if (entry.isObsolete(queueEntry)) {</b>
+<b class="nc">&nbsp;            if (!overrideRunning) {</b>
+<b class="nc">&nbsp;              return;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              textRuleQueue.remove(i);</b>
+<b class="nc">&nbsp;              if (debugMode) {</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: addQueueEntry: remove queue entry: docId = &quot; + entry.docId </b>
+&nbsp;                    + &quot;, nStart.type = &quot; + entry.nStart.type + &quot;, nStart.number = &quot; + entry.nStart.number + &quot;, nEnd.number = &quot; + entry.nEnd.number 
+&nbsp;                    + &quot;, nCache = &quot; + entry.nCache + &quot;, nCheck = &quot; + entry.nCheck + &quot;, overrideRunning = &quot; + entry.overrideRunning);
+&nbsp;              }
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        if (overrideRunning) {</b>
+<b class="nc">&nbsp;          for (int i = 0; i &lt; textRuleQueue.size(); i++) {</b>
+<b class="nc">&nbsp;            QueueEntry entry = textRuleQueue.get(i);</b>
+<b class="nc">&nbsp;            if(!entry.isEqualButSmallerCacheNumber(queueEntry)) {</b>
+<b class="nc">&nbsp;              textRuleQueue.add(i, queueEntry);</b>
+<b class="nc">&nbsp;              if (debugMode) {</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: addQueueEntry: add queue entry at position: &quot; + i + &quot;; docId = &quot; + queueEntry.docId </b>
+&nbsp;                    + &quot;, nStart.type = &quot; + queueEntry.nStart.type + &quot;, nStart.number = &quot; + queueEntry.nStart.number + &quot;, nEnd.number = &quot; + queueEntry.nEnd.number 
+&nbsp;                    + &quot;, nCache = &quot; + queueEntry.nCache + &quot;, nCheck = &quot; + queueEntry.nCheck + &quot;, overrideRunning = &quot; + queueEntry.overrideRunning);
+&nbsp;              }
+<b class="nc">&nbsp;              return;</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    synchronized(textRuleQueue) {</b>
+<b class="nc">&nbsp;      textRuleQueue.add(queueEntry);</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: addQueueEntry: add queue entry at position: &quot; + (textRuleQueue.size() - 1) + &quot;; docId = &quot; + queueEntry.docId </b>
+&nbsp;            + &quot;, nStart.type = &quot; + queueEntry.nStart.type + &quot;, nStart.number = &quot; + queueEntry.nStart.number + &quot;, nEnd.number = &quot; + queueEntry.nEnd.number 
+&nbsp;            + &quot;, nCache = &quot; + queueEntry.nCache + &quot;, nCheck = &quot; + queueEntry.nCheck + &quot;, overrideRunning = &quot; + queueEntry.overrideRunning);
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    interruptCheck = false;</b>
+<b class="nc">&nbsp;    wakeupQueue();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Create and give back a new queue entry
+&nbsp;   */
+&nbsp;  public QueueEntry createQueueEntry(TextParagraph nStart, TextParagraph nEnd, int nCache, int nCheck, String docId, boolean overrideRunning) {
+<b class="nc">&nbsp;    return (new QueueEntry(nStart, nEnd, nCache, nCheck, docId, overrideRunning));</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public QueueEntry createQueueEntry(TextParagraph nStart, TextParagraph nEnd, int cacheNum, int nCheck, String docId) {
+<b class="nc">&nbsp;    return createQueueEntry(nStart, nEnd, cacheNum, nCheck, docId, false);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * wake up the waiting iteration of the queue
+&nbsp;   */
+&nbsp;  private void wakeupQueue() {
+<b class="nc">&nbsp;    synchronized(queueWakeup) {</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: wakeupQueue: wake queue&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      queueWakeup.notify();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * wake up the waiting iteration of the queue for a specific document
+&nbsp;   */
+&nbsp;  public void wakeupQueue(String docId) {
+<b class="nc">&nbsp;    if (lastDocId == null) {</b>
+<b class="nc">&nbsp;      lastDocId = docId;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    wakeupQueue();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Set a stop flag to get a definite ending of the iteration
+&nbsp;   */
+&nbsp;  public void setStop() {
+<b class="nc">&nbsp;    if (queueRuns) {</b>
+<b class="nc">&nbsp;      interruptCheck = true;</b>
+<b class="nc">&nbsp;      QueueEntry queueEntry = new QueueEntry();</b>
+<b class="nc">&nbsp;      queueEntry.setStop();</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: setStop: stop queue&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      textRuleQueue.add(queueEntry);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    wakeupQueue();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Reset the queue
+&nbsp;   * all entries are removed; LanguageTool is new initialized
+&nbsp;   */
+&nbsp;  public void setReset() {
+<b class="nc">&nbsp;    if (queueRuns) {</b>
+<b class="nc">&nbsp;      interruptCheck = true;</b>
+<b class="nc">&nbsp;      QueueEntry queueEntry = new QueueEntry();</b>
+<b class="nc">&nbsp;      queueEntry.setReset();</b>
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: setReset: reset queue&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      textRuleQueue.add(queueEntry);</b>
+&nbsp;    }
+&nbsp;//    doReset();
+<b class="nc">&nbsp;    wakeupQueue();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * remove all entries for the disposed docId (gone document)
+&nbsp;   * @param docId
+&nbsp;   */
+&nbsp;  public void interruptCheck(String docId, boolean wait) {
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: interruptCheck: interrupt queue&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (!textRuleQueue.isEmpty()) {</b>
+<b class="nc">&nbsp;      synchronized(textRuleQueue) {</b>
+<b class="nc">&nbsp;        for (int i = textRuleQueue.size() - 1; i &gt;= 0; i--) {</b>
+<b class="nc">&nbsp;          QueueEntry queueEntry = textRuleQueue.get(i);</b>
+<b class="nc">&nbsp;          if (docId.equals(queueEntry.docId)) {</b>
+<b class="nc">&nbsp;            textRuleQueue.remove(queueEntry);</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (wait &amp;&amp; !queueWaits &amp;&amp; lastStart != null &amp;&amp; lastDocId != null &amp;&amp; lastDocId.equals(docId)) {</b>
+<b class="nc">&nbsp;      lastDocId = null;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Set interrupt and wait till finish last check
+&nbsp;   */
+&nbsp;  private void waitForInterrupt() {
+<b class="nc">&nbsp;    interruptCheck = true;</b>
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: waitForInterrupt: Interrupt initiated&quot;);</b>
+<b class="nc">&nbsp;    wakeupQueue();</b>
+<b class="nc">&nbsp;    int n = 0;</b>
+<b class="nc">&nbsp;    while (interruptCheck &amp;&amp; n &lt; MAX_WAIT) {</b>
+&nbsp;      try {
+<b class="nc">&nbsp;        Thread.sleep(1);</b>
+<b class="nc">&nbsp;        n++;</b>
+<b class="nc">&nbsp;      } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;        MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   *  get the document by ID
+&nbsp;   */
+&nbsp;  SingleDocument getSingleDocument(String docId) {
+<b class="nc">&nbsp;    for (SingleDocument document : multiDocHandler.getDocuments()) {</b>
+<b class="nc">&nbsp;      if (docId.equals(document.getDocID())) {</b>
+<b class="nc">&nbsp;        return document;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get language of document by ID
+&nbsp;   */
+&nbsp;  Language getLanguage(String docId, TextParagraph nStart) {
+<b class="nc">&nbsp;    SingleDocument document = getSingleDocument(docId);</b>
+<b class="nc">&nbsp;    DocumentCache docCache = null;</b>
+<b class="nc">&nbsp;    if (document != null) {</b>
+<b class="nc">&nbsp;      docCache = document.getDocumentCache();</b>
+<b class="nc">&nbsp;      if (docCache != null &amp;&amp; nStart.number &lt; docCache.textSize(nStart)) {</b>
+<b class="nc">&nbsp;        if (docCache.isAutomaticGenerated(docCache.getFlatParagraphNumber(nStart))) {</b>
+<b class="nc">&nbsp;          return null;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        Locale locale = docCache.getTextParagraphLocale(nStart);</b>
+<b class="nc">&nbsp;        if (locale != null &amp;&amp; multiDocHandler.hasLocale(locale)) {</b>
+<b class="nc">&nbsp;          return multiDocHandler.getLanguage(locale);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: getLanguage: return null: locale = &quot; + OfficeTools.localeToString(locale));</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode) {</b>
+<b class="nc">&nbsp;      if (document == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: getLanguage: document == null: return null&quot;);</b>
+<b class="nc">&nbsp;      } else if (docCache == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: getLanguage: docCache == null: return null&quot;);</b>
+<b class="nc">&nbsp;      } else if (nStart.number &gt;= docCache.textSize(nStart)) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: getLanguage: nStart.number &gt;= docCache.textSize(nStart): return null&quot;);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * gives back information if queue is interrupted
+&nbsp;   */
+&nbsp;  public boolean isInterrupted() {
+<b class="nc">&nbsp;    return interruptCheck;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * gives back information if queue is running
+&nbsp;   */
+&nbsp;  public boolean isRunning() {
+<b class="nc">&nbsp;    return queueRuns;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * gives back information if queue is waiting
+&nbsp;   */
+&nbsp;  public boolean isWaiting() {
+<b class="nc">&nbsp;    return queueWaits;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * reset LanguageToo; do an new initialization
+&nbsp;   */
+&nbsp;  private void doReset() {
+<b class="nc">&nbsp;    textRuleQueue.clear();</b>
+<b class="nc">&nbsp;    queueIterator.initLangtool(null);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get an entry for the next unchecked paragraphs
+&nbsp;   */
+&nbsp;  QueueEntry getNextQueueEntry(TextParagraph nPara, String docId) {
+<b class="nc">&nbsp;    List&lt;SingleDocument&gt; documents = multiDocHandler.getDocuments();</b>
+&nbsp;/*
+&nbsp;    if (!DocumentCursorTools.isBusy() &amp;&amp; !ViewCursorTools.isBusy() &amp;&amp; !FlatParagraphTools.isBusy()) {
+&nbsp;      XComponent xComponent = OfficeTools.getCurrentComponent(multiDocHandler.getContext());
+&nbsp;      ViewCursorTools viewCursor = new ViewCursorTools(xComponent);
+&nbsp;      TextParagraph cursorPara = viewCursor.getViewCursorParagraph();
+&nbsp;      if (cursorPara.type != DocumentCache.CURSOR_TYPE_UNKNOWN) {
+&nbsp;        if (lastCursorPara &lt; 0 || cursorPara.number != lastCursorPara || lastCursorComponent == null || !lastCursorComponent.equals(xComponent)) {
+&nbsp;          lastCursorComponent = xComponent;
+&nbsp;          lastCursorPara = cursorPara.number;
+&nbsp;          for (int n = 0; n &lt; documents.size(); n++) {
+&nbsp;            if (xComponent.equals(documents.get(n).getXComponent())) {
+&nbsp;              docId = documents.get(n).getDocID();
+&nbsp;              break;
+&nbsp;            }
+&nbsp;          }
+&nbsp;          nPara = cursorPara;
+&nbsp;          if (debugMode) {
+&nbsp;            MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: getNextQueueEntry: Next Paragraph set to View Cursor: Type = &quot; + nPara.type 
+&nbsp;                + &quot;, number = &quot; + nPara.number + &quot;, docId = &quot; + docId);
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;*/
+<b class="nc">&nbsp;    int nDoc = 0;</b>
+<b class="nc">&nbsp;    for (int n = 0; n &lt; documents.size(); n++) {</b>
+<b class="nc">&nbsp;      if ((docId == null || docId.equals(documents.get(n).getDocID())) &amp;&amp; !documents.get(n).isDisposed() &amp;&amp; documents.get(n).getDocumentType() == DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;        QueueEntry queueEntry = documents.get(n).getNextQueueEntry(nPara);</b>
+<b class="nc">&nbsp;        if (queueEntry != null) {</b>
+<b class="nc">&nbsp;          return queueEntry;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        nDoc = n;</b>
+<b class="nc">&nbsp;        break;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    for (int n = 0; n &lt; documents.size(); n++) {</b>
+<b class="nc">&nbsp;      if (docId != null &amp;&amp; docId.equals(documents.get(n).getDocID()) &amp;&amp; !documents.get(n).isDisposed() &amp;&amp; documents.get(n).getDocumentType() == DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;        QueueEntry queueEntry = documents.get(n).getQueueEntryForChangedParagraph();</b>
+<b class="nc">&nbsp;        if (queueEntry != null) {</b>
+<b class="nc">&nbsp;          return queueEntry;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        nDoc = n;</b>
+<b class="nc">&nbsp;        break;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    for (int i = nDoc + 1; i &lt; documents.size(); i++) {</b>
+<b class="nc">&nbsp;      if (!documents.get(i).isDisposed() &amp;&amp; documents.get(i).getDocumentType() == DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;        QueueEntry queueEntry = documents.get(i).getNextQueueEntry(null);</b>
+<b class="nc">&nbsp;        if (queueEntry != null) {</b>
+<b class="nc">&nbsp;          return queueEntry;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    for (int i = 0; i &lt; nDoc; i++) {</b>
+<b class="nc">&nbsp;      if (!documents.get(i).isDisposed() &amp;&amp; documents.get(i).getDocumentType() == DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;        QueueEntry queueEntry = documents.get(i).getNextQueueEntry(null);</b>
+<b class="nc">&nbsp;        if (queueEntry != null) {</b>
+<b class="nc">&nbsp;          return queueEntry;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * run heap space test, in intervals
+&nbsp;   */
+&nbsp;  private boolean testHeapSpace() {
+<b class="nc">&nbsp;    if (numSinceHeapTest &gt; HEAP_CHECK_INTERVAL) {</b>
+<b class="nc">&nbsp;      numSinceHeapTest = 0;</b>
+<b class="nc">&nbsp;      if (!multiDocHandler.isEnoughHeapSpace()) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+&nbsp;    } else {
+<b class="nc">&nbsp;      numSinceHeapTest++;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   *  run a queue entry for the specific document
+&nbsp;   */
+&nbsp;  void runQueueEntry(QueueEntry qEntry, MultiDocumentsHandler multiDocHandler, SwJLanguageTool lt) {
+<b class="nc">&nbsp;    if (testHeapSpace()) {</b>
+<b class="nc">&nbsp;      SingleDocument document = getSingleDocument(qEntry.docId);</b>
+<b class="nc">&nbsp;      if (document != null &amp;&amp; !document.isDisposed()) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: runQueueEntry: nstart = &quot; + qEntry.nStart.number + &quot;; nEnd = &quot;  + qEntry.nEnd.number </b>
+&nbsp;              + &quot;; nCache = &quot;  + qEntry.nCache + &quot;; nCheck = &quot;  + qEntry.nCheck + &quot;; overrideRunning = &quot;  + qEntry.overrideRunning);
+&nbsp;        }
+<b class="nc">&nbsp;        document.runQueueEntry(qEntry.nStart, qEntry.nEnd, qEntry.nCache, qEntry.nCheck, qEntry.overrideRunning, lt);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } else {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;Warning: Not enough heap space; text level queue stopped!&quot;);</b>
+<b class="nc">&nbsp;      setStop();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Internal class to store queue entries
+&nbsp;   */
+&nbsp;  static class QueueEntry {
+&nbsp;    TextParagraph nStart;
+&nbsp;    TextParagraph nEnd;
+&nbsp;    int nCache;
+&nbsp;    int nCheck;
+&nbsp;    String docId;
+&nbsp;    boolean overrideRunning;
+<b class="nc">&nbsp;    int special = TextLevelCheckQueue.NO_FLAG;</b>
+&nbsp;    
+<b class="nc">&nbsp;    QueueEntry(TextParagraph nStart, TextParagraph nEnd, int nCache, int nCheck, String docId, boolean overrideRunning) {</b>
+<b class="nc">&nbsp;      this.nStart = nStart;</b>
+<b class="nc">&nbsp;      this.nEnd = nEnd;</b>
+<b class="nc">&nbsp;      this.nCache = nCache;</b>
+<b class="nc">&nbsp;      this.nCheck = nCheck;</b>
+<b class="nc">&nbsp;      this.docId = docId;</b>
+<b class="nc">&nbsp;      this.overrideRunning = overrideRunning;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    QueueEntry(TextParagraph nStart, TextParagraph nEnd, int nCache, int nCheck, String docId) {
+<b class="nc">&nbsp;      this(nStart, nEnd, nCache, nCheck, docId, false);</b>
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    QueueEntry() {</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Set reset flag
+&nbsp;     */
+&nbsp;    void setReset() {
+<b class="nc">&nbsp;      special = TextLevelCheckQueue.RESET_FLAG;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Set stop flag
+&nbsp;     */
+&nbsp;    void setStop() {
+<b class="nc">&nbsp;      special = TextLevelCheckQueue.STOP_FLAG;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Set dispose flag
+&nbsp;     */
+&nbsp;    void setDispose(String docId) {
+<b class="nc">&nbsp;      special = TextLevelCheckQueue.DISPOSE_FLAG;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Define equal queue entries
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+<b class="nc">&nbsp;      if (o == null || !(o instanceof QueueEntry)) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      QueueEntry e = (QueueEntry) o;</b>
+<b class="nc">&nbsp;      if (nStart == null || nEnd == null || e.nStart == null || e.nEnd == null) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (nStart.type == e.nStart.type &amp;&amp; nStart.number == e.nStart.number &amp;&amp; nEnd.number == e.nEnd.number</b>
+<b class="nc">&nbsp;          &amp;&amp; nCache == e.nCache &amp;&amp; nCheck == e.nCheck &amp;&amp; docId.equals(e.docId)) {</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * entry is equal but number of cache is smaller then new entry e
+&nbsp;     */
+&nbsp;    public boolean isEqualButSmallerCacheNumber(QueueEntry e) {
+<b class="nc">&nbsp;      if (e == null || nStart == null || nEnd == null </b>
+&nbsp;          || e.nStart == null || e.nEnd == null || nStart.type != e.nStart.type) {
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (nStart.number &gt;= e.nStart.number &amp;&amp; nEnd.number &lt;= e.nEnd.number &amp;&amp; nCache &lt; e.nCache &amp;&amp; docId.equals(e.docId)) {</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * entry is obsolete and should be replaced by new entry e
+&nbsp;     */
+&nbsp;    public boolean isObsolete(QueueEntry e) {
+<b class="nc">&nbsp;      if (e == null || nStart == null  || nEnd == null || e.nStart == null || e.nEnd == null</b>
+<b class="nc">&nbsp;          || nCheck != e.nCheck || nCache != e.nCache || nStart.type != e.nStart.type || docId == null || !docId.equals(e.docId)) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (nCheck &lt; -1 || (nCheck == -1 &amp;&amp; e.nStart.number &gt;= nStart.number &amp;&amp; e.nStart.number &lt;= nEnd.number) </b>
+&nbsp;          || (nCheck &gt;= 0 &amp;&amp; nStart.number == e.nStart.number &amp;&amp; nEnd.number == e.nEnd.number)) {
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * class for automatic iteration of the queue
+&nbsp;   */
+&nbsp;  private class QueueIterator extends Thread {
+&nbsp;    
+&nbsp;    private SwJLanguageTool lt;
+&nbsp;
+&nbsp;      
+<b class="nc">&nbsp;    public QueueIterator() {</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * initialize languagetool for text level iteration
+&nbsp;     */
+&nbsp;    public void initLangtool(Language language) {
+<b class="nc">&nbsp;      if (debugMode) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: initLangtool: language = &quot; + (language == null ? &quot;null&quot; : language.getShortCodeWithCountryAndVariant()));</b>
+&nbsp;      }
+<b class="nc">&nbsp;      lt = multiDocHandler.initLanguageTool(language, false);</b>
+<b class="nc">&nbsp;      if (lt != null) {</b>
+<b class="nc">&nbsp;        multiDocHandler.initCheck(lt);</b>
+<b class="nc">&nbsp;        String langCode = OfficeTools.localeToString(multiDocHandler.getLocale());</b>
+<b class="nc">&nbsp;        sortedTextRules = new SortedTextRules(lt, multiDocHandler.getConfiguration(), multiDocHandler.getDisabledRules(langCode), false);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Run queue for check with text
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void run() {
+&nbsp;      try {
+<b class="nc">&nbsp;        long startTime = 0;</b>
+<b class="nc">&nbsp;        queueRuns = true;</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: run: queue started&quot;);</b>
+&nbsp;        }
+&nbsp;        for (;;) {
+<b class="nc">&nbsp;          queueWaits = false;</b>
+<b class="nc">&nbsp;          if (interruptCheck) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: run: Interrupt ended&quot;);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (textRuleQueue.isEmpty()) {</b>
+<b class="nc">&nbsp;            synchronized(textRuleQueue) {</b>
+<b class="nc">&nbsp;              if (lastDocId != null) {</b>
+<b class="nc">&nbsp;                QueueEntry queueEntry = null;</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                  if (debugModeTm) {</b>
+<b class="nc">&nbsp;                    startTime = System.currentTimeMillis();</b>
+&nbsp;                  }
+<b class="nc">&nbsp;                  if (!interruptCheck) {</b>
+<b class="nc">&nbsp;                    queueEntry = getNextQueueEntry(lastStart, lastDocId);</b>
+&nbsp;                  }
+<b class="nc">&nbsp;                  if (debugModeTm) {</b>
+<b class="nc">&nbsp;                    long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;                    if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;                      MessageHandler.printToLogFile(&quot;Time to run Text Level Check Queue (get Next Queue Entry): &quot; + runTime);</b>
+&nbsp;                    }
+&nbsp;                  }
+<b class="nc">&nbsp;                } catch (Throwable e) {</b>
+&nbsp;                  //  there may be exceptions because of timing problems
+&nbsp;                  //  catch them and write to log file but don&#39;t stop the queue
+<b class="nc">&nbsp;                  if (debugMode) {</b>
+<b class="nc">&nbsp;                    MessageHandler.showError(e);</b>
+&nbsp;                  } else {
+<b class="nc">&nbsp;                    MessageHandler.printException(e);</b>
+&nbsp;                  }
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;                if (queueEntry != null &amp;&amp; !interruptCheck) {</b>
+<b class="nc">&nbsp;                  textRuleQueue.add(queueEntry);</b>
+<b class="nc">&nbsp;                  queueEntry = null;</b>
+<b class="nc">&nbsp;                  continue;</b>
+&nbsp;                }
+&nbsp;              }
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            synchronized(queueWakeup) {</b>
+&nbsp;              try {
+<b class="nc">&nbsp;                if (debugMode) {</b>
+<b class="nc">&nbsp;                  MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: run: queue waits&quot;);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                lastStart = null;</b>
+<b class="nc">&nbsp;                lastEnd = null;</b>
+<b class="nc">&nbsp;                queueWaits = true;</b>
+<b class="nc">&nbsp;                queueWakeup.wait();</b>
+<b class="nc">&nbsp;              } catch (Throwable e) {</b>
+<b class="nc">&nbsp;                MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;                return;</b>
+<b class="nc">&nbsp;              }</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;          } else {
+&nbsp;            QueueEntry queueEntry;
+<b class="nc">&nbsp;            synchronized(textRuleQueue) {</b>
+<b class="nc">&nbsp;              if (!textRuleQueue.isEmpty()) {</b>
+<b class="nc">&nbsp;                queueEntry = textRuleQueue.get(0);</b>
+<b class="nc">&nbsp;                textRuleQueue.remove(0);</b>
+&nbsp;              } else {
+<b class="nc">&nbsp;                continue;</b>
+&nbsp;              }
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            if (queueEntry.special == STOP_FLAG) {</b>
+<b class="nc">&nbsp;              if (debugMode) {</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: run: queue ended&quot;);</b>
+&nbsp;              }
+<b class="nc">&nbsp;              queueRuns = false;</b>
+<b class="nc">&nbsp;              interruptCheck = false;</b>
+&nbsp;              return;
+<b class="nc">&nbsp;            } else if (queueEntry.special == RESET_FLAG) {</b>
+<b class="nc">&nbsp;              if (debugMode) {</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: run: reset queue&quot;);</b>
+&nbsp;              }
+<b class="nc">&nbsp;              synchronized(queueWakeup) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                  if (debugMode) {</b>
+<b class="nc">&nbsp;                    MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: run: queue waits&quot;);</b>
+&nbsp;                  }
+<b class="nc">&nbsp;                  lastStart = null;</b>
+<b class="nc">&nbsp;                  lastEnd = null;</b>
+<b class="nc">&nbsp;                  lastLanguage = null;</b>
+<b class="nc">&nbsp;                  queueWaits = true;</b>
+<b class="nc">&nbsp;                  interruptCheck = false;</b>
+<b class="nc">&nbsp;                  queueWakeup.wait();</b>
+<b class="nc">&nbsp;                } catch (Throwable e) {</b>
+<b class="nc">&nbsp;                  MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;                  return;</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;              }</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              if (debugMode) {</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: run: run queue entry: docId = &quot; + queueEntry.docId + &quot;, nStart.type = &quot; + queueEntry.nStart.type </b>
+&nbsp;                    + &quot;, nStart.number = &quot; + queueEntry.nStart.number + &quot;, nEnd.number = &quot; + queueEntry.nEnd.number 
+&nbsp;                    + &quot;, nCheck = &quot; + queueEntry.nCheck + &quot;, overrideRunning = &quot; + queueEntry.overrideRunning);
+<b class="nc">&nbsp;                if (queueEntry.nStart.number + 1 == queueEntry.nEnd.number) {</b>
+<b class="nc">&nbsp;                  SingleDocument document = getSingleDocument(queueEntry.docId);</b>
+<b class="nc">&nbsp;                  MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: run: Paragraph(&quot; + queueEntry.nStart.number + &quot;): &#39;&quot; </b>
+<b class="nc">&nbsp;                      + document.getDocumentCache().getTextParagraph(queueEntry.nStart) + &quot;&#39;&quot;);</b>
+&nbsp;                }
+&nbsp;              }
+&nbsp;              try {
+<b class="nc">&nbsp;                if (debugModeTm) {</b>
+<b class="nc">&nbsp;                  startTime = System.currentTimeMillis();</b>
+&nbsp;                }
+<b class="nc">&nbsp;                Language entryLanguage = null;</b>
+<b class="nc">&nbsp;                if (!interruptCheck) {</b>
+<b class="nc">&nbsp;                  entryLanguage = getLanguage(queueEntry.docId, queueEntry.nStart);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                if (entryLanguage != null) {</b>
+<b class="nc">&nbsp;                  if (lastLanguage == null || !lastLanguage.equals(entryLanguage)) {</b>
+<b class="nc">&nbsp;                    lastLanguage = entryLanguage;</b>
+<b class="nc">&nbsp;                    if (!interruptCheck) {</b>
+<b class="nc">&nbsp;                      initLangtool(lastLanguage);</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    if (!interruptCheck) {</b>
+<b class="nc">&nbsp;                      sortedTextRules.activateTextRulesByIndex(queueEntry.nCache, lt);</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                  } else if (lastCache != queueEntry.nCache &amp;&amp; !interruptCheck) {</b>
+<b class="nc">&nbsp;                    sortedTextRules.activateTextRulesByIndex(queueEntry.nCache, lt);</b>
+&nbsp;                  }
+&nbsp;                }
+<b class="nc">&nbsp;                lastDocId = queueEntry.docId;</b>
+<b class="nc">&nbsp;  	            lastStart = queueEntry.nStart;</b>
+<b class="nc">&nbsp;  	            lastEnd = queueEntry.nEnd;</b>
+<b class="nc">&nbsp;  	            lastCache = queueEntry.nCache;</b>
+&nbsp;  	            // entryLanguage == null: language is not supported by LT
+&nbsp;  	            // lt is set to null - results in empty entry in result cache
+<b class="nc">&nbsp;                if (debugMode &amp;&amp; entryLanguage == null) {</b>
+<b class="nc">&nbsp;                  MessageHandler.printToLogFile(&quot;TextLevelCheckQueue: run: entryLanguage == null: lt set to null&quot;); </b>
+&nbsp;                }
+<b class="nc">&nbsp;                if (!interruptCheck) {</b>
+<b class="nc">&nbsp;                  runQueueEntry(queueEntry, multiDocHandler, entryLanguage == null ? null : lt);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                queueEntry = null;</b>
+<b class="nc">&nbsp;                if (debugModeTm) {</b>
+<b class="nc">&nbsp;                  long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;                  if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;                    MessageHandler.printToLogFile(&quot;Time to run Text Level Check Queue (run Queue Entry): &quot; + runTime);</b>
+&nbsp;                  }
+&nbsp;                }
+<b class="nc">&nbsp;              } catch (Throwable e) {</b>
+&nbsp;                //  there may be exceptions because of timing problems
+&nbsp;                //  catch them and write to log file but don&#39;t stop the queue
+<b class="nc">&nbsp;                if (debugMode) {</b>
+<b class="nc">&nbsp;                  MessageHandler.showError(e);</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                  MessageHandler.printException(e);</b>
+&nbsp;                }
+<b class="nc">&nbsp;              }</b>
+&nbsp;            }
+<b class="nc">&nbsp;          }</b>
+&nbsp;        }
+<b class="nc">&nbsp;      } catch (Throwable e) {</b>
+<b class="nc">&nbsp;        MessageHandler.showError(e);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+&nbsp;  }
+&nbsp;    
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

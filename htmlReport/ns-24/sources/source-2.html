@@ -1,0 +1,252 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > AbstractCheckCaseRule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.rules</a>
+</div>
+
+<h1>Coverage Summary for Class: AbstractCheckCaseRule (org.languagetool.rules)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbstractCheckCaseRule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/56)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/64)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2020 Daniel Naber (http://www.danielnaber.de)
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.rules;
+&nbsp;
+&nbsp;import org.apache.commons.lang3.StringUtils;
+&nbsp;import org.languagetool.AnalyzedSentence;
+&nbsp;import org.languagetool.AnalyzedTokenReadings;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.tools.StringTools;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;import java.util.concurrent.ArrayBlockingQueue;
+&nbsp;
+&nbsp;/**
+&nbsp; * A rule that checks case in phrases
+&nbsp; * 
+&nbsp; * @author Jaume Ortolà
+&nbsp; */
+&nbsp;public abstract class AbstractCheckCaseRule extends AbstractSimpleReplaceRule2 {
+&nbsp;
+&nbsp;  public AbstractCheckCaseRule(ResourceBundle messages, Language language) {
+<b class="nc">&nbsp;    super(messages, language);</b>
+<b class="nc">&nbsp;    super.setLocQualityIssueType(ITSIssueType.Typographical);</b>
+<b class="nc">&nbsp;    super.setCategory(Categories.CASING.getCategory(messages));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public RuleMatch[] match(AnalyzedSentence sentence) {
+<b class="nc">&nbsp;    List&lt;RuleMatch&gt; ruleMatches = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    AnalyzedTokenReadings[] tokens = sentence.getTokensWithoutWhitespace();</b>
+&nbsp;
+<b class="nc">&nbsp;    List&lt;Map&lt;String, SuggestionWithMessage&gt;&gt; wrongWords = getWrongWords(true);</b>
+<b class="nc">&nbsp;    if (wrongWords.size() == 0) {</b>
+<b class="nc">&nbsp;      return toRuleMatchArray(ruleMatches);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Queue&lt;AnalyzedTokenReadings&gt; prevTokens = new ArrayBlockingQueue&lt;&gt;(wrongWords.size());</b>
+<b class="nc">&nbsp;    int sentStart = 0;</b>
+<b class="nc">&nbsp;    while (sentStart + 1 &lt; tokens.length &amp;&amp; isPunctuationStart(tokens[sentStart + 1].getToken())) {</b>
+<b class="nc">&nbsp;      sentStart++;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    for (int i = 1; i &lt; tokens.length; i++) {</b>
+<b class="nc">&nbsp;      addToQueue(tokens[i], prevTokens);</b>
+<b class="nc">&nbsp;      StringBuilder sb = new StringBuilder();</b>
+<b class="nc">&nbsp;      List&lt;String&gt; phrases = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      List&lt;AnalyzedTokenReadings&gt; prevTokensList = Arrays.asList(prevTokens.toArray(new AnalyzedTokenReadings[0]));</b>
+<b class="nc">&nbsp;      for (int j = prevTokensList.size() - 1; j &gt;= 0; j--) {</b>
+<b class="nc">&nbsp;        if (j != prevTokensList.size() - 1 &amp;&amp; prevTokensList.get(j + 1).isWhitespaceBefore()) {</b>
+<b class="nc">&nbsp;          sb.insert(0, &quot; &quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        sb.insert(0, prevTokensList.get(j).getToken());</b>
+<b class="nc">&nbsp;        phrases.add(0, sb.toString());</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (isTokenException(tokens[i])) {</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int len = phrases.size(); // prevTokensList and variants have now the same length</b>
+<b class="nc">&nbsp;      for (int j = 0; j &lt; len; j++) { // longest words first</b>
+<b class="nc">&nbsp;        String originalPhrase = phrases.get(j);</b>
+<b class="nc">&nbsp;        int crtWordCount = len - j;</b>
+<b class="nc">&nbsp;        SuggestionWithMessage suggMess = wrongWords.get(crtWordCount - 1).get(originalPhrase.toLowerCase(getLocale()));</b>
+<b class="nc">&nbsp;        if (suggMess == null) {</b>
+<b class="nc">&nbsp;          continue;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        String correctPhrase = suggMess.getSuggestion();</b>
+<b class="nc">&nbsp;        String capitalizedCorrect = StringTools.uppercaseFirstChar(correctPhrase);</b>
+<b class="nc">&nbsp;        int startPos = prevTokensList.get(len - crtWordCount).getStartPos();</b>
+<b class="nc">&nbsp;        int endPos = prevTokensList.get(len - 1).getEndPos();</b>
+<b class="nc">&nbsp;        if ((crtWordCount + sentStart == i &amp;&amp; originalPhrase.equals(capitalizedCorrect))</b>
+<b class="nc">&nbsp;            || correctPhrase.equals(originalPhrase)) {</b>
+&nbsp;          // remove last match if is contained in a correct phrase
+<b class="nc">&nbsp;          if (ruleMatches.size() &gt; 0) {</b>
+<b class="nc">&nbsp;            RuleMatch lastRuleMatch = ruleMatches.get(ruleMatches.size() - 1);</b>
+<b class="nc">&nbsp;            if (lastRuleMatch.getToPos() &gt; startPos) {</b>
+<b class="nc">&nbsp;              ruleMatches.remove(ruleMatches.size() - 1);</b>
+&nbsp;            }
+<b class="nc">&nbsp;          }</b>
+&nbsp;          // The phrase is correct. Don&#39;t look into shorter phrases inside this phrase.
+&nbsp;          break;
+&nbsp;        }
+<b class="nc">&nbsp;        if (originalPhrase.equals(originalPhrase.toUpperCase())) {</b>
+<b class="nc">&nbsp;          continue;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (correctPhrase != null &amp;&amp; !correctPhrase.equals(originalPhrase)) {</b>
+&nbsp;          RuleMatch ruleMatch;
+<b class="nc">&nbsp;          String msg = suggMess.getMessage();</b>
+<b class="nc">&nbsp;          if (msg == null) {</b>
+<b class="nc">&nbsp;            msg = getMessage();</b>
+&nbsp;          }
+<b class="nc">&nbsp;          ruleMatch = new RuleMatch(this, sentence, startPos, endPos, msg, getShort());</b>
+<b class="nc">&nbsp;          if (subRuleSpecificIds) {</b>
+<b class="nc">&nbsp;            ruleMatch.setSpecificRuleId(StringTools.toId(getId() + &quot;_&quot; + correctPhrase));</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (crtWordCount + sentStart == i) {</b>
+&nbsp;            // Capitalize suggestion at the sentence start
+<b class="nc">&nbsp;            correctPhrase = StringTools.uppercaseFirstChar(correctPhrase);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          ruleMatch.addSuggestedReplacement(correctPhrase);</b>
+<b class="nc">&nbsp;          if (!isException(sentence.getText().substring(startPos, endPos))) {</b>
+&nbsp;            // keep only the longest match
+<b class="nc">&nbsp;            if (ruleMatches.size() &gt; 0) {</b>
+<b class="nc">&nbsp;              RuleMatch lastRuleMatch = ruleMatches.get(ruleMatches.size() - 1);</b>
+<b class="nc">&nbsp;              if (lastRuleMatch.getFromPos() == ruleMatch.getFromPos()</b>
+<b class="nc">&nbsp;                  &amp;&amp; lastRuleMatch.getToPos() &lt; ruleMatch.getToPos()) {</b>
+<b class="nc">&nbsp;                ruleMatches.remove(ruleMatches.size() - 1);</b>
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;            ruleMatches.add(ruleMatch);</b>
+&nbsp;          }
+&nbsp;          break;
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return toRuleMatchArray(ruleMatches);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private boolean isPunctuationStart(String word) {
+<b class="nc">&nbsp;    return StringUtils.getDigits(word).length() &gt; 0 // e.g. postal codes</b>
+<b class="nc">&nbsp;        || StringTools.isPunctuationMark(word) || StringTools.isNotWordCharacter(word);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

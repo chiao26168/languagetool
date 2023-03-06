@@ -1,0 +1,377 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CatalanSynthesizer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.synthesis.ca</a>
+</div>
+
+<h1>Coverage Summary for Class: CatalanSynthesizer (org.languagetool.synthesis.ca)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CatalanSynthesizer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/118)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/135)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2012 Jaume Ortolà i Font
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.synthesis.ca;
+&nbsp;
+&nbsp;import org.languagetool.AnalyzedToken;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.synthesis.BaseSynthesizer;
+&nbsp;import org.languagetool.tools.StringTools;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;import java.util.regex.Matcher;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;import java.util.regex.PatternSyntaxException;
+&nbsp;
+&nbsp;/**
+&nbsp; * Catalan word form synthesizer.
+&nbsp; * 
+&nbsp; * There are special additions:
+&nbsp; * &quot;DT&quot; tag adds &quot;el, la, l&#39;, els, les&quot; according to the gender  
+&nbsp; * and the number of the word and the Catalan rules for apostrophation (l&#39;).
+&nbsp; * &quot;DTa&quot; adds &quot;al, a la, a l&#39;, als, a les&quot;
+&nbsp; * &quot;DTde&quot; adds &quot;del, de la, de l&#39;, dels, de les&quot;
+&nbsp; * &quot;DTper&quot; adds &quot;pel, per la, per l&#39;, pels, per les&quot;
+&nbsp; * &quot;DTca&quot; adds &quot;cal, ca la, ca l&#39;, cals, ca les&quot;
+&nbsp; *
+&nbsp; * @author Jaume Ortolà i Font
+&nbsp; */
+&nbsp;public class CatalanSynthesizer extends BaseSynthesizer {
+&nbsp;  
+&nbsp;  /* A special tag to add determiner (el, la, l&#39;, els, les). **/
+&nbsp;  // private static final String ADD_DETERMINER = &quot;DT&quot;;
+&nbsp;  
+&nbsp;  /* Exceptions */
+<b class="nc">&nbsp;  public static final List&lt;String&gt; LemmasToIgnore =  Arrays.asList(&quot;enterar&quot;, &quot;sentar&quot;, &quot;conseguir&quot;, &quot;alcançar&quot;);</b>
+&nbsp;
+&nbsp;  /** Patterns for number and gender **/
+<b class="nc">&nbsp;  private static final Pattern pMS = Pattern.compile(&quot;(N|A.).[MC][SN].*|V.P.*SM.?&quot;);</b>
+<b class="nc">&nbsp;  private static final Pattern pFS = Pattern.compile(&quot;(N|A.).[FC][SN].*|V.P.*SF.?&quot;);</b>
+<b class="nc">&nbsp;  private static final Pattern pMP = Pattern.compile(&quot;(N|A.).[MC][PN].*|V.P.*PM.?&quot;);</b>
+<b class="nc">&nbsp;  private static final Pattern pFP = Pattern.compile(&quot;(N|A.).[FC][PN].*|V.P.*PF.?&quot;);</b>
+&nbsp;
+&nbsp;  /** Pattern for previous preposition passed in the postag **/
+<b class="nc">&nbsp;  private static final Pattern pPrep = Pattern.compile(&quot;(DT)(.*)&quot;);</b>
+&nbsp;
+&nbsp;  /** Patterns for apostrophation **/
+<b class="nc">&nbsp;  private static final Pattern pMascYes = Pattern.compile(&quot;h?[aeiouàèéíòóú].*&quot;,Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE);</b>
+<b class="nc">&nbsp;  private static final Pattern pMascNo = Pattern.compile(&quot;h?[ui][aeioàèéóò].+&quot;,Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE);</b>
+<b class="nc">&nbsp;  private static final Pattern pFemYes = Pattern.compile(&quot;h?[aeoàèéíòóú].*|h?[ui][^aeiouàèéíòóúüï]+[aeiou][ns]?|urbs&quot;,Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE);</b>
+<b class="nc">&nbsp;  private static final Pattern pFemNo = Pattern.compile(&quot;host|ira|inxa&quot;,Pattern.CASE_INSENSITIVE|Pattern.UNICODE_CASE);</b>
+&nbsp;  
+&nbsp;  /** Patterns verb **/
+<b class="nc">&nbsp;  private static final Pattern pVerb = Pattern.compile(&quot;V.*[CVBXYZ0123456]&quot;);</b>
+&nbsp;  
+<b class="nc">&nbsp;  private static final Pattern pLemmaSpace = Pattern.compile(&quot;([^ ]+) (.+)&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;  public static final CatalanSynthesizer INSTANCE = new CatalanSynthesizer();</b>
+&nbsp;
+&nbsp;  /** @deprecated use {@link #INSTANCE} */
+&nbsp;  public CatalanSynthesizer(Language lang) {
+<b class="nc">&nbsp;    this();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private CatalanSynthesizer() {
+<b class="nc">&nbsp;    super(&quot;/ca/ca.sor&quot;, &quot;/ca/ca-ES-valencia_synth.dict&quot;, &quot;/ca/ca-ES-valencia_tags.txt&quot;, &quot;ca&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String[] synthesize(AnalyzedToken token, String posTag) throws IOException {    
+<b class="nc">&nbsp;    if (posTag.startsWith(SPELLNUMBER_TAG)) {</b>
+<b class="nc">&nbsp;      return super.synthesize(token, posTag);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    String lemma = token.getLemma();</b>
+<b class="nc">&nbsp;    String toAddAfter = &quot;&quot;;</b>
+&nbsp;    // verbs with noun
+<b class="nc">&nbsp;    if (posTag.startsWith(&quot;V&quot;)) {</b>
+<b class="nc">&nbsp;      Matcher mLemmaSpace = pLemmaSpace.matcher(lemma);</b>
+<b class="nc">&nbsp;      if (mLemmaSpace.matches()) {</b>
+<b class="nc">&nbsp;        lemma = mLemmaSpace.group(1);</b>
+<b class="nc">&nbsp;        toAddAfter = mLemmaSpace.group(2);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    initPossibleTags();</b>
+&nbsp;    Pattern p;
+<b class="nc">&nbsp;    boolean addDt = false; </b>
+<b class="nc">&nbsp;    String prep = &quot;&quot;; </b>
+<b class="nc">&nbsp;    Matcher mPrep = pPrep.matcher(posTag);</b>
+<b class="nc">&nbsp;    if (mPrep.matches()) {</b>
+<b class="nc">&nbsp;      addDt = true; // add definite article before token</b>
+<b class="nc">&nbsp;      if (mPrep.groupCount() &gt; 1) {</b>
+<b class="nc">&nbsp;        prep = mPrep.group(2); // add preposition before article</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (addDt) {</b>
+<b class="nc">&nbsp;      p = Pattern.compile(&quot;N.*|A.*|V.P.*|PX.&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      p = Pattern.compile(posTag);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    List&lt;String&gt; results = new ArrayList&lt;&gt;();</b>
+&nbsp;    
+<b class="nc">&nbsp;    for (String tag : possibleTags) {</b>
+<b class="nc">&nbsp;      Matcher m = p.matcher(tag);</b>
+<b class="nc">&nbsp;      if (m.matches()) {</b>
+<b class="nc">&nbsp;        if (addDt) {</b>
+<b class="nc">&nbsp;          List&lt;String&gt; wordForms = lookup(lemma, tag);</b>
+<b class="nc">&nbsp;          for (String word : wordForms) {</b>
+<b class="nc">&nbsp;            word = StringTools.preserveCase(word, token.getToken());</b>
+<b class="nc">&nbsp;            results.addAll(addPrepositionAndDeterminer(word, tag, prep));</b>
+<b class="nc">&nbsp;          }</b>
+<b class="nc">&nbsp;        } else {</b>
+<b class="nc">&nbsp;          results.addAll(lookup(lemma, tag));</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;    // if found nothing with determiner, add the expected determiner for the original word form
+<b class="nc">&nbsp;    if (addDt &amp;&amp; results.isEmpty()) {</b>
+<b class="nc">&nbsp;      results.addAll(addPrepositionAndDeterminer(token.getToken(), token.getPOSTag(), prep));</b>
+&nbsp;    }
+&nbsp;    // if not found, try verbs from any regional variant
+<b class="nc">&nbsp;    if (results.isEmpty() &amp;&amp; posTag.startsWith(&quot;V&quot;)) {</b>
+<b class="nc">&nbsp;      if (posTag.endsWith(&quot;V&quot;) || posTag.endsWith(&quot;B&quot;)) {</b>
+<b class="nc">&nbsp;        results.addAll(lookup(lemma, posTag.substring(0, posTag.length() - 1).concat(&quot;Z&quot;)));</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (results.isEmpty() &amp;&amp; !posTag.endsWith(&quot;0&quot;)) {</b>
+<b class="nc">&nbsp;        results.addAll(lookup(lemma, posTag.substring(0, posTag.length() - 1).concat(&quot;0&quot;)));</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (results.isEmpty()) { // another try</b>
+<b class="nc">&nbsp;        return synthesize(token, posTag.substring(0, posTag.length() - 1).concat(&quot;.&quot;), true);</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return addWordsAfter(results, toAddAfter).toArray(new String[0]);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  @Override
+&nbsp;  public String[] synthesize(AnalyzedToken token, String posTag, boolean posTagRegExp) throws IOException {
+<b class="nc">&nbsp;    if (posTag.startsWith(SPELLNUMBER_TAG)) {</b>
+<b class="nc">&nbsp;      return synthesize(token, posTag);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (posTagRegExp) {</b>
+<b class="nc">&nbsp;      String lemma = token.getLemma();</b>
+<b class="nc">&nbsp;      if (LemmasToIgnore.contains(lemma)) {</b>
+<b class="nc">&nbsp;        return new String[0];</b>
+&nbsp;      }
+<b class="nc">&nbsp;      String toAddAfter = &quot;&quot;;</b>
+&nbsp;      // verbs with noun
+<b class="nc">&nbsp;      if (posTag.startsWith(&quot;V&quot;)) {</b>
+<b class="nc">&nbsp;        Matcher mLemmaSpace = pLemmaSpace.matcher(lemma);</b>
+<b class="nc">&nbsp;        if (mLemmaSpace.matches()) {</b>
+<b class="nc">&nbsp;          lemma = mLemmaSpace.group(1);</b>
+<b class="nc">&nbsp;          toAddAfter = mLemmaSpace.group(2);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      initPossibleTags();</b>
+&nbsp;      Pattern p;
+&nbsp;      try {
+<b class="nc">&nbsp;        p = Pattern.compile(posTag);</b>
+<b class="nc">&nbsp;      } catch (PatternSyntaxException e) {</b>
+<b class="nc">&nbsp;        System.err.println(&quot;WARNING: Error trying to synthesize POS tag &quot;</b>
+<b class="nc">&nbsp;            + posTag + &quot; from token &quot; + token.getToken() + &quot;: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;        return null;</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      List&lt;String&gt; results = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      for (String tag : possibleTags) {</b>
+<b class="nc">&nbsp;        Matcher m = p.matcher(tag);</b>
+<b class="nc">&nbsp;        if (m.matches()) {</b>
+<b class="nc">&nbsp;          results.addAll(lookup(lemma, tag));</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+&nbsp;      // if not found, try verbs from any regional variant
+<b class="nc">&nbsp;      if (results.isEmpty()) {</b>
+<b class="nc">&nbsp;        Matcher mVerb = pVerb.matcher(posTag);</b>
+<b class="nc">&nbsp;        if (mVerb.matches()) {</b>
+<b class="nc">&nbsp;          if (!posTag.endsWith(&quot;0&quot;)) {</b>
+<b class="nc">&nbsp;            p = Pattern.compile(posTag.substring(0, posTag.length() - 1)</b>
+<b class="nc">&nbsp;                .concat(&quot;0&quot;));</b>
+<b class="nc">&nbsp;            for (String tag : possibleTags) {</b>
+<b class="nc">&nbsp;              Matcher m = p.matcher(tag);</b>
+<b class="nc">&nbsp;              if (m.matches()) {</b>
+<b class="nc">&nbsp;                results.addAll(lookup(lemma, tag));</b>
+&nbsp;              }
+<b class="nc">&nbsp;            }</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (results.isEmpty()) { // another try</b>
+<b class="nc">&nbsp;            p = Pattern.compile(posTag.substring(0, posTag.length() - 1)</b>
+<b class="nc">&nbsp;                .concat(&quot;.&quot;));</b>
+<b class="nc">&nbsp;            for (String tag : possibleTags) {</b>
+<b class="nc">&nbsp;              Matcher m = p.matcher(tag);</b>
+<b class="nc">&nbsp;              if (m.matches()) {</b>
+<b class="nc">&nbsp;                results.addAll(lookup(lemma, tag));</b>
+&nbsp;              }
+<b class="nc">&nbsp;            }</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return addWordsAfter(results, toAddAfter).toArray(new String[0]);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return synthesize(token, posTag);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /*
+&nbsp;   * Add the appropriate forms of preposition + article + noun / adj
+&nbsp;   */
+&nbsp;  private List&lt;String&gt; addPrepositionAndDeterminer(String word, String posTag, String prep) {
+<b class="nc">&nbsp;    List&lt;String&gt; results = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    Matcher mMS = pMS.matcher(posTag);</b>
+<b class="nc">&nbsp;    Matcher mFS = pFS.matcher(posTag);</b>
+<b class="nc">&nbsp;    Matcher mMP = pMP.matcher(posTag);</b>
+<b class="nc">&nbsp;    Matcher mFP = pFP.matcher(posTag);</b>
+<b class="nc">&nbsp;    if (mMS.matches()) {</b>
+<b class="nc">&nbsp;      Matcher mMascYes = pMascYes.matcher(word);</b>
+<b class="nc">&nbsp;      Matcher mMascNo = pMascNo.matcher(word);</b>
+<b class="nc">&nbsp;      if (prep.equals(&quot;per&quot;)) {  if (mMascYes.matches() &amp;&amp; !mMascNo.matches()) {  results.add(&quot;per l&#39;&quot; + word);  }  else {results.add(&quot;pel &quot; + word);  } }</b>
+<b class="nc">&nbsp;      else if (prep.isEmpty()) {  if (mMascYes.matches() &amp;&amp; !mMascNo.matches()) {  results.add(&quot;l&#39;&quot; + word);  }  else {results.add(&quot;el &quot; + word);  } }</b>
+<b class="nc">&nbsp;      else {  if (mMascYes.matches() &amp;&amp; !mMascNo.matches()) {  results.add(prep+&quot; l&#39;&quot; + word);  }  else {results.add(prep+&quot;l &quot; + word);  } }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (mFS.matches()) {</b>
+<b class="nc">&nbsp;      Matcher mFemYes = pFemYes.matcher(word);</b>
+<b class="nc">&nbsp;      Matcher mFemNo = pFemNo.matcher(word);</b>
+<b class="nc">&nbsp;      if (prep.equals(&quot;per&quot;)) {  if (mFemYes.matches() &amp;&amp; !mFemNo.matches()) {  results.add(&quot;per l&#39;&quot; + word);  }  else {results.add(&quot;per la &quot; + word);} }</b>
+<b class="nc">&nbsp;      else if (prep.isEmpty()) {  if (mFemYes.matches() &amp;&amp; !mFemNo.matches()) {  results.add(&quot;l&#39;&quot; + word);  }  else {results.add(&quot;la &quot; + word);} }</b>
+<b class="nc">&nbsp;      else {  if (mFemYes.matches() &amp;&amp; !mFemNo.matches()) {  results.add(prep+&quot; l&#39;&quot; + word);  }  else {results.add(prep+&quot; la &quot; + word);} }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (mMP.matches()) {    </b>
+<b class="nc">&nbsp;      if (prep.equals(&quot;per&quot;)) { results.add(&quot;pels &quot; + word); }</b>
+<b class="nc">&nbsp;      else if (prep.isEmpty()) { results.add(&quot;els &quot; + word); }</b>
+<b class="nc">&nbsp;      else { results.add(prep+&quot;ls &quot; + word); }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (mFP.matches()) { </b>
+<b class="nc">&nbsp;      if (prep.isEmpty()) { results.add(&quot;les &quot; + word);  } else {results.add(prep+&quot; les &quot; + word);  }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return results;</b>
+&nbsp;  } 
+&nbsp;  
+&nbsp;  private List&lt;String&gt; addWordsAfter(List&lt;String&gt; results, String toAddAfter) {
+<b class="nc">&nbsp;    if (!toAddAfter.isEmpty()) {</b>
+<b class="nc">&nbsp;      List&lt;String&gt; output = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      for (String result : results) {</b>
+<b class="nc">&nbsp;        output.add(result + &quot; &quot; + toAddAfter);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      return output;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return results;</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

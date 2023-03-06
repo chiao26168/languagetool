@@ -1,0 +1,1491 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > SingleDocument</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: SingleDocument (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SingleDocument</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/53)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/440)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/499)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SingleDocument$1</td>
+  </tr>
+  <tr>
+    <td class="name">SingleDocument$IgnoredMatches</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/47)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">SingleDocument$LTDokumentEventListener</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">SingleDocument$RuleDesc</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/72)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/488)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/565)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.gui.Configuration;
+&nbsp;import org.languagetool.openoffice.DocumentCache.TextParagraph;
+&nbsp;import org.languagetool.openoffice.OfficeTools.DocumentType;
+&nbsp;import org.languagetool.openoffice.TextLevelCheckQueue.QueueEntry;
+&nbsp;
+&nbsp;import com.sun.star.awt.MouseButton;
+&nbsp;import com.sun.star.awt.MouseEvent;
+&nbsp;import com.sun.star.awt.XMouseClickHandler;
+&nbsp;import com.sun.star.awt.XUserInputInterception;
+&nbsp;import com.sun.star.beans.PropertyValue;
+&nbsp;import com.sun.star.document.DocumentEvent;
+&nbsp;import com.sun.star.document.XDocumentEventBroadcaster;
+&nbsp;import com.sun.star.document.XDocumentEventListener;
+&nbsp;import com.sun.star.frame.XController;
+&nbsp;import com.sun.star.frame.XModel;
+&nbsp;import com.sun.star.lang.EventObject;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;import com.sun.star.linguistic2.ProofreadingResult;
+&nbsp;import com.sun.star.linguistic2.SingleProofreadingError;
+&nbsp;import com.sun.star.uno.UnoRuntime;
+&nbsp;import com.sun.star.uno.XComponentContext;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class for checking text of one LO document 
+&nbsp; * @since 4.3
+&nbsp; * @author Fred Kruse, Marcin Miłkowski
+&nbsp; */
+<b class="nc">&nbsp;class SingleDocument {</b>
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Full text Check:
+&nbsp;   * numParasToCheck: Paragraphs to be checked for full text rules
+&nbsp;   * &lt; 0 check full text (time intensive)
+&nbsp;   * == 0 check only one paragraph (works like LT Version &lt;= 3.9)
+&nbsp;   * &gt; 0 checks numParasToCheck before and after the processed paragraph
+&nbsp;   * 
+&nbsp;   * Cache:
+&nbsp;   * sentencesCache: only used for doResetCheck == true (LO checks again only changed paragraphs by default)
+&nbsp;   * paragraphsCache: used to store LT matches for a fast return to LO (numParasToCheck != 0)
+&nbsp;   * singleParaCache: used for one paragraph check by default or for special paragraphs like headers, footers, footnotes, etc.
+&nbsp;   *  
+&nbsp;   */
+&nbsp;  
+&nbsp;  private static int debugMode;                   //  should be 0 except for testing; 1 = low level; 2 = advanced level
+&nbsp;  private static boolean debugModeTm;             // time measurement should be false except for testing
+&nbsp;  
+&nbsp;  private Configuration config;
+&nbsp;
+<b class="nc">&nbsp;  private int numParasToCheck = 0;                // current number of Paragraphs to be checked</b>
+&nbsp;
+&nbsp;  private XComponentContext xContext;             //  The context of the document
+&nbsp;  private String docID;                           //  docID of the document
+&nbsp;  private XComponent xComponent;                  //  XComponent of the open document
+&nbsp;  private final MultiDocumentsHandler mDocHandler;      //  handles the different documents loaded in LO/OO
+<b class="nc">&nbsp;  private LTDokumentEventListener eventListener = null; //  listens for save of document </b>
+&nbsp;  
+&nbsp;  private final DocumentCache docCache;           //  cache of paragraphs (only readable by parallel thread)
+&nbsp;  private final List&lt;ResultCache&gt; paragraphsCache;//  Cache for matches of text rules
+&nbsp;  private final Map&lt;Integer, String&gt; changedParas;//  Map of last changed paragraphs;
+<b class="nc">&nbsp;  private DocumentCursorTools docCursor = null;   //  Save document cursor for the single document</b>
+<b class="nc">&nbsp;  private ViewCursorTools viewCursor = null;      //  Get the view cursor for desktop</b>
+<b class="nc">&nbsp;  private FlatParagraphTools flatPara = null;     //  Save information for flat paragraphs (including iterator and iterator provider) for the single document</b>
+<b class="nc">&nbsp;  private Integer numLastVCPara = 0;              //  Save position of ViewCursor for the single documents</b>
+<b class="nc">&nbsp;  private Integer numLastFlPara = -1;             //  Save position of FlatParagraph for the single documents</b>
+&nbsp;  private CacheIO cacheIO;
+<b class="nc">&nbsp;  private int changeFrom = 0;                     //  Change result cache from paragraph</b>
+<b class="nc">&nbsp;  private int changeTo = 0;                       //  Change result cache to paragraph</b>
+&nbsp;  private int paraNum;                            //  Number of current checked paragraph
+&nbsp;  private int lastChangedPara;                    //  lastPara which was detected as changed
+&nbsp;  private List&lt;Integer&gt; lastChangedParas;         //  lastPara which was detected as changed
+&nbsp;  private IgnoredMatches ignoredMatches;          //  Map of matches (number of paragraph, number of character) that should be ignored after ignoreOnce was called
+&nbsp;  private final DocumentType docType;             //  save the type of document
+<b class="nc">&nbsp;  private boolean disposed = false;               //  true: document with this docId is disposed - SingleDocument shall be removed</b>
+<b class="nc">&nbsp;  private boolean resetDocCache = false;          //  true: the cache of the document should be reseted before the next check</b>
+<b class="nc">&nbsp;  private boolean hasFootnotes = true;            //  true: Footnotes are supported by LO/OO</b>
+<b class="nc">&nbsp;  private boolean hasSortedTextId = true;            //  true: Node Index is supported by LO</b>
+<b class="nc">&nbsp;  private boolean isLastIntern = false;           //  true: last check was intern</b>
+<b class="nc">&nbsp;  private boolean isRightButtonPressed = false;   //  true: right mouse Button was pressed</b>
+<b class="nc">&nbsp;  private boolean isOnUnload = false;             //  Document will be closed</b>
+<b class="nc">&nbsp;  private String lastSinglePara = null;           //  stores the last paragraph which is checked as single paragraph</b>
+&nbsp;  private Language docLanguage;                   //  docLanguage (usually the Language of the first paragraph)
+&nbsp;  private final Language fixedLanguage;           //  fixed language (by configuration); if null: use language of document (given by LO/OO)
+<b class="nc">&nbsp;  private LanguageToolMenus ltMenus = null;       //  LT menus (tools menu and context menu)</b>
+&nbsp;
+&nbsp;  SingleDocument(XComponentContext xContext, Configuration config, String docID, 
+<b class="nc">&nbsp;      XComponent xComp, MultiDocumentsHandler mDH) {</b>
+<b class="nc">&nbsp;    debugMode = OfficeTools.DEBUG_MODE_SD;</b>
+<b class="nc">&nbsp;    debugModeTm = OfficeTools.DEBUG_MODE_TM;</b>
+<b class="nc">&nbsp;    this.xContext = xContext;</b>
+<b class="nc">&nbsp;    this.config = config;</b>
+<b class="nc">&nbsp;    this.docID = docID;</b>
+<b class="nc">&nbsp;    if (docID.charAt(0) == &#39;I&#39;) {</b>
+<b class="nc">&nbsp;      docType = DocumentType.IMPRESS;</b>
+<b class="nc">&nbsp;    } else if (docID.charAt(0) == &#39;C&#39;) {</b>
+<b class="nc">&nbsp;      docType = DocumentType.CALC;</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      docType = DocumentType.WRITER;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    xComponent = xComp;</b>
+<b class="nc">&nbsp;    mDocHandler = mDH;</b>
+<b class="nc">&nbsp;    fixedLanguage = config.getDefaultLanguage();</b>
+<b class="nc">&nbsp;    changedParas = new HashMap&lt;Integer, String&gt;();</b>
+<b class="nc">&nbsp;    setDokumentListener(xComponent);</b>
+<b class="nc">&nbsp;    List&lt;ResultCache&gt; paraCache = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; OfficeTools.NUMBER_TEXTLEVEL_CACHE; i++) {</b>
+<b class="nc">&nbsp;      paraCache.add(new ResultCache());</b>
+&nbsp;    }
+<b class="nc">&nbsp;    paragraphsCache = Collections.unmodifiableList(paraCache);</b>
+<b class="nc">&nbsp;    if (config != null) {</b>
+<b class="nc">&nbsp;      setConfigValues(config);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    resetResultCache();</b>
+<b class="nc">&nbsp;    ignoredMatches = new IgnoredMatches();</b>
+<b class="nc">&nbsp;    if (docCursor == null) {</b>
+<b class="nc">&nbsp;      docCursor = new DocumentCursorTools(xComponent);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    docCache = new DocumentCache(docType);</b>
+<b class="nc">&nbsp;    if (config != null &amp;&amp; config.saveLoCache() &amp;&amp; !config.noBackgroundCheck() &amp;&amp; xComponent != null &amp;&amp; !mDocHandler.isTestMode()) {</b>
+<b class="nc">&nbsp;      readCaches();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (xComponent != null) {</b>
+<b class="nc">&nbsp;      setFlatParagraphTools();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (docType == DocumentType.IMPRESS &amp;&amp; ltMenus == null) {</b>
+<b class="nc">&nbsp;      ltMenus = new LanguageToolMenus(xContext, xComponent, this, config);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**  get the result for a check of a single document 
+&nbsp;   * 
+&nbsp;   * @param paraText          paragraph text
+&nbsp;   * @param paRes             proof reading result
+&nbsp;   * @return                  proof reading result
+&nbsp;   */
+&nbsp;  ProofreadingResult getCheckResults(String paraText, Locale locale, ProofreadingResult paRes, 
+&nbsp;      PropertyValue[] propertyValues, boolean docReset, SwJLanguageTool lt) {
+<b class="nc">&nbsp;    return getCheckResults(paraText, locale, paRes, propertyValues, docReset, lt, -1);</b>
+&nbsp;  }
+&nbsp;    
+&nbsp;  ProofreadingResult getCheckResults(String paraText, Locale locale, ProofreadingResult paRes, 
+&nbsp;      PropertyValue[] propertyValues, boolean docReset, SwJLanguageTool lt, int nPara) {
+<b class="nc">&nbsp;    boolean isMouseRequest = false;</b>
+<b class="nc">&nbsp;    if (isRightButtonPressed) {</b>
+<b class="nc">&nbsp;      isMouseRequest = true;</b>
+<b class="nc">&nbsp;      isRightButtonPressed = false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    int [] footnotePositions = null;  // e.g. for LO/OO &lt; 4.3 and the &#39;FootnotePositions&#39; property</b>
+<b class="nc">&nbsp;    int proofInfo = OfficeTools.PROOFINFO_UNKNOWN;  //  OO and LO &lt; 6.5 do not support ProofInfo</b>
+<b class="nc">&nbsp;    int sortedTextId = -1;</b>
+<b class="nc">&nbsp;    int documentElementsCount = -1;</b>
+<b class="nc">&nbsp;    for (PropertyValue propertyValue : propertyValues) {</b>
+<b class="nc">&nbsp;      if (&quot;FootnotePositions&quot;.equals(propertyValue.Name)) {</b>
+<b class="nc">&nbsp;        if (propertyValue.Value instanceof int[]) {</b>
+<b class="nc">&nbsp;          footnotePositions = (int[]) propertyValue.Value;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: Not of expected type int[]: &quot; + propertyValue.Name + &quot;: &quot; + propertyValue.Value.getClass());</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (&quot;ProofInfo&quot;.equals(propertyValue.Name)) {</b>
+<b class="nc">&nbsp;        if (propertyValue.Value instanceof Integer) {</b>
+<b class="nc">&nbsp;          proofInfo = (int) propertyValue.Value;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: Not of expected type int: &quot; + propertyValue.Name + &quot;: &quot; + propertyValue.Value.getClass());</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (hasSortedTextId) {</b>
+<b class="nc">&nbsp;        if (&quot;SortedTextId&quot;.equals(propertyValue.Name)) {</b>
+<b class="nc">&nbsp;          if (propertyValue.Value instanceof Integer) {</b>
+<b class="nc">&nbsp;            sortedTextId = (int) propertyValue.Value;</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: Not of expected type int: &quot; + propertyValue.Name + &quot;: &quot; + propertyValue.Value.getClass());</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        if (&quot;DocumentElementsCount&quot;.equals(propertyValue.Name)) {</b>
+<b class="nc">&nbsp;          if (propertyValue.Value instanceof Integer) {</b>
+<b class="nc">&nbsp;            documentElementsCount = (int) propertyValue.Value;</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: Not of expected type int: &quot; + propertyValue.Name + &quot;: &quot; + propertyValue.Value.getClass());</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    if (hasSortedTextId &amp;&amp; sortedTextId &lt; 0) {</b>
+<b class="nc">&nbsp;      hasSortedTextId = false;</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: SortedTextId and DocumentElementsCount are not supported by LO!&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0 &amp;&amp; hasSortedTextId) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: sortedTextId: &quot; + sortedTextId);</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: documentElementsCount: &quot; + documentElementsCount);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    hasFootnotes = footnotePositions != null;</b>
+<b class="nc">&nbsp;    if (!hasFootnotes) {</b>
+&nbsp;      //  OO and LO &lt; 4.3 do not support &#39;FootnotePositions&#39; property and other advanced features
+&nbsp;      //  switch back to single paragraph check mode - save settings in configuration
+<b class="nc">&nbsp;      if (numParasToCheck != 0) {</b>
+<b class="nc">&nbsp;        if (config.useTextLevelQueue()) {</b>
+<b class="nc">&nbsp;          mDocHandler.getTextLevelCheckQueue().setStop();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        numParasToCheck = 0;</b>
+<b class="nc">&nbsp;        config.setNumParasToCheck(numParasToCheck);</b>
+<b class="nc">&nbsp;        config.setUseTextLevelQueue(false);</b>
+&nbsp;        try {
+<b class="nc">&nbsp;          config.saveConfiguration(docLanguage);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;          MessageHandler.showError(e);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Single paragraph check mode set!&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      mDocHandler.setUseOriginalCheckDialog();</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    if (proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT </b>
+<b class="nc">&nbsp;        &amp;&amp; (DocumentCursorTools.isBusy() || ViewCursorTools.isBusy() || FlatParagraphTools.isBusy() || docCache.isResetRunning())) {</b>
+&nbsp;      //  NOTE: LO blocks the read of information by document or view cursor tools till a PROOFINFO_GET_PROOFRESULT request is done
+&nbsp;      //        This causes a hanging of LO when the request isn&#39;t answered immediately by a 0 matches result
+&nbsp;//      MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: docCache Reset is running: return 0 errors&quot;);
+<b class="nc">&nbsp;      SingleCheck singleCheck = new SingleCheck(this, paragraphsCache, docCursor, flatPara, fixedLanguage,</b>
+&nbsp;          docLanguage, ignoredMatches, numParasToCheck, true, isMouseRequest, false);
+<b class="nc">&nbsp;      paRes.aErrors = singleCheck.checkParaRules(paraText, locale, footnotePositions, -1, paRes.nStartOfSentencePosition, lt, 0, 0, false, false);</b>
+<b class="nc">&nbsp;      docCursor = null;</b>
+<b class="nc">&nbsp;      viewCursor = null;</b>
+<b class="nc">&nbsp;      return paRes;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: start PROOFRESULT&quot;);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (resetDocCache) {</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: is resetDocCache&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (docCursor == null) {</b>
+<b class="nc">&nbsp;        if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: get docCursor&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        docCursor = new DocumentCursorTools(xComponent);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugMode &gt; 0 &amp;&amp; proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;SingleDocument: getCheckResults: refresh docCache&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      docCache.refresh(this, LinguisticServices.getLocale(fixedLanguage), </b>
+<b class="nc">&nbsp;          LinguisticServices.getLocale(docLanguage),xComponent, 6);</b>
+<b class="nc">&nbsp;      resetDocCache = false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (docLanguage == null) {</b>
+<b class="nc">&nbsp;      docLanguage = lt.getLanguage();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (disposed) {</b>
+<b class="nc">&nbsp;      docCursor = null;</b>
+<b class="nc">&nbsp;      viewCursor = null;</b>
+<b class="nc">&nbsp;      return paRes;</b>
+&nbsp;    }
+&nbsp;    try {
+<b class="nc">&nbsp;      if (docReset) {</b>
+<b class="nc">&nbsp;        numLastVCPara = 0;</b>
+<b class="nc">&nbsp;        ignoredMatches = new IgnoredMatches();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      boolean isIntern = nPara &lt; 0 ? false : true;</b>
+<b class="nc">&nbsp;      boolean isDialogRequest = (nPara &gt;= 0 || (proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT));</b>
+&nbsp;      
+<b class="nc">&nbsp;      CheckRequestAnalysis requestAnalysis = new CheckRequestAnalysis(numLastVCPara, numLastFlPara,</b>
+&nbsp;          proofInfo, numParasToCheck, fixedLanguage, docLanguage, this, paragraphsCache, viewCursor, changedParas);
+<b class="nc">&nbsp;      long startTime = 0;</b>
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        startTime = System.currentTimeMillis();</b>
+&nbsp;      }
+&nbsp;      int paraNum;
+<b class="nc">&nbsp;      if (hasSortedTextId) {</b>
+<b class="nc">&nbsp;        paraNum = requestAnalysis.getNumberOfParagraphFromSortedTextId(sortedTextId, documentElementsCount, paraText, locale, footnotePositions);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        paraNum = requestAnalysis.getNumberOfParagraph(nPara, paraText, locale, paRes.nStartOfSentencePosition, footnotePositions);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to run request analyses: &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugMode &gt; 1) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Single document: getCheckResults: paraNum = &quot; + paraNum + &quot;, nPara = &quot; + nPara);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (paraNum == -2) {</b>
+<b class="nc">&nbsp;        paraNum = isLastIntern ? this.paraNum : -1;</b>
+<b class="nc">&nbsp;        if (debugMode &gt; 1) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Single document: getCheckResults: paraNum set to: &quot; + paraNum + &quot;, isLastIntern = &quot; + isLastIntern);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      this.paraNum = paraNum;</b>
+<b class="nc">&nbsp;      isLastIntern = isIntern;</b>
+<b class="nc">&nbsp;      flatPara = requestAnalysis.getFlatParagraphTools();</b>
+<b class="nc">&nbsp;      docCursor = requestAnalysis.getDocumentCursorTools();</b>
+<b class="nc">&nbsp;      viewCursor = requestAnalysis.getViewCursorTools();</b>
+<b class="nc">&nbsp;      changeFrom = requestAnalysis.getFirstParagraphToChange();</b>
+<b class="nc">&nbsp;      changeTo = requestAnalysis.getLastParagraphToChange();</b>
+<b class="nc">&nbsp;      numLastFlPara = requestAnalysis.getLastParaNumFromFlatParagraph();</b>
+<b class="nc">&nbsp;      numLastVCPara = requestAnalysis.getLastParaNumFromViewCursor();</b>
+<b class="nc">&nbsp;      boolean textIsChanged = requestAnalysis.textIsChanged();</b>
+&nbsp;      
+<b class="nc">&nbsp;      if (disposed) {</b>
+<b class="nc">&nbsp;        docCursor = null;</b>
+<b class="nc">&nbsp;        viewCursor = null;</b>
+<b class="nc">&nbsp;        return paRes;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        startTime = System.currentTimeMillis();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      SingleCheck singleCheck = new SingleCheck(this, paragraphsCache, docCursor, flatPara, fixedLanguage,</b>
+&nbsp;          docLanguage, ignoredMatches, numParasToCheck, isDialogRequest, isMouseRequest, isIntern);
+<b class="nc">&nbsp;      paRes.aErrors = singleCheck.getCheckResults(paraText, footnotePositions, locale, lt, paraNum, </b>
+&nbsp;          paRes.nStartOfSentencePosition, textIsChanged, changeFrom, changeTo, lastSinglePara, lastChangedPara);
+<b class="nc">&nbsp;      lastSinglePara = singleCheck.getLastSingleParagraph();</b>
+<b class="nc">&nbsp;      paRes.nStartOfSentencePosition = paragraphsCache.get(0).getStartSentencePosition(paraNum, paRes.nStartOfSentencePosition);</b>
+<b class="nc">&nbsp;      paRes.nStartOfNextSentencePosition = paragraphsCache.get(0).getNextSentencePosition(paraNum, paRes.nStartOfSentencePosition);</b>
+<b class="nc">&nbsp;      if (paRes.nStartOfNextSentencePosition == 0) {</b>
+<b class="nc">&nbsp;        paRes.nStartOfNextSentencePosition = paraText.length();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      paRes.nBehindEndOfSentencePosition = paRes.nStartOfNextSentencePosition;</b>
+<b class="nc">&nbsp;      lastChangedPara = (textIsChanged &amp;&amp; numParasToCheck != 0) ? paraNum : -1;</b>
+<b class="nc">&nbsp;      if (proofInfo == OfficeTools.PROOFINFO_GET_PROOFRESULT || isIntern) {</b>
+<b class="nc">&nbsp;        addSynonyms(paRes, paraText, locale, lt);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (debugModeTm) {</b>
+<b class="nc">&nbsp;        long runTime = System.currentTimeMillis() - startTime;</b>
+<b class="nc">&nbsp;        if (runTime &gt; OfficeTools.TIME_TOLERANCE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Time to run single check: &quot; + runTime);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (ltMenus == null &amp;&amp; docType == DocumentType.WRITER &amp;&amp; paraText.length() &gt; 0) {</b>
+<b class="nc">&nbsp;      ltMenus = new LanguageToolMenus(xContext, xComponent, this, config);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    docCursor = null;</b>
+<b class="nc">&nbsp;    viewCursor = null;</b>
+<b class="nc">&nbsp;    return paRes;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * set values set by configuration dialog
+&nbsp;   */
+&nbsp;  void setConfigValues(Configuration config) {
+<b class="nc">&nbsp;    this.config = config;</b>
+<b class="nc">&nbsp;    numParasToCheck = (mDocHandler.isTestMode() || mDocHandler.heapLimitIsReached()) ? 0 : config.getNumParasToCheck();</b>
+<b class="nc">&nbsp;    if (ltMenus != null) {</b>
+<b class="nc">&nbsp;      ltMenus.setConfigValues(config);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (config.noBackgroundCheck() || numParasToCheck == 0) {</b>
+<b class="nc">&nbsp;      setFlatParagraphTools();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * set the document cache - use only for tests
+&nbsp;   * @since 5.3
+&nbsp;   */
+&nbsp;  void setDocumentCacheForTests(List&lt;String&gt; paragraphs, List&lt;List&lt;String&gt;&gt; textParagraphs, List&lt;int[]&gt; footnotes, List&lt;List&lt;Integer&gt;&gt; chapterBegins, Locale locale) {
+<b class="nc">&nbsp;    docCache.setForTest(paragraphs, textParagraphs, footnotes, chapterBegins, locale);</b>
+<b class="nc">&nbsp;    numParasToCheck = -1;</b>
+<b class="nc">&nbsp;    mDocHandler.resetSortedTextRules();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** Get LanguageTool menu
+&nbsp;   */
+&nbsp;  LanguageToolMenus getLtMenu() {
+<b class="nc">&nbsp;    return ltMenus;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * set menu ID to MultiDocumentsHandler
+&nbsp;   */
+&nbsp;  void dispose(boolean disposed) {
+<b class="nc">&nbsp;    this.disposed = disposed;</b>
+<b class="nc">&nbsp;    if (disposed) {</b>
+<b class="nc">&nbsp;      if (docCursor != null) {</b>
+<b class="nc">&nbsp;        docCursor.setDisposed();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (viewCursor != null) {</b>
+<b class="nc">&nbsp;        viewCursor.setDisposed();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (flatPara != null) {</b>
+<b class="nc">&nbsp;        flatPara.setDisposed();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      ltMenus.removeListener();</b>
+<b class="nc">&nbsp;      ltMenus = null;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get type of document
+&nbsp;   */
+&nbsp;  DocumentType getDocumentType() {
+<b class="nc">&nbsp;    return docType;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get number of current paragraph
+&nbsp;   */
+&nbsp;  boolean isDisposed() {
+<b class="nc">&nbsp;    return disposed;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * set menu ID to MultiDocumentsHandler
+&nbsp;   */
+&nbsp;  void setMenuDocId() {
+<b class="nc">&nbsp;    mDocHandler.setMenuDocId(getDocID());</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get number of current paragraph
+&nbsp;   */
+&nbsp;  int getCurrentNumberOfParagraph() {
+<b class="nc">&nbsp;    return paraNum;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get language of the document
+&nbsp;   */
+&nbsp;  Language getLanguage() {
+<b class="nc">&nbsp;    return docLanguage;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * set language of the document
+&nbsp;   */
+&nbsp;  void setLanguage(Language language) {
+<b class="nc">&nbsp;    docLanguage = language;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Set XComponentContext and XComponent of the document
+&nbsp;   */
+&nbsp;  void setXComponent(XComponentContext xContext, XComponent xComponent) {
+<b class="nc">&nbsp;    this.xContext = xContext;</b>
+<b class="nc">&nbsp;    this.xComponent = xComponent;</b>
+<b class="nc">&nbsp;    if (xComponent == null) {</b>
+<b class="nc">&nbsp;      docCursor = null;</b>
+<b class="nc">&nbsp;      viewCursor = null;</b>
+<b class="nc">&nbsp;      flatPara = null;</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      setDokumentListener(xComponent);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Get xComponent of the document
+&nbsp;   */
+&nbsp;  XComponent getXComponent() {
+<b class="nc">&nbsp;    return xComponent;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Get MultiDocumentsHandler
+&nbsp;   */
+&nbsp;  MultiDocumentsHandler getMultiDocumentsHandler() {
+<b class="nc">&nbsp;    return mDocHandler;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Get ID of the document
+&nbsp;   */
+&nbsp;  String getDocID() {
+<b class="nc">&nbsp;    return docID;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Get ID of the document
+&nbsp;   */
+&nbsp;  void setDocID(String docId) {
+<b class="nc">&nbsp;    docID = docId;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Get flat paragraph tools of the document
+&nbsp;   */
+&nbsp;  FlatParagraphTools getFlatParagraphTools () {
+<b class="nc">&nbsp;    if (flatPara == null) {</b>
+<b class="nc">&nbsp;      setFlatParagraphTools();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return flatPara;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Get document cursor tools
+&nbsp;   */
+&nbsp;  DocumentCursorTools getDocumentCursorTools () {
+<b class="nc">&nbsp;    if (docCursor == null) {</b>
+<b class="nc">&nbsp;      docCursor = new DocumentCursorTools(xComponent);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return docCursor;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Get document cache of the document
+&nbsp;   */
+&nbsp;  List&lt;ResultCache&gt; getParagraphsCache() {
+<b class="nc">&nbsp;    return paragraphsCache;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  Get document cache of the document
+&nbsp;   */
+&nbsp;  DocumentCache getDocumentCache() {
+<b class="nc">&nbsp;    return docCache;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  reset document cache of the document
+&nbsp;   */
+&nbsp;  void resetDocumentCache() {
+<b class="nc">&nbsp;    resetDocCache = true;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  set last changed paragraphs
+&nbsp;   */
+&nbsp;  void setLastChangedParas(List&lt;Integer&gt; lastChangedParas) {
+<b class="nc">&nbsp;    this.lastChangedParas = lastChangedParas;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   *  get last changed paragraphs
+&nbsp;   */
+&nbsp;  List&lt;Integer&gt; getLastChangedParas() {
+<b class="nc">&nbsp;    return lastChangedParas;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * reset the Document
+&nbsp;   */
+&nbsp;  void resetDocument() {
+<b class="nc">&nbsp;    mDocHandler.resetDocument();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * read caches from file
+&nbsp;   */
+&nbsp;  void readCaches() {
+<b class="nc">&nbsp;    if (numParasToCheck != 0 &amp;&amp; docType == DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;      cacheIO = new CacheIO(xComponent);</b>
+<b class="nc">&nbsp;      boolean cacheExist = cacheIO.readAllCaches(config, mDocHandler);</b>
+<b class="nc">&nbsp;      if (cacheExist) {</b>
+<b class="nc">&nbsp;        docCache.put(cacheIO.getDocumentCache());</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; cacheIO.getParagraphsCache().size(); i++) {</b>
+<b class="nc">&nbsp;          paragraphsCache.get(i).replace(cacheIO.getParagraphsCache().get(i));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        ignoredMatches = new IgnoredMatches(cacheIO.getIgnoredMatches());</b>
+<b class="nc">&nbsp;        if (docType == DocumentType.WRITER &amp;&amp; mDocHandler != null) {</b>
+<b class="nc">&nbsp;          mDocHandler.runShapeCheck(docCache.hasUnsupportedText(), 9);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      cacheIO.resetAllCache();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * write caches to file
+&nbsp;   */
+&nbsp;  void writeCaches() {
+<b class="nc">&nbsp;    if (numParasToCheck != 0 &amp;&amp; !config.noBackgroundCheck() &amp;&amp; docType == DocumentType.WRITER) {</b>
+<b class="nc">&nbsp;      DocumentCache docCache = new DocumentCache(this.docCache);</b>
+<b class="nc">&nbsp;      List&lt;ResultCache&gt; paragraphsCache = new ArrayList&lt;ResultCache&gt;();</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; this.paragraphsCache.size(); i++) {</b>
+<b class="nc">&nbsp;        paragraphsCache.add(new ResultCache(this.paragraphsCache.get(i)));</b>
+&nbsp;      }
+<b class="nc">&nbsp;      cacheIO.saveCaches(docCache, paragraphsCache, ignoredMatches, config, mDocHandler);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Reset all caches of the document
+&nbsp;   */
+&nbsp;  void resetResultCache() {
+<b class="nc">&nbsp;    for (int i = 0; i &lt; OfficeTools.NUMBER_TEXTLEVEL_CACHE; i++) {</b>
+<b class="nc">&nbsp;      paragraphsCache.get(i).removeAll();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * remove all cached matches for one paragraph
+&nbsp;   */
+&nbsp;  public void removeResultCache(int nPara) {
+<b class="nc">&nbsp;    for (ResultCache cache : paragraphsCache) {</b>
+<b class="nc">&nbsp;      cache.remove(nPara);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Remove a special Proofreading error from all caches of document
+&nbsp;   */
+&nbsp;  public void removeRuleError(String ruleId) {
+<b class="nc">&nbsp;    List&lt;Integer&gt; allChanged = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (ResultCache cache : paragraphsCache) {</b>
+<b class="nc">&nbsp;      List&lt;Integer&gt; changed = cache.removeRuleError(ruleId);</b>
+<b class="nc">&nbsp;      if (changed.size() &gt; 0) {</b>
+<b class="nc">&nbsp;        for (int n : changed) {</b>
+<b class="nc">&nbsp;          if (!allChanged.contains(n)) {</b>
+<b class="nc">&nbsp;            allChanged.add(n);</b>
+&nbsp;          }
+<b class="nc">&nbsp;        }</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (allChanged.size() &gt; 0) {</b>
+<b class="nc">&nbsp;      allChanged.sort(null);</b>
+<b class="nc">&nbsp;      remarkChangedParagraphs(allChanged, true);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Open new flat paragraph tools or initialize them again
+&nbsp;   */
+&nbsp;  public FlatParagraphTools setFlatParagraphTools() {
+<b class="nc">&nbsp;	  if (disposed) {</b>
+<b class="nc">&nbsp;      flatPara = null;</b>
+<b class="nc">&nbsp;	  } else if (flatPara == null) {</b>
+<b class="nc">&nbsp;      flatPara = new FlatParagraphTools(xComponent);</b>
+<b class="nc">&nbsp;      if (!flatPara.isValid()) {</b>
+<b class="nc">&nbsp;        flatPara = null;</b>
+&nbsp;      }
+&nbsp;    } else {
+<b class="nc">&nbsp;      flatPara.init();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return flatPara;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Add an new entry to text level queue
+&nbsp;   * nFPara is number of flat paragraph
+&nbsp;   */
+&nbsp;  public void addQueueEntry(int nFPara, int nCache, int nCheck, String docId, boolean checkOnlyParagraph, boolean overrideRunning) {
+<b class="nc">&nbsp;    if (!disposed &amp;&amp; mDocHandler.isSortedRuleForIndex(nCache) &amp;&amp; docCache != null) {</b>
+<b class="nc">&nbsp;      TextParagraph nTPara = docCache.getNumberOfTextParagraph(nFPara);</b>
+<b class="nc">&nbsp;      if (nTPara != null &amp;&amp; nTPara.type != DocumentCache.CURSOR_TYPE_UNKNOWN) {</b>
+&nbsp;        int nStart;
+&nbsp;        int nEnd;
+<b class="nc">&nbsp;        if (checkOnlyParagraph &amp;&amp; nCheck &gt; 0) {</b>
+<b class="nc">&nbsp;          nStart = nTPara.number;</b>
+<b class="nc">&nbsp;          nEnd = nTPara.number + 1;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          nStart = docCache.getStartOfParaCheck(nTPara, nCheck, checkOnlyParagraph, true, false);</b>
+<b class="nc">&nbsp;          nEnd = docCache.getEndOfParaCheck(nTPara, nCheck, checkOnlyParagraph, true, false);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        mDocHandler.getTextLevelCheckQueue().addQueueEntry(docCache.createTextParagraph(nTPara.type, nStart), </b>
+<b class="nc">&nbsp;            docCache.createTextParagraph(nTPara.type, nEnd), nCache, nCheck, docId, overrideRunning);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * create a queue entry 
+&nbsp;   * used by getNextQueueEntry
+&nbsp;   */
+&nbsp;  private QueueEntry createQueueEntry(TextParagraph nPara, int nCache) {
+<b class="nc">&nbsp;    int nCheck = mDocHandler.getNumMinToCheckParas().get(nCache);</b>
+<b class="nc">&nbsp;    int nStart = docCache.getStartOfParaCheck(nPara, nCheck, false, true, false);</b>
+<b class="nc">&nbsp;    int nEnd = docCache.getEndOfParaCheck(nPara, nCheck, false, true, false);</b>
+<b class="nc">&nbsp;    if (nCheck &gt; 0 &amp;&amp; nStart + 1 &lt; nEnd) {</b>
+<b class="nc">&nbsp;      if ((nStart == nPara.number || (nPara.number == 0</b>
+<b class="nc">&nbsp;              || paragraphsCache.get(nCache).getCacheEntry(docCache.getFlatParagraphNumber(new TextParagraph(nPara.type, nPara.number - 1))) != null)) </b>
+<b class="nc">&nbsp;          &amp;&amp; (nEnd == nPara.number || nPara.number == docCache.textSize(nPara) - 1</b>
+<b class="nc">&nbsp;              || paragraphsCache.get(nCache).getCacheEntry(docCache.getFlatParagraphNumber(new TextParagraph(nPara.type, nPara.number + 1))) != null)) {</b>
+<b class="nc">&nbsp;        nStart = nPara.number;</b>
+<b class="nc">&nbsp;        nEnd = nStart + 1;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return mDocHandler.getTextLevelCheckQueue().createQueueEntry(docCache.createTextParagraph(nPara.type, nStart), </b>
+<b class="nc">&nbsp;        docCache.createTextParagraph(nPara.type, nEnd), nCache, nCheck, docID, false);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get the next queue entry which is the next empty cache entry
+&nbsp;   */
+&nbsp;  public QueueEntry getNextQueueEntry(TextParagraph nPara) {
+<b class="nc">&nbsp;    if (!disposed &amp;&amp; docCache != null) {</b>
+<b class="nc">&nbsp;      if (nPara != null &amp;&amp; nPara.type != DocumentCache.CURSOR_TYPE_UNKNOWN &amp;&amp; nPara.number &lt; docCache.textSize(nPara)) {</b>
+<b class="nc">&nbsp;        for (int nCache = 1; nCache &lt; paragraphsCache.size(); nCache++) {</b>
+<b class="nc">&nbsp;          if (mDocHandler.isSortedRuleForIndex(nCache) &amp;&amp; docCache.isFinished() </b>
+<b class="nc">&nbsp;              &amp;&amp; paragraphsCache.get(nCache).getCacheEntry(docCache.getFlatParagraphNumber(nPara)) == null) {</b>
+<b class="nc">&nbsp;            return createQueueEntry(nPara, nCache);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      int nStart = (nPara == null || nPara.type == DocumentCache.CURSOR_TYPE_UNKNOWN || nPara.number &lt; docCache.textSize(nPara)) ? </b>
+<b class="nc">&nbsp;          0 : docCache.getFlatParagraphNumber(nPara);</b>
+<b class="nc">&nbsp;      for (int i = nStart; i &lt; docCache.size(); i++) {</b>
+<b class="nc">&nbsp;        if (docCache.getNumberOfTextParagraph(i).type != DocumentCache.CURSOR_TYPE_UNKNOWN) {</b>
+<b class="nc">&nbsp;          for (int nCache = 1; nCache &lt; paragraphsCache.size(); nCache++) {</b>
+<b class="nc">&nbsp;            if (mDocHandler.isSortedRuleForIndex(nCache) &amp;&amp; docCache.isFinished() &amp;&amp; paragraphsCache.get(nCache).getCacheEntry(i) == null) {</b>
+<b class="nc">&nbsp;              return createQueueEntry(docCache.getNumberOfTextParagraph(i), nCache);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = 0; i &lt; nStart &amp;&amp; i &lt; docCache.size(); i++) {</b>
+<b class="nc">&nbsp;        if (docCache.getNumberOfTextParagraph(i).type != DocumentCache.CURSOR_TYPE_UNKNOWN) {</b>
+<b class="nc">&nbsp;          for (int nCache = 1; nCache &lt; paragraphsCache.size(); nCache++) {</b>
+<b class="nc">&nbsp;            if (mDocHandler.isSortedRuleForIndex(nCache) &amp;&amp; docCache.isFinished() &amp;&amp; paragraphsCache.get(nCache).getCacheEntry(i) == null) {</b>
+<b class="nc">&nbsp;              return createQueueEntry(docCache.getNumberOfTextParagraph(i), nCache);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get the queue entry for the first changed paragraph in document cache
+&nbsp;   */
+&nbsp;  public QueueEntry getQueueEntryForChangedParagraph() {
+<b class="nc">&nbsp;    if (!disposed &amp;&amp; docCache != null &amp;&amp; flatPara != null &amp;&amp; !changedParas.isEmpty()) {</b>
+&nbsp;/*  TODO: Remove after Tests
+&nbsp;      CheckRequestAnalysis requestAnalysis = new CheckRequestAnalysis(numLastVCPara, numLastFlPara,
+&nbsp;          OfficeTools.PROOFINFO_GET_PROOFRESULT, numParasToCheck, this, paragraphsCache, viewCursor);
+&nbsp;      int nPara = requestAnalysis.changesInDocumentCache();
+&nbsp;*/
+<b class="nc">&nbsp;      Set&lt;Integer&gt; nParas = new HashSet&lt;Integer&gt;(changedParas.keySet());</b>
+<b class="nc">&nbsp;      for (int nPara : nParas) {</b>
+<b class="nc">&nbsp;        String sPara = flatPara.getFlatParagraphAt(nPara).getText();</b>
+<b class="nc">&nbsp;        if (sPara != null) {</b>
+<b class="nc">&nbsp;          String sChangedPara = changedParas.get(nPara);</b>
+<b class="nc">&nbsp;          changedParas.remove(nPara);</b>
+<b class="nc">&nbsp;          if (sChangedPara != null &amp;&amp; !sChangedPara.equals(sPara)) {</b>
+<b class="nc">&nbsp;            docCache.setFlatParagraph(nPara, sPara);</b>
+&nbsp;            //  NOTE: Don&#39;t remove paragraph cache 0. It is needed to set correct markups
+<b class="nc">&nbsp;            for (int i = 1; i &lt; mDocHandler.getNumMinToCheckParas().size(); i++) {</b>
+<b class="nc">&nbsp;              paragraphsCache.get(i).remove(nPara);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return createQueueEntry(docCache.getNumberOfTextParagraph(nPara), 0);</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public void addShapeQueueEntries() {
+<b class="nc">&nbsp;    int shapeTextSize = docCache.textSize(DocumentCache.CURSOR_TYPE_SHAPE) + docCache.textSize(DocumentCache.CURSOR_TYPE_TABLE);</b>
+&nbsp;//    MessageHandler.printToLogFile(&quot;SingleDocument: addShapeQueueEntries: shapeTextSize = &quot; + shapeTextSize);
+<b class="nc">&nbsp;    if (shapeTextSize &gt; 0) {</b>
+<b class="nc">&nbsp;      if (flatPara == null) {</b>
+<b class="nc">&nbsp;        setFlatParagraphTools();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      List&lt;Integer&gt; changedParas = docCache.getChangedUnsupportedParagraphs(flatPara, paragraphsCache.get(0));</b>
+<b class="nc">&nbsp;      if (changedParas != null) { </b>
+&nbsp;//      MessageHandler.printToLogFile(&quot;SingleDocument: addShapeQueueEntries: changedParas.size = &quot; + changedParas.size());
+<b class="nc">&nbsp;        for (int i = 0; i &lt; changedParas.size(); i++) {</b>
+<b class="nc">&nbsp;          for (int nCache = 0; nCache &lt; paragraphsCache.size(); nCache++) {</b>
+<b class="nc">&nbsp;            int nCheck = mDocHandler.getNumMinToCheckParas().get(nCache);</b>
+<b class="nc">&nbsp;            addQueueEntry(changedParas.get(i), nCache, nCheck, docID, false, true);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * run a text level check from a queue entry (initiated by the queue)
+&nbsp;   */
+&nbsp;  public void runQueueEntry(TextParagraph nStart, TextParagraph nEnd, int cacheNum, int nCheck, boolean override, SwJLanguageTool lt) {
+<b class="nc">&nbsp;    if (!disposed &amp;&amp; flatPara != null &amp;&amp; docCache.isFinished() &amp;&amp; nStart.number &lt; docCache.textSize(nStart)) {</b>
+<b class="nc">&nbsp;      SingleCheck singleCheck = new SingleCheck(this, paragraphsCache, docCursor, flatPara,</b>
+&nbsp;          fixedLanguage, docLanguage, ignoredMatches, numParasToCheck, false, false, false);
+<b class="nc">&nbsp;      singleCheck.addParaErrorsToCache(docCache.getFlatParagraphNumber(nStart), lt, cacheNum, nCheck, </b>
+&nbsp;          nEnd.number == nStart.number + 1, override, false, hasFootnotes);
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  private void remarkChangedParagraphs(List&lt;Integer&gt; changedParas, boolean isIntern) {
+<b class="nc">&nbsp;    if (!disposed) {</b>
+<b class="nc">&nbsp;      SingleCheck singleCheck = new SingleCheck(this, paragraphsCache, docCursor, flatPara, fixedLanguage, docLanguage, </b>
+&nbsp;          ignoredMatches, numParasToCheck, false, false, isIntern);
+<b class="nc">&nbsp;      if (docCursor == null) {</b>
+<b class="nc">&nbsp;        docCursor = new DocumentCursorTools(xComponent);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      singleCheck.remarkChangedParagraphs(changedParas, docCursor, flatPara, mDocHandler.getLanguageTool(), true);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;/**
+&nbsp; * Renew text markups for paragraphs under view cursor
+&nbsp; */
+&nbsp;  public void renewMarkups() {
+<b class="nc">&nbsp;    if (disposed) {</b>
+&nbsp;      return;
+&nbsp;    }
+<b class="nc">&nbsp;    ViewCursorTools viewCursor = new ViewCursorTools(xComponent);</b>
+<b class="nc">&nbsp;    int y = docCache.getFlatParagraphNumber(viewCursor.getViewCursorParagraph());</b>
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: renewMarkups: Number of Flat Paragraph = &quot; + y);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    List&lt;Integer&gt; changedParas = new ArrayList&lt;Integer&gt;();</b>
+<b class="nc">&nbsp;    changedParas.add(y);</b>
+<b class="nc">&nbsp;    remarkChangedParagraphs(changedParas, false);</b>
+&nbsp;/*
+&nbsp;    for (int i = 1; i &lt; mDocHandler.getNumMinToCheckParas().size(); i++) {
+&nbsp;      paragraphsCache.get(i).remove(y);
+&nbsp;    }
+&nbsp;    addQueueEntry(y, 0, 0, docID, true, true);
+&nbsp;*/
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * is a ignore once entry in cache
+&nbsp;   */
+&nbsp;  public boolean isIgnoreOnce(int xFrom, int xTo, int y, String ruleId) {
+<b class="nc">&nbsp;    return ignoredMatches.isIgnored(xFrom, xTo, y, ruleId);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * reset the ignore once cache
+&nbsp;   */
+&nbsp;  public void resetIgnoreOnce() {
+<b class="nc">&nbsp;    ignoredMatches = new IgnoredMatches();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * add a ignore once entry to queue and remove the mark
+&nbsp;   */
+&nbsp;  public String ignoreOnce() {
+<b class="nc">&nbsp;    if (disposed) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    ViewCursorTools viewCursor = new ViewCursorTools(xComponent);</b>
+<b class="nc">&nbsp;    int y = docCache.getFlatParagraphNumber(viewCursor.getViewCursorParagraph());</b>
+<b class="nc">&nbsp;    int x = viewCursor.getViewCursorCharacter();</b>
+<b class="nc">&nbsp;    String ruleId = getRuleIdFromCache(y, x).ruleID;</b>
+<b class="nc">&nbsp;    setIgnoredMatch (x, y, ruleId, false);</b>
+<b class="nc">&nbsp;    return docID;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * add a ignore once entry for point x, y to queue and remove the mark
+&nbsp;   */
+&nbsp;  public void setIgnoredMatch(int x, int y, String ruleId, boolean isIntern) {
+<b class="nc">&nbsp;    ignoredMatches.setIgnoredMatch(x, y, ruleId);</b>
+<b class="nc">&nbsp;    if (debugMode &gt; 1) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: setIgnoredMatch: DocumentType = &quot; + docType + &quot;; numParasToCheck = &quot; + numParasToCheck);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (docType == DocumentType.WRITER &amp;&amp; numParasToCheck != 0) {</b>
+<b class="nc">&nbsp;      List&lt;Integer&gt; changedParas = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      changedParas.add(y);</b>
+<b class="nc">&nbsp;      remarkChangedParagraphs(changedParas, isIntern);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: setIgnoredMatch: Ignore Match added at: paragraph: &quot; + y + &quot;; character: &quot; + x + &quot;; ruleId: &quot; + ruleId);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * remove all ignore once entries for paragraph y from queue and set the mark
+&nbsp;   */
+&nbsp;  public void removeAndShiftIgnoredMatch(int from, int to, int oldSize, int newSize) {
+<b class="nc">&nbsp;    if (!ignoredMatches.isEmpty()) {</b>
+<b class="nc">&nbsp;      IgnoredMatches tmpIgnoredMatches = new IgnoredMatches();</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; from; i++) {</b>
+<b class="nc">&nbsp;        if (ignoredMatches.containsParagraph(i)) {</b>
+<b class="nc">&nbsp;          tmpIgnoredMatches.put(i, ignoredMatches.get(i));</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = to + 1; i &lt; oldSize; i++) {</b>
+<b class="nc">&nbsp;        int n = i + newSize - oldSize;</b>
+<b class="nc">&nbsp;        if (ignoredMatches.containsParagraph(i)) {</b>
+<b class="nc">&nbsp;          tmpIgnoredMatches.put(n, ignoredMatches.get(i));</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      ignoredMatches = tmpIgnoredMatches;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * remove all ignore once entries for paragraph y from queue and set the mark
+&nbsp;   */
+&nbsp;  public void removeIgnoredMatch(int y, boolean isIntern) {
+<b class="nc">&nbsp;    ignoredMatches.removeIgnoredMatches(y);</b>
+<b class="nc">&nbsp;    if (numParasToCheck != 0 &amp;&amp; flatPara != null) {</b>
+<b class="nc">&nbsp;      List&lt;Integer&gt; changedParas = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      changedParas.add(y);</b>
+<b class="nc">&nbsp;      remarkChangedParagraphs(changedParas, isIntern);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: removeIgnoredMatch: All Ignored Matches removed at: paragraph: &quot; + y);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * remove a ignore once entry for point x, y from queue and set the mark
+&nbsp;   * if x &lt; 0 remove all ignore once entries for paragraph y
+&nbsp;   */
+&nbsp;  public void removeIgnoredMatch(int x, int y, String ruleId, boolean isIntern) {
+<b class="nc">&nbsp;    ignoredMatches.removeIgnoredMatch(x, y, ruleId);</b>
+<b class="nc">&nbsp;    if (numParasToCheck != 0) {</b>
+<b class="nc">&nbsp;      List&lt;Integer&gt; changedParas = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      changedParas.add(y);</b>
+<b class="nc">&nbsp;      remarkChangedParagraphs(changedParas, isIntern);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: removeIgnoredMatch: Ignore Match removed at: paragraph: &quot; + y + &quot;; character: &quot; + x);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get a rule ID of an error out of the cache 
+&nbsp;   * by the position of the error (flat paragraph number and number of character)
+&nbsp;   */
+&nbsp;  private RuleDesc getRuleIdFromCache(int nPara, int nChar) {
+<b class="nc">&nbsp;    List&lt;SingleProofreadingError&gt; tmpErrors = new ArrayList&lt;SingleProofreadingError&gt;();</b>
+<b class="nc">&nbsp;    if (nPara &lt; 0 || nPara &gt;= docCache.size()) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: getRuleIdFromCache(nPara = &quot; + nPara + &quot;, docCache.size() = &quot; + docCache.size() + &quot;): nPara out of range!&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    for (ResultCache paraCache : paragraphsCache) {</b>
+<b class="nc">&nbsp;      SingleProofreadingError tError = paraCache.getErrorAtPosition(nPara, nChar);</b>
+<b class="nc">&nbsp;      if (tError != null) {</b>
+<b class="nc">&nbsp;        tmpErrors.add(tError);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (tmpErrors.size() &gt; 0) {</b>
+<b class="nc">&nbsp;      SingleProofreadingError[] errors = new SingleProofreadingError[tmpErrors.size()];</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; tmpErrors.size(); i++) {</b>
+<b class="nc">&nbsp;        errors[i] = tmpErrors.get(i);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Arrays.sort(errors, new ErrorPositionComparator());</b>
+<b class="nc">&nbsp;      if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; errors.length; i++) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;SingleDocument: getRuleIdFromCache: Error[&quot; + i + &quot;]: ruleID: &quot; + errors[i].aRuleIdentifier + &quot;, Start = &quot; + errors[i].nErrorStart + &quot;, Length = &quot; + errors[i].nErrorLength);</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      return new RuleDesc(docCache.getFlatParagraphLocale(nPara), errors[0].aRuleIdentifier);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;SingleDocument: getRuleIdFromCache(nPara = &quot; + nPara + &quot;, nChar = &quot; + nChar + &quot;): No ruleId found!&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get a rule ID of an error from a check 
+&nbsp;   * by the position of the error (number of character)
+&nbsp;   */
+&nbsp;  private RuleDesc getRuleIdFromCheck(int nChar, ViewCursorTools viewCursor) {
+<b class="nc">&nbsp;    String text = viewCursor.getViewCursorParagraphText();</b>
+<b class="nc">&nbsp;    if (text == null) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    PropertyValue[] propertyValues = new PropertyValue[0];</b>
+<b class="nc">&nbsp;    ProofreadingResult paRes = new ProofreadingResult();</b>
+<b class="nc">&nbsp;    paRes.nStartOfSentencePosition = 0;</b>
+<b class="nc">&nbsp;    paRes.nStartOfNextSentencePosition = 0;</b>
+<b class="nc">&nbsp;    paRes.nBehindEndOfSentencePosition = paRes.nStartOfNextSentencePosition;</b>
+<b class="nc">&nbsp;    paRes.xProofreader = null;</b>
+<b class="nc">&nbsp;    paRes.aLocale = mDocHandler.getLocale();</b>
+<b class="nc">&nbsp;    paRes.aDocumentIdentifier = docID;</b>
+<b class="nc">&nbsp;    paRes.aText = text;</b>
+<b class="nc">&nbsp;    paRes.aProperties = propertyValues;</b>
+<b class="nc">&nbsp;    paRes.aErrors = null;</b>
+<b class="nc">&nbsp;    while (nChar &gt; paRes.nStartOfNextSentencePosition &amp;&amp; paRes.nStartOfNextSentencePosition &lt; text.length()) {</b>
+<b class="nc">&nbsp;      paRes.nStartOfSentencePosition = paRes.nStartOfNextSentencePosition;</b>
+<b class="nc">&nbsp;      paRes.nStartOfNextSentencePosition = text.length();</b>
+<b class="nc">&nbsp;      paRes.nBehindEndOfSentencePosition = paRes.nStartOfNextSentencePosition;</b>
+<b class="nc">&nbsp;      paRes = getCheckResults(text, paRes.aLocale, paRes, propertyValues, false, mDocHandler.getLanguageTool(), -1);</b>
+<b class="nc">&nbsp;      if (paRes.nStartOfNextSentencePosition &gt; nChar) {</b>
+<b class="nc">&nbsp;        if (paRes.aErrors == null) {</b>
+<b class="nc">&nbsp;          return null;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        for (SingleProofreadingError error : paRes.aErrors) {</b>
+<b class="nc">&nbsp;          if (error.nErrorStart &lt;= nChar &amp;&amp; nChar &lt; error.nErrorStart + error.nErrorLength) {</b>
+<b class="nc">&nbsp;            return new RuleDesc(paRes.aLocale, error.aRuleIdentifier);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;SingleDocument: getRuleIdFromCache: No ruleId found&quot;);</b>
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get back the rule ID to deactivate a rule
+&nbsp;   */
+&nbsp;  public RuleDesc deactivateRule() {
+<b class="nc">&nbsp;    if (disposed) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    ViewCursorTools viewCursor = new ViewCursorTools(xComponent);</b>
+<b class="nc">&nbsp;    int x = viewCursor.getViewCursorCharacter();</b>
+<b class="nc">&nbsp;    if (numParasToCheck == 0) {</b>
+<b class="nc">&nbsp;      return getRuleIdFromCheck(x, viewCursor);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    int y = docCache.getFlatParagraphNumber(viewCursor.getViewCursorParagraph());</b>
+<b class="nc">&nbsp;    return getRuleIdFromCache(y, x);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * class for store and handle ignored matches
+&nbsp;   */
+&nbsp;  public static class IgnoredMatches {
+&nbsp;    
+&nbsp;    private Map&lt;Integer, Map&lt;String, Set&lt;Integer&gt;&gt;&gt; ignoredMatches;
+&nbsp;    
+<b class="nc">&nbsp;    IgnoredMatches () {</b>
+<b class="nc">&nbsp;      ignoredMatches = new HashMap&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    IgnoredMatches (Map&lt;Integer, Map&lt;String, Set&lt;Integer&gt;&gt;&gt; ignoredMatches) {</b>
+<b class="nc">&nbsp;      this.ignoredMatches = ignoredMatches;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Set an ignored match
+&nbsp;     */
+&nbsp;    public void setIgnoredMatch(int x, int y, String ruleId) {
+&nbsp;      Map&lt;String, Set&lt;Integer&gt;&gt; ruleAtX;
+&nbsp;      Set&lt;Integer&gt; charNums;
+<b class="nc">&nbsp;      if (ignoredMatches.containsKey(y)) {</b>
+<b class="nc">&nbsp;        ruleAtX = ignoredMatches.get(y);</b>
+<b class="nc">&nbsp;        if (ruleAtX.containsKey(ruleId)) {</b>
+<b class="nc">&nbsp;          charNums = ruleAtX.get(ruleId);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          charNums = new HashSet&lt;&gt;();</b>
+&nbsp;        }
+&nbsp;      } else {
+<b class="nc">&nbsp;        ruleAtX = new HashMap&lt;String, Set&lt;Integer&gt;&gt;();</b>
+<b class="nc">&nbsp;        charNums = new HashSet&lt;&gt;();</b>
+&nbsp;      }
+<b class="nc">&nbsp;      charNums.add(x);</b>
+<b class="nc">&nbsp;      ruleAtX.put(ruleId, charNums);</b>
+<b class="nc">&nbsp;      ignoredMatches.put(y, ruleAtX);</b>
+&nbsp;    }
+&nbsp;   
+&nbsp;    /**
+&nbsp;     * Remove an ignored matches in a paragraph
+&nbsp;     */
+&nbsp;    public void removeIgnoredMatches(int y) {
+<b class="nc">&nbsp;      if (ignoredMatches.containsKey(y)) {</b>
+<b class="nc">&nbsp;        ignoredMatches.remove(y);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;      
+&nbsp;    /**
+&nbsp;     * Remove an ignored matches of a special ruleID in a paragraph
+&nbsp;     */
+&nbsp;    public void removeIgnoredMatches(int y, String ruleId) {
+<b class="nc">&nbsp;      if (ignoredMatches.containsKey(y)) {</b>
+<b class="nc">&nbsp;        Map&lt;String, Set&lt;Integer&gt;&gt; ruleAtX = ignoredMatches.get(y);</b>
+<b class="nc">&nbsp;        if (ruleAtX.containsKey(ruleId)) {</b>
+<b class="nc">&nbsp;          ruleAtX.remove(ruleId);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (ruleAtX.isEmpty()) {</b>
+<b class="nc">&nbsp;          ignoredMatches.remove(y);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          ignoredMatches.put(y, ruleAtX);</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;      
+&nbsp;    /**
+&nbsp;     * Remove one ignored match
+&nbsp;     */
+&nbsp;    public void removeIgnoredMatch(int x, int y, String ruleId) {
+<b class="nc">&nbsp;      if (ignoredMatches.containsKey(y)) {</b>
+<b class="nc">&nbsp;        Map&lt;String, Set&lt;Integer&gt;&gt; ruleAtX = ignoredMatches.get(y);</b>
+<b class="nc">&nbsp;        if (ruleAtX.containsKey(ruleId)) {</b>
+<b class="nc">&nbsp;          Set&lt;Integer&gt; charNums = ruleAtX.get(ruleId);</b>
+<b class="nc">&nbsp;          if (charNums.contains(x)) {</b>
+<b class="nc">&nbsp;            charNums.remove(x);</b>
+<b class="nc">&nbsp;            if (charNums.isEmpty()) {</b>
+<b class="nc">&nbsp;              ruleAtX.remove(ruleId);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              ruleAtX.put(ruleId, charNums);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (ruleAtX.isEmpty()) {</b>
+<b class="nc">&nbsp;              ignoredMatches.remove(y);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              ignoredMatches.put(y, ruleAtX);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Is the match of a ruleID at a position ignored
+&nbsp;     */
+&nbsp;    public boolean isIgnored(int xFrom, int xTo, int y, String ruleId) {
+<b class="nc">&nbsp;      if (ignoredMatches.containsKey(y) &amp;&amp; ignoredMatches.get(y).containsKey(ruleId)) {</b>
+<b class="nc">&nbsp;        for (int x : ignoredMatches.get(y).get(ruleId)) {</b>
+<b class="nc">&nbsp;          if (x &gt;= xFrom &amp;&amp; x &lt; xTo) {</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;          }
+<b class="nc">&nbsp;        }</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Contains a paragraph ignored matches
+&nbsp;     */
+&nbsp;    public boolean containsParagraph(int y) {
+<b class="nc">&nbsp;      return ignoredMatches.containsKey(y);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Is the list of ignored matches empty - no ignored matches
+&nbsp;     */
+&nbsp;    public boolean isEmpty() {
+<b class="nc">&nbsp;      return ignoredMatches.isEmpty();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * size: number of paragraphs containing ignored matches
+&nbsp;     */
+&nbsp;    public int size() {
+<b class="nc">&nbsp;      return ignoredMatches.size();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get all ignored matches of a paragraph
+&nbsp;     */
+&nbsp;    public Map&lt;String, Set&lt;Integer&gt;&gt;  get(int y) {
+<b class="nc">&nbsp;      return ignoredMatches.get(y);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Get a copy of map
+&nbsp;     */
+&nbsp;    public Map&lt;Integer, Map&lt;String, Set&lt;Integer&gt;&gt;&gt;  getFullMap() {
+<b class="nc">&nbsp;      return ignoredMatches;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * add or replace a map of ignored matches to a paragraph
+&nbsp;     */
+&nbsp;    public void put(int y, Map&lt;String, Set&lt;Integer&gt;&gt; ruleAtX) {
+<b class="nc">&nbsp;      ignoredMatches.put(y, ruleAtX);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  private void addSynonyms(ProofreadingResult paRes, String para, Locale locale, SwJLanguageTool lt) throws IOException {
+<b class="nc">&nbsp;    LinguisticServices linguServices = mDocHandler.getLinguisticServices();</b>
+<b class="nc">&nbsp;    if (linguServices != null) {</b>
+<b class="nc">&nbsp;      for (SingleProofreadingError error : paRes.aErrors) {</b>
+<b class="nc">&nbsp;        if ((error.aSuggestions == null || error.aSuggestions.length == 0) </b>
+<b class="nc">&nbsp;            &amp;&amp; linguServices.isThesaurusRelevantRule(error.aRuleIdentifier)) {</b>
+<b class="nc">&nbsp;          String word = para.substring(error.nErrorStart, error.nErrorStart + error.nErrorLength);</b>
+<b class="nc">&nbsp;          List&lt;String&gt; suggestions = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;          List&lt;String&gt; lemmas = lt.getLemmasOfWord(word);</b>
+<b class="nc">&nbsp;          int num = 0;</b>
+<b class="nc">&nbsp;          for (String lemma : lemmas) {</b>
+<b class="nc">&nbsp;            if (debugMode &gt; 0) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;SingleDocument: addSynonyms: Find Synonyms for lemma:&quot; + lemma);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            List&lt;String&gt; synonyms = linguServices.getSynonyms(lemma, locale);</b>
+<b class="nc">&nbsp;            for (String synonym : synonyms) {</b>
+<b class="nc">&nbsp;              synonym = synonym.replaceAll(&quot;\\(.*\\)&quot;, &quot;&quot;).trim();</b>
+<b class="nc">&nbsp;              if (!synonym.isEmpty() &amp;&amp; !suggestions.contains(synonym)) {</b>
+<b class="nc">&nbsp;                suggestions.add(synonym);</b>
+<b class="nc">&nbsp;                num++;</b>
+&nbsp;              }
+<b class="nc">&nbsp;              if (num &gt;= OfficeTools.MAX_SUGGESTIONS) {</b>
+<b class="nc">&nbsp;                break;</b>
+&nbsp;              }
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            if (num &gt;= OfficeTools.MAX_SUGGESTIONS) {</b>
+<b class="nc">&nbsp;              break;</b>
+&nbsp;            }
+<b class="nc">&nbsp;          }</b>
+<b class="nc">&nbsp;          if (!suggestions.isEmpty()) {</b>
+<b class="nc">&nbsp;            error.aSuggestions = suggestions.toArray(new String[suggestions.size()]);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  private void setDokumentListener(XComponent xComponent) {
+<b class="nc">&nbsp;    if (xComponent != null &amp;&amp; eventListener == null) {</b>
+<b class="nc">&nbsp;      eventListener = new LTDokumentEventListener();</b>
+<b class="nc">&nbsp;      XDocumentEventBroadcaster broadcaster = UnoRuntime.queryInterface(XDocumentEventBroadcaster.class, xComponent);</b>
+<b class="nc">&nbsp;      if (broadcaster != null) {</b>
+<b class="nc">&nbsp;        broadcaster.addDocumentEventListener(eventListener);</b>
+&nbsp;      } else {
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;SingleDocument: setDokumentListener: Could not add document event listener!&quot;);</b>
+&nbsp;      }
+&nbsp;//      XTextDocument curDoc = UnoRuntime.queryInterface(XTextDocument.class, xComponent);
+&nbsp;//      if (curDoc == null) {
+&nbsp;//        MessageHandler.printToLogFile(&quot;SingleDocument: setDokumentListener: XTextDocument not found!&quot;);
+&nbsp;//        return;
+&nbsp;//      }
+<b class="nc">&nbsp;      XModel xModel = UnoRuntime.queryInterface(XModel.class, xComponent);</b>
+<b class="nc">&nbsp;      if (xModel == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;SingleDocument: setDokumentListener: XModel not found!&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XController xController = xModel.getCurrentController();</b>
+<b class="nc">&nbsp;      if (xController == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;SingleDocument: setDokumentListener: XController not found!&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      XUserInputInterception xUserInputInterception = UnoRuntime.queryInterface(XUserInputInterception.class, xController);</b>
+<b class="nc">&nbsp;      if (xUserInputInterception == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;SingleDocument: setDokumentListener: XUserInputInterception not found!&quot;);</b>
+&nbsp;        return;
+&nbsp;      }
+<b class="nc">&nbsp;      xUserInputInterception.addMouseClickHandler(eventListener);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  public static class RuleDesc {
+&nbsp;    String langCode;
+&nbsp;    String ruleID;
+&nbsp;    
+<b class="nc">&nbsp;    RuleDesc(Locale locale, String ruleID) {</b>
+<b class="nc">&nbsp;      langCode = OfficeTools.localeToString(locale);</b>
+<b class="nc">&nbsp;      this.ruleID = ruleID;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+<b class="nc">&nbsp;  private class LTDokumentEventListener implements XDocumentEventListener, XMouseClickHandler {</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void disposing(EventObject event) {
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void documentEventOccured(DocumentEvent event) {
+<b class="nc">&nbsp;      if(event.EventName.equals(&quot;OnUnload&quot;)) {</b>
+<b class="nc">&nbsp;        isOnUnload = true;</b>
+<b class="nc">&nbsp;      } else if(event.EventName.equals(&quot;OnUnfocus&quot;) &amp;&amp; !isOnUnload) {</b>
+<b class="nc">&nbsp;        mDocHandler.getCurrentDocument();</b>
+<b class="nc">&nbsp;      } else if(event.EventName.equals(&quot;OnSave&quot;) &amp;&amp; config.saveLoCache()) {</b>
+<b class="nc">&nbsp;        writeCaches();</b>
+<b class="nc">&nbsp;      } else if(event.EventName.equals(&quot;OnSaveAsDone&quot;) &amp;&amp; config.saveLoCache()) {</b>
+<b class="nc">&nbsp;        writeCaches();</b>
+<b class="nc">&nbsp;        cacheIO.setDocumentPath(xComponent);</b>
+<b class="nc">&nbsp;        writeCaches();</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean mousePressed(MouseEvent event) {
+<b class="nc">&nbsp;      if (event.Buttons == MouseButton.RIGHT) {</b>
+<b class="nc">&nbsp;        isRightButtonPressed = true;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean mouseReleased(MouseEvent event) {
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

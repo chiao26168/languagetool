@@ -1,0 +1,512 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > TokenAgreementVerbNounRule</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.rules.uk</a>
+</div>
+
+<h1>Coverage Summary for Class: TokenAgreementVerbNounRule (org.languagetool.rules.uk)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TokenAgreementVerbNounRule</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/126)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/155)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TokenAgreementVerbNounRule$State</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/126)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/160)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2013 Andriy Rysin
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.rules.uk;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import org.languagetool.AnalyzedSentence;
+&nbsp;import org.languagetool.AnalyzedToken;
+&nbsp;import org.languagetool.AnalyzedTokenReadings;
+&nbsp;import org.languagetool.rules.Categories;
+&nbsp;import org.languagetool.rules.Rule;
+&nbsp;import org.languagetool.rules.RuleMatch;
+&nbsp;import org.languagetool.rules.uk.InflectionHelper.Inflection;
+&nbsp;import org.languagetool.tagging.uk.PosTagHelper;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;/**
+&nbsp; * A rule that checks if noun and verb agree
+&nbsp; * 
+&nbsp; * @author Andriy Rysin
+&nbsp; * @since 5.9
+&nbsp; */
+&nbsp;public class TokenAgreementVerbNounRule extends Rule {
+&nbsp;  
+<b class="nc">&nbsp;  private static final Logger logger = LoggerFactory.getLogger(TokenAgreementVerbNounRule.class);</b>
+&nbsp;
+<b class="nc">&nbsp;  public TokenAgreementVerbNounRule(ResourceBundle messages) throws IOException {</b>
+<b class="nc">&nbsp;    super.setCategory(Categories.MISC.getCategory(messages));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public final String getId() {
+<b class="nc">&nbsp;    return &quot;UK_VERB_NOUN_INFLECTION_AGREEMENT&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getDescription() {
+<b class="nc">&nbsp;    return &quot;Узгодження дієслова з іменником&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public String getShort() {
+<b class="nc">&nbsp;    return &quot;Узгодження дієслова з іменником&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public boolean isCaseSensitive() {
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  
+<b class="nc">&nbsp;  static class State {</b>
+&nbsp;    int verbPos;
+&nbsp;    int nounPos;
+<b class="nc">&nbsp;    List&lt;AnalyzedToken&gt; verbTokenReadings = new ArrayList&lt;&gt;(); </b>
+<b class="nc">&nbsp;    AnalyzedTokenReadings verbAnalyzedTokenReadings = null;</b>
+&nbsp;    List&lt;org.languagetool.rules.uk.VerbInflectionHelper.Inflection&gt; nounAdjNazInflections;
+<b class="nc">&nbsp;    Set&lt;String&gt; cases = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;    List&lt;AnalyzedToken&gt; nounAdjIndirTokenReadings = new ArrayList&lt;&gt;(); </b>
+&nbsp;  }
+&nbsp;  
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public final RuleMatch[] match(AnalyzedSentence sentence) {
+<b class="nc">&nbsp;    List&lt;RuleMatch&gt; ruleMatches = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    AnalyzedTokenReadings[] tokens = sentence.getTokensWithoutWhitespace();    </b>
+&nbsp;
+<b class="nc">&nbsp;    State state = null;</b>
+&nbsp;
+<b class="nc">&nbsp;    for (int i = 1; i &lt; tokens.length; i++) {</b>
+<b class="nc">&nbsp;      AnalyzedTokenReadings tokenReadings = tokens[i];</b>
+&nbsp;//      String cleanToken = tokenReadings.getCleanToken();
+&nbsp;
+<b class="nc">&nbsp;      String posTag0 = tokenReadings.getAnalyzedToken(0).getPOSTag();</b>
+&nbsp;
+<b class="nc">&nbsp;      if( posTag0 == null ) {</b>
+<b class="nc">&nbsp;        state = null;</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      if( state == null ) {</b>
+&nbsp;        // no need to start checking on last token or if no noun
+<b class="nc">&nbsp;        if( i == tokens.length - 1 )</b>
+<b class="nc">&nbsp;          continue;</b>
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      if( PosTagHelper.hasPosTagStart(tokenReadings, &quot;verb&quot;) ) {</b>
+&nbsp;        
+<b class="nc">&nbsp;        if( LemmaHelper.hasLemma(tokenReadings, Arrays.asList(&quot;бути&quot;, &quot;могти&quot;, &quot;змогти&quot;, &quot;мати&quot;, &quot;хотіти&quot;, &quot;мусити&quot;, &quot;намагатися&quot;, &quot;вдатися&quot;, &quot;доводитися&quot;), &quot;verb&quot;) ) {</b>
+<b class="nc">&nbsp;          state = null;</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if( PosTagHelper.hasPosTag(tokenReadings, Pattern.compile(&quot;.*(arch|bad|slang|alt).*&quot;)) ) {</b>
+<b class="nc">&nbsp;          state = null;</b>
+<b class="nc">&nbsp;          continue;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        state = new State();</b>
+&nbsp;
+<b class="nc">&nbsp;        for (AnalyzedToken token: tokenReadings) {</b>
+<b class="nc">&nbsp;          String verbPosTag = token.getPOSTag();</b>
+&nbsp;
+<b class="nc">&nbsp;          if( verbPosTag == null ) { // can happen for words with \u0301 or \u00AD</b>
+<b class="nc">&nbsp;            continue;</b>
+&nbsp;          }
+&nbsp;
+<b class="nc">&nbsp;          if( ! verbPosTag.startsWith(&quot;verb&quot;)</b>
+<b class="nc">&nbsp;              || verbPosTag.contains(&quot;abbr&quot;)</b>
+<b class="nc">&nbsp;              || &quot;значить&quot;.equals(token.getToken())</b>
+<b class="nc">&nbsp;              || &quot;читай&quot;.equals(token.getToken())</b>
+<b class="nc">&nbsp;              || &quot;діяти&quot;.equals(token.getToken()) ) {</b>
+<b class="nc">&nbsp;            state = null;</b>
+<b class="nc">&nbsp;            break;</b>
+&nbsp;          }
+&nbsp;//        else if( PosTagHelper.isPredictOrInsert(token) ) {
+&nbsp;          // ignore
+&nbsp;//        }
+&nbsp;
+<b class="nc">&nbsp;          state.verbPos = i;</b>
+<b class="nc">&nbsp;          state.verbTokenReadings.add(token);</b>
+<b class="nc">&nbsp;          state.verbAnalyzedTokenReadings = tokenReadings;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      if( state == null )</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;
+<b class="nc">&nbsp;      if( tokenReadings.getCleanToken().toLowerCase().matches(&quot;[0-9]{4}-.+|нікому|нічому|нічого|нікого|нічим|решту&quot;) ) {</b>
+<b class="nc">&nbsp;        state = null;</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      if( LemmaHelper.hasLemma(tokenReadings, Arrays.asList(&quot;сам&quot;, &quot;самий&quot;, &quot;себе&quot;, &quot;один&quot;)) ) {</b>
+<b class="nc">&nbsp;        state = null;</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      if( isSkip(tokens, i) ) {</b>
+&nbsp;//        i++;
+<b class="nc">&nbsp;        state = null;</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;      List&lt;AnalyzedToken&gt; nounAdjTokenReadingsVnaz = new ArrayList&lt;&gt;(); </b>
+&nbsp;
+<b class="nc">&nbsp;      for (AnalyzedToken token: tokenReadings) {</b>
+<b class="nc">&nbsp;        String nounAdjPosTag = token.getPOSTag();</b>
+&nbsp;
+<b class="nc">&nbsp;        if( nounAdjPosTag == null // can happen for words with \u0301 or \u00AD</b>
+<b class="nc">&nbsp;            || nounAdjPosTag.endsWith(&quot;_END&quot;)) {</b>
+<b class="nc">&nbsp;          continue;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if( nounAdjPosTag.startsWith(&quot;&lt;&quot;) ) {</b>
+<b class="nc">&nbsp;          state = null;</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if( nounAdjPosTag.startsWith(&quot;noun&quot;) || nounAdjPosTag.startsWith(&quot;adj&quot;) || nounAdjPosTag.startsWith(&quot;numr&quot;)  ) {</b>
+&nbsp;
+<b class="nc">&nbsp;          if( nounAdjPosTag.contains(&quot;v_naz&quot;) ) {</b>
+<b class="nc">&nbsp;            nounAdjTokenReadingsVnaz.add(token);</b>
+&nbsp;          }
+&nbsp;          else {
+<b class="nc">&nbsp;            state.nounAdjIndirTokenReadings.add(token);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          state.nounPos = i;</b>
+&nbsp;        }
+&nbsp;        else {
+<b class="nc">&nbsp;          state = null;</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+&nbsp;
+&nbsp;      // no following token - restart
+&nbsp;
+<b class="nc">&nbsp;      if( state == null || nounAdjTokenReadingsVnaz.isEmpty() &amp;&amp; state.nounAdjIndirTokenReadings.isEmpty() ) {</b>
+<b class="nc">&nbsp;        state = null;</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      logger.debug(&quot;=== Checking\n\t{}\n\tnDir: {}\n\tnIndir: {}&quot;, </b>
+&nbsp;          state.verbTokenReadings, nounAdjTokenReadingsVnaz, state.nounAdjIndirTokenReadings);
+&nbsp;
+&nbsp;      // perform the check
+&nbsp;
+&nbsp;      // боротиметься кілька однопартійців
+<b class="nc">&nbsp;      if( PosTagHelper.hasPosTag(state.verbAnalyzedTokenReadings, Pattern.compile(&quot;.*:[sn](:.*|$)&quot;))</b>
+<b class="nc">&nbsp;          &amp;&amp; PosTagHelper.hasPosTag(tokens[i], Pattern.compile(&quot;numr.*v_naz.*&quot;)) ) {</b>
+<b class="nc">&nbsp;        state = null;</b>
+<b class="nc">&nbsp;        continue;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      
+<b class="nc">&nbsp;      List&lt;VerbInflectionHelper.Inflection&gt; verbInflections = null;</b>
+<b class="nc">&nbsp;      boolean pass = false;</b>
+&nbsp;
+<b class="nc">&nbsp;      if( nounAdjTokenReadingsVnaz.size() &gt; 0 ) {</b>
+<b class="nc">&nbsp;        state.nounAdjNazInflections = VerbInflectionHelper.getNounInflections(nounAdjTokenReadingsVnaz);</b>
+<b class="nc">&nbsp;        state.nounAdjNazInflections.addAll(VerbInflectionHelper.getAdjInflections(nounAdjTokenReadingsVnaz));</b>
+<b class="nc">&nbsp;        verbInflections = VerbInflectionHelper.getVerbInflections(state.verbTokenReadings);</b>
+&nbsp;
+<b class="nc">&nbsp;        logger.debug(&quot;\t\t{}\n\t{}&quot;, verbInflections, state.nounAdjNazInflections);</b>
+&nbsp;
+<b class="nc">&nbsp;        pass = ! Collections.disjoint(verbInflections, state.nounAdjNazInflections);</b>
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      if( ! pass &amp;&amp; state.nounAdjIndirTokenReadings.size() &gt; 0 ) {</b>
+&nbsp;
+<b class="nc">&nbsp;        Set&lt;String&gt; cases = CaseGovernmentHelper.getCaseGovernments(state.verbAnalyzedTokenReadings, &quot;verb&quot;);</b>
+&nbsp;
+&nbsp;        // віддати-відрізати Донбас
+<b class="nc">&nbsp;        if( cases.isEmpty() </b>
+<b class="nc">&nbsp;            &amp;&amp; state.verbAnalyzedTokenReadings.getCleanToken().contains(&quot;-&quot;)</b>
+<b class="nc">&nbsp;            &amp;&amp; LemmaHelper.hasLemma(state.verbAnalyzedTokenReadings, Pattern.compile(&quot;.+ти(ся)?-.+ти(ся)?&quot;)) ) {</b>
+&nbsp;          
+<b class="nc">&nbsp;          List&lt;AnalyzedToken&gt; nodashReadings = state.verbAnalyzedTokenReadings.getReadings().stream()</b>
+<b class="nc">&nbsp;              .filter(r -&gt; PosTagHelper.hasPosTagStart(r, &quot;verb&quot;))</b>
+<b class="nc">&nbsp;              .map(r -&gt; new AnalyzedToken(r.getToken(), r.getPOSTag(), r.getLemma().replaceFirst(&quot;(ти(ся)?)-.*&quot;, &quot;$1&quot;)))</b>
+<b class="nc">&nbsp;              .collect(Collectors.toList());</b>
+<b class="nc">&nbsp;          AnalyzedTokenReadings newReadings = new AnalyzedTokenReadings(state.verbAnalyzedTokenReadings, nodashReadings, &quot;nodash&quot;);</b>
+<b class="nc">&nbsp;          cases = CaseGovernmentHelper.getCaseGovernments(newReadings, &quot;verb&quot;);</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        state.cases = cases;</b>
+&nbsp;
+<b class="nc">&nbsp;        String tokenLowerCase = tokens[i].getCleanToken().toLowerCase();</b>
+&nbsp;
+<b class="nc">&nbsp;        if( cases.contains(&quot;v_zna&quot;) &amp;&amp; tokenLowerCase.matches(&quot;грошей|грошенят|дров|товарів|пісень&quot;) ) {</b>
+&nbsp;//          cases.add(&quot;v_rod&quot;);
+<b class="nc">&nbsp;          state = null;</b>
+<b class="nc">&nbsp;          continue;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if( cases.isEmpty() || ! TokenAgreementPrepNounRule.hasVidmPosTag(cases, state.nounAdjIndirTokenReadings) ) {</b>
+&nbsp;          
+&nbsp;        }
+&nbsp;        else {
+<b class="nc">&nbsp;          pass = true;</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      if( ! pass ) {</b>
+&nbsp;
+<b class="nc">&nbsp;        if( i &lt; tokens.length - 1</b>
+<b class="nc">&nbsp;            &amp;&amp; LemmaHelper.hasLemma(tokens[i], Arrays.asList(&quot;він&quot;, &quot;вона&quot;, &quot;вони&quot;), Pattern.compile(&quot;noun:.*v_rod.*&quot;)) </b>
+<b class="nc">&nbsp;            &amp;&amp; PosTagHelper.hasPosTag(tokens[i+1], Pattern.compile(&quot;(noun|adj).*&quot;))) {</b>
+&nbsp;          // skip pron and try next token
+<b class="nc">&nbsp;          continue;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        if( TokenAgreementVerbNounExceptionHelper.isException(tokens, state.verbPos, i, state, verbInflections, state.nounAdjNazInflections, state.verbTokenReadings, nounAdjTokenReadingsVnaz)) {</b>
+<b class="nc">&nbsp;          state.verbTokenReadings.clear();</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if( nounAdjTokenReadingsVnaz.size() &gt; 0 || state.nounAdjIndirTokenReadings.size() &gt; 0 ) {</b>
+&nbsp;
+<b class="nc">&nbsp;          Set&lt;String&gt; cases = CaseGovernmentHelper.getCaseGovernments(state.verbAnalyzedTokenReadings, &quot;verb&quot;);</b>
+<b class="nc">&nbsp;          if( ! TokenAgreementPrepNounRule.hasVidmPosTag(cases, state.nounAdjIndirTokenReadings) ) {</b>
+&nbsp;
+<b class="nc">&nbsp;            logger.debug(&quot;=== Found verb/noun mismatch\n\t{} // {}\n\t{} // {}&quot;,</b>
+<b class="nc">&nbsp;                state.verbAnalyzedTokenReadings.getToken(), state.verbAnalyzedTokenReadings,</b>
+<b class="nc">&nbsp;                tokens[state.nounPos].getToken(), state.nounAdjIndirTokenReadings);</b>
+&nbsp;
+<b class="nc">&nbsp;            List&lt;Inflection&gt; nounAdjInflections2 = InflectionHelper.getNounInflections(state.nounAdjIndirTokenReadings);</b>
+<b class="nc">&nbsp;            nounAdjInflections2.addAll(InflectionHelper.getAdjInflections(state.nounAdjIndirTokenReadings));</b>
+<b class="nc">&nbsp;            nounAdjInflections2.addAll(InflectionHelper.getNumrInflections(state.nounAdjIndirTokenReadings));</b>
+&nbsp;
+<b class="nc">&nbsp;            if( nounAdjTokenReadingsVnaz.size() &gt; 0 ) {</b>
+&nbsp;//              cases.add(&quot;v_naz&quot;);
+<b class="nc">&nbsp;              List&lt;Inflection&gt; nounAdjInflections0 = InflectionHelper.getNounInflections(nounAdjTokenReadingsVnaz);</b>
+<b class="nc">&nbsp;              nounAdjInflections0.addAll(InflectionHelper.getAdjInflections(nounAdjTokenReadingsVnaz));</b>
+<b class="nc">&nbsp;              nounAdjInflections0.addAll(InflectionHelper.getNumrInflections(nounAdjTokenReadingsVnaz));</b>
+<b class="nc">&nbsp;              nounAdjInflections2.addAll(nounAdjInflections0);</b>
+&nbsp;            }
+&nbsp;            
+&nbsp;//            nounAdjInflections2.addAll(nounAdjTokenReadingsVnaz.stream().)
+&nbsp;            
+<b class="nc">&nbsp;            String msg = String.format(&quot;Не узгоджено дієслово з іменником: \&quot;%s\&quot; (%s) і \&quot;%s\&quot; (%s)&quot;,</b>
+<b class="nc">&nbsp;                state.verbTokenReadings.get(0).getToken(), formatInflections(cases), </b>
+<b class="nc">&nbsp;                state.nounAdjIndirTokenReadings.get(0).getToken(), TokenAgreementAdjNounRule.formatInflections(nounAdjInflections2, false));</b>
+&nbsp;
+<b class="nc">&nbsp;            RuleMatch potentialRuleMatch = new RuleMatch(this, sentence, state.verbAnalyzedTokenReadings.getStartPos(), tokenReadings.getEndPos(), msg, getShort());</b>
+<b class="nc">&nbsp;            ruleMatches.add(potentialRuleMatch);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      state = null;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    return toRuleMatchArray(ruleMatches);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private String formatInflections(Set&lt;String&gt; cases) {
+<b class="nc">&nbsp;    if( cases.isEmpty() )</b>
+<b class="nc">&nbsp;      return &quot;неперех.&quot;;</b>
+&nbsp;    
+<b class="nc">&nbsp;    return &quot;вимагає: &quot; + cases.stream()</b>
+<b class="nc">&nbsp;        .map(c -&gt; PosTagHelper.VIDMINKY_I_MAP.get(c))</b>
+<b class="nc">&nbsp;        .collect(Collectors.joining(&quot;, &quot;));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private boolean isSkip(AnalyzedTokenReadings[] tokens, int i) {
+&nbsp;    
+&nbsp;    // висміювати такого роду забобони
+<b class="nc">&nbsp;    if( i &lt; tokens.length - 1</b>
+<b class="nc">&nbsp;        &amp;&amp; tokens[i].getCleanToken().matches(&quot;свого|такого|різного|одного|певного|подібного&quot;)</b>
+<b class="nc">&nbsp;        &amp;&amp; tokens[i+1].getCleanToken().matches(&quot;роду|разу|типу|штибу&quot;)</b>
+&nbsp;        ) {
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if( i &lt; tokens.length - 1</b>
+<b class="nc">&nbsp;        &amp;&amp; tokens[i].getCleanToken().matches(&quot;таким|якимо?сь|відповідним|певним|жодним|дивним&quot;)</b>
+<b class="nc">&nbsp;        &amp;&amp; tokens[i+1].getCleanToken().matches(&quot;чином|способом|робом|ходом&quot;) ) {</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if( i &lt; tokens.length - 1</b>
+<b class="nc">&nbsp;        &amp;&amp; tokens[i].getCleanToken().matches(&quot;більшою|меншою|(не)?значною|якоюсь|неабиякою|достатньою|великою&quot;)</b>
+<b class="nc">&nbsp;        &amp;&amp; tokens[i+1].getCleanToken().matches(&quot;мірою&quot;)</b>
+&nbsp;        ) {
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if( i &lt; tokens.length - 1</b>
+<b class="nc">&nbsp;        &amp;&amp; tokens[i+1].getCleanToken().matches(&quot;темпами&quot;)</b>
+&nbsp;        ) {
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

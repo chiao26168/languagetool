@@ -1,0 +1,988 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > OfficeDrawTools</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: OfficeDrawTools (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OfficeDrawTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/202)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/397)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">OfficeDrawTools$ParagraphContainer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">OfficeDrawTools$UndoMarkupContainer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">OfficeDrawTools$UndoMarkupContainer$Underline</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/202)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/410)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.awt.Color;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import com.sun.star.awt.FontUnderline;
+&nbsp;import com.sun.star.awt.Point;
+&nbsp;import com.sun.star.awt.Size;
+&nbsp;import com.sun.star.beans.PropertyValue;
+&nbsp;import com.sun.star.beans.PropertyVetoException;
+&nbsp;import com.sun.star.beans.UnknownPropertyException;
+&nbsp;import com.sun.star.beans.XPropertySet;
+&nbsp;import com.sun.star.drawing.XDrawPage;
+&nbsp;import com.sun.star.drawing.XDrawPages;
+&nbsp;import com.sun.star.drawing.XDrawPagesSupplier;
+&nbsp;import com.sun.star.drawing.XDrawView;
+&nbsp;import com.sun.star.drawing.XMasterPageTarget;
+&nbsp;import com.sun.star.drawing.XMasterPagesSupplier;
+&nbsp;import com.sun.star.drawing.XShape;
+&nbsp;import com.sun.star.drawing.XShapes;
+&nbsp;import com.sun.star.frame.XController;
+&nbsp;import com.sun.star.frame.XModel;
+&nbsp;import com.sun.star.lang.IllegalArgumentException;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.lang.WrappedTargetException;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;import com.sun.star.lang.XServiceInfo;
+&nbsp;import com.sun.star.linguistic2.SingleProofreadingError;
+&nbsp;import com.sun.star.presentation.XHandoutMasterSupplier;
+&nbsp;import com.sun.star.presentation.XPresentationPage;
+&nbsp;import com.sun.star.text.XText;
+&nbsp;import com.sun.star.text.XTextCursor;
+&nbsp;import com.sun.star.uno.UnoRuntime;
+&nbsp;
+&nbsp;/**
+&nbsp; * Some tools to get information of LibreOffice Impress context
+&nbsp; * @since 5.4
+&nbsp; * @author Fred Kruse
+&nbsp; */
+<b class="nc">&nbsp;public class OfficeDrawTools {</b>
+&nbsp;  
+<b class="nc">&nbsp;  private static boolean debugMode = false;</b>
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * get the page count for standard pages
+&nbsp;   */
+&nbsp;  public static int getDrawPageCount(XComponent xComponent) {
+<b class="nc">&nbsp;    XDrawPagesSupplier xDrawPagesSupplier = UnoRuntime.queryInterface(XDrawPagesSupplier.class, xComponent);</b>
+<b class="nc">&nbsp;    XDrawPages xDrawPages = xDrawPagesSupplier.getDrawPages();</b>
+<b class="nc">&nbsp;    return xDrawPages.getCount();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * get draw page by index
+&nbsp;   */
+&nbsp;  public static XDrawPage getDrawPageByIndex(XComponent xComponent, int nIndex)
+&nbsp;      throws com.sun.star.lang.IndexOutOfBoundsException, com.sun.star.lang.WrappedTargetException {
+<b class="nc">&nbsp;    XDrawPagesSupplier xDrawPagesSupplier = UnoRuntime.queryInterface(XDrawPagesSupplier.class, xComponent);</b>
+<b class="nc">&nbsp;    XDrawPages xDrawPages = xDrawPagesSupplier.getDrawPages();</b>
+<b class="nc">&nbsp;    return UnoRuntime.queryInterface(XDrawPage.class, xDrawPages.getByIndex( nIndex ));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * creates and inserts a draw page into the giving position,
+&nbsp;   * the method returns the new created page
+&nbsp;   */
+&nbsp;  public static XDrawPage insertNewDrawPageByIndex(XComponent xComponent, int nIndex) throws Exception {
+<b class="nc">&nbsp;    XDrawPagesSupplier xDrawPagesSupplier = UnoRuntime.queryInterface(XDrawPagesSupplier.class, xComponent);</b>
+<b class="nc">&nbsp;    XDrawPages xDrawPages = xDrawPagesSupplier.getDrawPages();</b>
+<b class="nc">&nbsp;    return xDrawPages.insertNewByIndex( nIndex );</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * get size of the given page
+&nbsp;   */
+&nbsp;  public static Size getPageSize( XDrawPage xDrawPage ) 
+&nbsp;      throws com.sun.star.beans.UnknownPropertyException, com.sun.star.lang.WrappedTargetException {
+<b class="nc">&nbsp;    XPropertySet xPageProperties = UnoRuntime.queryInterface( XPropertySet.class, xDrawPage );</b>
+<b class="nc">&nbsp;    return new Size(</b>
+<b class="nc">&nbsp;        ((Integer)xPageProperties.getPropertyValue( &quot;Width&quot; )).intValue(),</b>
+<b class="nc">&nbsp;        ((Integer)xPageProperties.getPropertyValue( &quot;Height&quot; )).intValue() );</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * get the page count for master pages
+&nbsp;   */
+&nbsp;  public static int getMasterPageCount(XComponent xComponent) {
+<b class="nc">&nbsp;    XMasterPagesSupplier xMasterPagesSupplier = UnoRuntime.queryInterface(XMasterPagesSupplier.class, xComponent);</b>
+<b class="nc">&nbsp;    XDrawPages xDrawPages = xMasterPagesSupplier.getMasterPages();</b>
+<b class="nc">&nbsp;    return xDrawPages.getCount();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * get master page by index
+&nbsp;   */
+&nbsp;  public static XDrawPage getMasterPageByIndex(XComponent xComponent, int nIndex)
+&nbsp;      throws com.sun.star.lang.IndexOutOfBoundsException, com.sun.star.lang.WrappedTargetException {
+<b class="nc">&nbsp;    XMasterPagesSupplier xMasterPagesSupplier = UnoRuntime.queryInterface(XMasterPagesSupplier.class, xComponent);</b>
+<b class="nc">&nbsp;    XDrawPages xDrawPages = xMasterPagesSupplier.getMasterPages();</b>
+<b class="nc">&nbsp;    return UnoRuntime.queryInterface(XDrawPage.class, xDrawPages.getByIndex( nIndex ));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * creates and inserts a new master page into the giving position,
+&nbsp;   * the method returns the new created page
+&nbsp;   */
+&nbsp;  public static XDrawPage insertNewMasterPageByIndex(XComponent xComponent, int nIndex) {
+<b class="nc">&nbsp;    XMasterPagesSupplier xMasterPagesSupplier = UnoRuntime.queryInterface(XMasterPagesSupplier.class, xComponent);</b>
+<b class="nc">&nbsp;    XDrawPages xDrawPages = xMasterPagesSupplier.getMasterPages();</b>
+<b class="nc">&nbsp;    return xDrawPages.insertNewByIndex( nIndex );</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * sets given masterpage at the drawpage
+&nbsp;   */
+&nbsp;  public static void setMasterPage(XDrawPage xDrawPage, XDrawPage xMasterPage) {
+<b class="nc">&nbsp;    XMasterPageTarget xMasterPageTarget = UnoRuntime.queryInterface(XMasterPageTarget.class, xDrawPage);</b>
+<b class="nc">&nbsp;    xMasterPageTarget.setMasterPage( xMasterPage );</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * test if a Presentation Document is supported.
+&nbsp;   * This is important, because only presentation documents
+&nbsp;   * have notes and handout pages
+&nbsp;   */
+&nbsp;  public static boolean isImpressDocument(XComponent xComponent) {
+<b class="nc">&nbsp;    XServiceInfo xInfo = UnoRuntime.queryInterface(XServiceInfo.class, xComponent);</b>
+<b class="nc">&nbsp;    return xInfo.supportsService(&quot;com.sun.star.presentation.PresentationDocument&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * in impress documents each normal draw page has a corresponding notes page
+&nbsp;   */
+&nbsp;  public static XDrawPage getNotesPage(XDrawPage xDrawPage) {
+<b class="nc">&nbsp;    XPresentationPage aPresentationPage = UnoRuntime.queryInterface(XPresentationPage.class, xDrawPage);</b>
+<b class="nc">&nbsp;    return aPresentationPage.getNotesPage();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * in impress each documents has one handout page
+&nbsp;   */
+&nbsp;  public static XDrawPage getHandoutMasterPage(XComponent xComponent) {
+<b class="nc">&nbsp;    XHandoutMasterSupplier aHandoutMasterSupplier = UnoRuntime.queryInterface(XHandoutMasterSupplier.class, xComponent);</b>
+<b class="nc">&nbsp;    return aHandoutMasterSupplier.getHandoutMasterPage();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get shapes of a page
+&nbsp;   */
+&nbsp;  public static XShapes getShapes(XDrawPage xPage) {
+<b class="nc">&nbsp;    return UnoRuntime.queryInterface( XShapes.class, xPage );</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get all paragraphs from Text of a shape
+&nbsp;   */
+&nbsp;  private static int getAllParagraphsFromText(int nPara, List&lt;String&gt; paragraphs, 
+&nbsp;      List&lt;Locale&gt; locales, XText xText) throws Throwable {
+<b class="nc">&nbsp;    if (xText != null) {</b>
+<b class="nc">&nbsp;      XTextCursor xTextCursor = xText.createTextCursor();</b>
+<b class="nc">&nbsp;      xTextCursor.gotoStart(false);</b>
+<b class="nc">&nbsp;      String sText = xText.getString();</b>
+<b class="nc">&nbsp;      int kStart = 0;</b>
+&nbsp;      int k;
+<b class="nc">&nbsp;      for (k = 0; k &lt; sText.length(); k++) {</b>
+<b class="nc">&nbsp;        if (sText.charAt(k) == OfficeTools.SINGLE_END_OF_PARAGRAPH.charAt(0)) {</b>
+<b class="nc">&nbsp;          paragraphs.add(sText.substring(kStart, k));</b>
+<b class="nc">&nbsp;          nPara++;</b>
+<b class="nc">&nbsp;          xTextCursor.goRight((short)(k - kStart), true);</b>
+<b class="nc">&nbsp;          XPropertySet xParaPropSet = UnoRuntime.queryInterface(XPropertySet.class, xTextCursor);</b>
+<b class="nc">&nbsp;          locales.add((Locale) xParaPropSet.getPropertyValue(&quot;CharLocale&quot;));</b>
+<b class="nc">&nbsp;          xTextCursor.goRight((short)1, false);</b>
+<b class="nc">&nbsp;          kStart = k + 1;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (k &gt; kStart) {</b>
+<b class="nc">&nbsp;        paragraphs.add(sText.substring(kStart, k));</b>
+<b class="nc">&nbsp;        nPara++;</b>
+<b class="nc">&nbsp;        xTextCursor.goRight((short)(k - kStart), true);</b>
+<b class="nc">&nbsp;        XPropertySet xParaPropSet = UnoRuntime.queryInterface(XPropertySet.class, xTextCursor);</b>
+<b class="nc">&nbsp;        locales.add((Locale) xParaPropSet.getPropertyValue(&quot;CharLocale&quot;));</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return nPara;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get all paragraphs of a impress document
+&nbsp;   */
+&nbsp;  public static ParagraphContainer getAllParagraphs(XComponent xComponent) {
+<b class="nc">&nbsp;    List&lt;String&gt; paragraphs = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    List&lt;Locale&gt; locales = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    List&lt;Integer&gt; pageBegins = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    int nPara = 0;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      int pageCount = OfficeDrawTools.getDrawPageCount(xComponent);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; pageCount; i++) {</b>
+<b class="nc">&nbsp;        XDrawPage xDrawPage = null;</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; 2; n++) {</b>
+<b class="nc">&nbsp;          if (n == 0) {</b>
+<b class="nc">&nbsp;            xDrawPage = OfficeDrawTools.getDrawPageByIndex(xComponent, i);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            xDrawPage = getNotesPage(xDrawPage);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          XShapes xShapes = OfficeDrawTools.getShapes(xDrawPage);</b>
+<b class="nc">&nbsp;          int nShapes = xShapes.getCount();</b>
+<b class="nc">&nbsp;          if (nShapes &gt; 0) {</b>
+<b class="nc">&nbsp;            pageBegins.add(nPara);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          for(int j = 0; j &lt; nShapes; j++) {</b>
+<b class="nc">&nbsp;            Object oShape = xShapes.getByIndex(j);</b>
+<b class="nc">&nbsp;            XShape xShape = UnoRuntime.queryInterface(XShape.class, oShape);</b>
+<b class="nc">&nbsp;            if (xShape != null) {</b>
+<b class="nc">&nbsp;              XText xText = UnoRuntime.queryInterface(XText.class, xShape);</b>
+<b class="nc">&nbsp;              nPara = getAllParagraphsFromText(nPara, paragraphs, locales, xText);</b>
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;OfficeDrawTools: getAllParagraphs: xShape &quot; + j + &quot; is null&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return new ParagraphContainer(paragraphs, locales, pageBegins);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * find the Paragraph to change in a shape and change the text
+&nbsp;   * returns -1 if it was found
+&nbsp;   * returns the last number of paragraph otherwise
+&nbsp;   */
+&nbsp;  private static int changeTextOfParagraphInText(int nParaCount, int nPara, int beginn, int length, String replace, XText xText) {
+<b class="nc">&nbsp;    if (xText != null) {</b>
+<b class="nc">&nbsp;      XTextCursor xTextCursor = xText.createTextCursor();</b>
+<b class="nc">&nbsp;      String sText = xText.getString();</b>
+<b class="nc">&nbsp;      if (nParaCount == nPara) {</b>
+<b class="nc">&nbsp;        xTextCursor.gotoStart(false);</b>
+<b class="nc">&nbsp;        xTextCursor.goRight((short)beginn, false);</b>
+<b class="nc">&nbsp;        xTextCursor.goRight((short)length, true);</b>
+<b class="nc">&nbsp;        xTextCursor.setString(replace);</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int lastParaEnd = 0;</b>
+<b class="nc">&nbsp;      for (int k = 0; k &lt; sText.length(); k++) {</b>
+<b class="nc">&nbsp;        if (sText.charAt(k) == OfficeTools.SINGLE_END_OF_PARAGRAPH.charAt(0)) {</b>
+<b class="nc">&nbsp;          nParaCount++;</b>
+<b class="nc">&nbsp;          lastParaEnd = k;</b>
+<b class="nc">&nbsp;          if (nParaCount == nPara) {</b>
+<b class="nc">&nbsp;            xTextCursor.gotoStart(false);</b>
+<b class="nc">&nbsp;            xTextCursor.goRight((short)(beginn + k + 1), false);</b>
+<b class="nc">&nbsp;            xTextCursor.goRight((short)length, true);</b>
+<b class="nc">&nbsp;            xTextCursor.setString(replace);</b>
+&nbsp;            //  Note: The faked change of position is a workaround to trigger the notification of a change
+<b class="nc">&nbsp;            return -1;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (lastParaEnd &lt; sText.length() - 1) {</b>
+<b class="nc">&nbsp;        nParaCount++;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return nParaCount;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * change the text of a paragraph
+&nbsp;   */
+&nbsp;  public static void changeTextOfParagraph(int nPara, int beginn, int length, String replace, XComponent xComponent) {
+&nbsp;    try {
+<b class="nc">&nbsp;      int nParaCount = 0;</b>
+<b class="nc">&nbsp;      int pageCount = OfficeDrawTools.getDrawPageCount(xComponent);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; pageCount; i++) {</b>
+<b class="nc">&nbsp;        XDrawPage xDrawPage = null;</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; 2; n++) {</b>
+<b class="nc">&nbsp;          if (n == 0) {</b>
+<b class="nc">&nbsp;            xDrawPage = OfficeDrawTools.getDrawPageByIndex(xComponent, i);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            xDrawPage = getNotesPage(xDrawPage);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          XShapes xShapes = OfficeDrawTools.getShapes(xDrawPage);</b>
+<b class="nc">&nbsp;          int nShapes = xShapes.getCount();</b>
+<b class="nc">&nbsp;          for(int j = 0; j &lt; nShapes; j++) {</b>
+<b class="nc">&nbsp;            Object oShape = xShapes.getByIndex(j);</b>
+<b class="nc">&nbsp;            XShape xShape = UnoRuntime.queryInterface(XShape.class, oShape);</b>
+<b class="nc">&nbsp;            if (xShape != null) {</b>
+<b class="nc">&nbsp;              XText xText = UnoRuntime.queryInterface(XText.class, xShape);</b>
+<b class="nc">&nbsp;              nParaCount = changeTextOfParagraphInText(nParaCount, nPara, beginn, length, replace, xText);</b>
+<b class="nc">&nbsp;              if (nParaCount &lt; 0) {</b>
+&nbsp;                //  Note: The faked change of position is a workaround to trigger the notification of a change
+<b class="nc">&nbsp;                Point p = xShape.getPosition();</b>
+<b class="nc">&nbsp;                xShape.setPosition(p);</b>
+&nbsp;                return;
+&nbsp;              }
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;OfficeDrawTools: changeTextOfParagraph: xShape &quot; + j + &quot; is null&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * find the Paragraph to change in a shape and change the locale
+&nbsp;   * returns -1 if it was found
+&nbsp;   * returns the last number of paragraph otherwise
+&nbsp;   */
+&nbsp;  private static int changeLocaleOfParagraphInText(int nParaCount, int nPara, int beginn, int length, Locale locale, 
+&nbsp;      XText xText) throws UnknownPropertyException, PropertyVetoException, IllegalArgumentException, WrappedTargetException {
+<b class="nc">&nbsp;    if (xText != null) {</b>
+<b class="nc">&nbsp;      XTextCursor xTextCursor = xText.createTextCursor();</b>
+<b class="nc">&nbsp;      String sText = xText.getString();</b>
+<b class="nc">&nbsp;      if (nParaCount == nPara) {</b>
+<b class="nc">&nbsp;        xTextCursor.gotoStart(false);</b>
+<b class="nc">&nbsp;        xTextCursor.goRight((short)beginn, false);</b>
+<b class="nc">&nbsp;        xTextCursor.goRight((short)length, true);</b>
+<b class="nc">&nbsp;        XPropertySet xParaPropSet = UnoRuntime.queryInterface(XPropertySet.class, xTextCursor);</b>
+<b class="nc">&nbsp;        xParaPropSet.setPropertyValue(&quot;CharLocale&quot;, locale);</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int lastParaEnd = 0;</b>
+<b class="nc">&nbsp;      for (int k = 0; k &lt; sText.length(); k++) {</b>
+<b class="nc">&nbsp;        if (sText.charAt(k) == OfficeTools.SINGLE_END_OF_PARAGRAPH.charAt(0)) {</b>
+<b class="nc">&nbsp;          nParaCount++;</b>
+<b class="nc">&nbsp;          lastParaEnd = k;</b>
+<b class="nc">&nbsp;          if (nParaCount == nPara) {</b>
+<b class="nc">&nbsp;            xTextCursor.gotoStart(false);</b>
+<b class="nc">&nbsp;            xTextCursor.goRight((short)(beginn + k + 1), false);</b>
+<b class="nc">&nbsp;            xTextCursor.goRight((short)length, true);</b>
+<b class="nc">&nbsp;            XPropertySet xParaPropSet = UnoRuntime.queryInterface(XPropertySet.class, xTextCursor);</b>
+<b class="nc">&nbsp;            xParaPropSet.setPropertyValue(&quot;CharLocale&quot;, locale);</b>
+<b class="nc">&nbsp;            return -1;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (lastParaEnd &lt; sText.length() - 1) {</b>
+<b class="nc">&nbsp;        nParaCount++;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return nParaCount;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * change the language of a paragraph
+&nbsp;   */
+&nbsp;  public static void setLanguageOfParagraph(int nPara, int beginn, int length, Locale locale, XComponent xComponent) {
+&nbsp;    try {
+<b class="nc">&nbsp;      int nParaCount = 0;</b>
+<b class="nc">&nbsp;      int pageCount = OfficeDrawTools.getDrawPageCount(xComponent);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; pageCount; i++) {</b>
+<b class="nc">&nbsp;        XDrawPage xDrawPage = null;</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; 2; n++) {</b>
+<b class="nc">&nbsp;          if (n == 0) {</b>
+<b class="nc">&nbsp;            xDrawPage = OfficeDrawTools.getDrawPageByIndex(xComponent, i);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            xDrawPage = getNotesPage(xDrawPage);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          XShapes xShapes = OfficeDrawTools.getShapes(xDrawPage);</b>
+<b class="nc">&nbsp;          int nShapes = xShapes.getCount();</b>
+<b class="nc">&nbsp;          for(int j = 0; j &lt; nShapes; j++) {</b>
+<b class="nc">&nbsp;            Object oShape = xShapes.getByIndex(j);</b>
+<b class="nc">&nbsp;            XShape xShape = UnoRuntime.queryInterface(XShape.class, oShape);</b>
+<b class="nc">&nbsp;            if (xShape != null) {</b>
+<b class="nc">&nbsp;              XText xText = UnoRuntime.queryInterface(XText.class, xShape);</b>
+<b class="nc">&nbsp;              nParaCount = changeLocaleOfParagraphInText(nParaCount, nPara, beginn, length, locale, xText);</b>
+<b class="nc">&nbsp;              if (nParaCount &lt; 0) {</b>
+&nbsp;                //  Note: The faked change of position is a workaround to trigger the notification of a change
+<b class="nc">&nbsp;                Point p = xShape.getPosition();</b>
+<b class="nc">&nbsp;                xShape.setPosition(p);</b>
+&nbsp;                return;
+&nbsp;              }
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;OfficeDrawTools: setLanguageOfParagraph: xShape &quot; + j + &quot; is null&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * find the Paragraph in a shape
+&nbsp;   * returns -1 if it was found
+&nbsp;   * returns the last number of paragraph otherwise
+&nbsp;   */
+&nbsp;  private static int findParaInText(int nParaCount, int nPara, XText xText) {
+<b class="nc">&nbsp;    if (xText != null) {</b>
+<b class="nc">&nbsp;      String sText = xText.getString();</b>
+<b class="nc">&nbsp;      if (nParaCount == nPara &amp;&amp; sText.length() &gt; 0) {</b>
+<b class="nc">&nbsp;        return -1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int kStart = 0;</b>
+<b class="nc">&nbsp;      for (int k = 0; k &lt; sText.length(); k++) {</b>
+<b class="nc">&nbsp;        if (sText.charAt(k) == OfficeTools.SINGLE_END_OF_PARAGRAPH.charAt(0)) {</b>
+<b class="nc">&nbsp;          nParaCount++;</b>
+<b class="nc">&nbsp;          kStart = k + 1;</b>
+<b class="nc">&nbsp;          if (nParaCount == nPara) {</b>
+<b class="nc">&nbsp;            return -1;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      if (kStart &lt; sText.length()) {</b>
+<b class="nc">&nbsp;        nParaCount++;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return nParaCount;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * set the current draw page for a given paragraph
+&nbsp;   */
+&nbsp;  public static void setCurrentPage(int nPara, XComponent xComponent) {
+&nbsp;    try {
+<b class="nc">&nbsp;      XModel xModel = UnoRuntime.queryInterface(XModel.class, xComponent);</b>
+<b class="nc">&nbsp;      XController xController = xModel.getCurrentController();</b>
+<b class="nc">&nbsp;      XDrawView xDrawView = UnoRuntime.queryInterface(XDrawView.class, xController);</b>
+<b class="nc">&nbsp;      int nParaCount = 0;</b>
+<b class="nc">&nbsp;      int pageCount = OfficeDrawTools.getDrawPageCount(xComponent);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; pageCount; i++) {</b>
+<b class="nc">&nbsp;        XDrawPage xDrawPage = null;</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; 2; n++) {</b>
+<b class="nc">&nbsp;          if (n == 0) {</b>
+<b class="nc">&nbsp;            xDrawPage = OfficeDrawTools.getDrawPageByIndex(xComponent, i);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            xDrawPage = getNotesPage(xDrawPage);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          XShapes xShapes = OfficeDrawTools.getShapes(xDrawPage);</b>
+<b class="nc">&nbsp;          int nShapes = xShapes.getCount();</b>
+&nbsp;//          MessageHandler.printToLogFile(&quot;OfficeDrawTools: setCurrentPage: Page: &quot; + i + &quot;, n: &quot; +n + &quot;, nParaCount: &quot; + nParaCount);
+<b class="nc">&nbsp;          for(int j = 0; j &lt; nShapes; j++) {</b>
+<b class="nc">&nbsp;            Object oShape = xShapes.getByIndex(j);</b>
+<b class="nc">&nbsp;            XShape xShape = UnoRuntime.queryInterface(XShape.class, oShape);</b>
+<b class="nc">&nbsp;            if (xShape != null) {</b>
+<b class="nc">&nbsp;              XText xText = UnoRuntime.queryInterface(XText.class, xShape);</b>
+<b class="nc">&nbsp;              nParaCount = findParaInText(nParaCount, nPara, xText);</b>
+<b class="nc">&nbsp;              if (nParaCount &lt; 0) {</b>
+<b class="nc">&nbsp;                xDrawView.setCurrentPage(xDrawPage);</b>
+&nbsp;                return;
+&nbsp;              }
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;OfficeDrawTools: setCurrentPage: xShape &quot; + j + &quot; is null&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get the first paragraph of current draw page
+&nbsp;   */
+&nbsp;  public static int getParagraphFromCurrentPage(XComponent xComponent) {
+<b class="nc">&nbsp;    int nParaCount = 0;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XModel xModel = UnoRuntime.queryInterface(XModel.class, xComponent);</b>
+<b class="nc">&nbsp;      XController xController = xModel.getCurrentController();</b>
+<b class="nc">&nbsp;      XDrawView xDrawView = UnoRuntime.queryInterface(XDrawView.class, xController);</b>
+<b class="nc">&nbsp;      XDrawPage xCurrentDrawPage = xDrawView.getCurrentPage();</b>
+<b class="nc">&nbsp;      int pageCount = OfficeDrawTools.getDrawPageCount(xComponent);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; pageCount; i++) {</b>
+<b class="nc">&nbsp;        XDrawPage xDrawPage = null;</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; 2; n++) {</b>
+<b class="nc">&nbsp;          if (n == 0) {</b>
+<b class="nc">&nbsp;            xDrawPage = OfficeDrawTools.getDrawPageByIndex(xComponent, i);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            xDrawPage = getNotesPage(xDrawPage);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          if (xDrawPage.equals(xCurrentDrawPage)) {</b>
+<b class="nc">&nbsp;            return nParaCount;</b>
+&nbsp;          }
+<b class="nc">&nbsp;          XShapes xShapes = OfficeDrawTools.getShapes(xDrawPage);</b>
+<b class="nc">&nbsp;          int nShapes = xShapes.getCount();</b>
+<b class="nc">&nbsp;          for(int j = 0; j &lt; nShapes; j++) {</b>
+<b class="nc">&nbsp;            Object oShape = xShapes.getByIndex(j);</b>
+<b class="nc">&nbsp;            XShape xShape = UnoRuntime.queryInterface(XShape.class, oShape);</b>
+<b class="nc">&nbsp;            if (xShape != null) {</b>
+<b class="nc">&nbsp;              XText xText = UnoRuntime.queryInterface(XText.class, xShape);</b>
+<b class="nc">&nbsp;              nParaCount = findParaInText(nParaCount, -1, xText);</b>
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;OfficeDrawTools: getParagraphFromCurrentPage: xShape &quot; + j + &quot; is null&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return nParaCount;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * true: if paragraph is in a notes page
+&nbsp;   */
+&nbsp;  public static boolean isParagraphInNotesPage(int nPara, XComponent xComponent) {
+<b class="nc">&nbsp;    int nParaCount = 0;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      int pageCount = OfficeDrawTools.getDrawPageCount(xComponent);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; pageCount; i++) {</b>
+<b class="nc">&nbsp;        XDrawPage xDrawPage = null;</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; 2; n++) {</b>
+<b class="nc">&nbsp;          if (n == 0) {</b>
+<b class="nc">&nbsp;            xDrawPage = OfficeDrawTools.getDrawPageByIndex(xComponent, i);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            xDrawPage = getNotesPage(xDrawPage);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          XShapes xShapes = OfficeDrawTools.getShapes(xDrawPage);</b>
+<b class="nc">&nbsp;          int nShapes = xShapes.getCount();</b>
+<b class="nc">&nbsp;          for(int j = 0; j &lt; nShapes; j++) {</b>
+<b class="nc">&nbsp;            Object oShape = xShapes.getByIndex(j);</b>
+<b class="nc">&nbsp;            XShape xShape = UnoRuntime.queryInterface(XShape.class, oShape);</b>
+<b class="nc">&nbsp;            if (xShape != null) {</b>
+<b class="nc">&nbsp;              XText xText = UnoRuntime.queryInterface(XText.class, xShape);</b>
+<b class="nc">&nbsp;              nParaCount = findParaInText(nParaCount, nPara, xText);</b>
+<b class="nc">&nbsp;              if (nParaCount &lt; 0) {</b>
+<b class="nc">&nbsp;                return (n == 0 ? false : true);</b>
+&nbsp;              }
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;OfficeDrawTools: isParagraphInNotesPage: xShape &quot; + j + &quot; is null&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public static Locale getDocumentLocale(XComponent xComponent) {
+&nbsp;    try {
+<b class="nc">&nbsp;      int pageCount = OfficeDrawTools.getDrawPageCount(xComponent);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; pageCount; i++) {</b>
+<b class="nc">&nbsp;        XDrawPage xDrawPage = null;</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; 2; n++) {</b>
+<b class="nc">&nbsp;          if (n == 0) {</b>
+<b class="nc">&nbsp;            xDrawPage = OfficeDrawTools.getDrawPageByIndex(xComponent, i);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            xDrawPage = getNotesPage(xDrawPage);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          XShapes xShapes = OfficeDrawTools.getShapes(xDrawPage);</b>
+<b class="nc">&nbsp;          int nShapes = xShapes.getCount();</b>
+<b class="nc">&nbsp;          for(int j = 0; j &lt; nShapes; j++) {</b>
+<b class="nc">&nbsp;            Object oShape = xShapes.getByIndex(j);</b>
+<b class="nc">&nbsp;            XShape xShape = UnoRuntime.queryInterface(XShape.class, oShape);</b>
+<b class="nc">&nbsp;            if (xShape != null) {</b>
+<b class="nc">&nbsp;              XText xText = UnoRuntime.queryInterface(XText.class, xShape);</b>
+<b class="nc">&nbsp;              XTextCursor xTextCursor = xText.createTextCursor();</b>
+<b class="nc">&nbsp;              XPropertySet xParaPropSet = UnoRuntime.queryInterface(XPropertySet.class, xTextCursor);</b>
+<b class="nc">&nbsp;              return ((Locale) xParaPropSet.getPropertyValue(&quot;CharLocale&quot;));</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;OfficeDrawTools: getDocumentLocale: xShape &quot; + j + &quot; is null&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * mark up the errors in a paragraph
+&nbsp;   */
+&nbsp;  private static void markupOneParagraph(int nParaBeginn, SingleProofreadingError error, 
+&nbsp;      UndoMarkupContainer undoMarkUp, XTextCursor xTextCursor) throws Throwable {
+<b class="nc">&nbsp;    xTextCursor.gotoStart(false);</b>
+<b class="nc">&nbsp;    xTextCursor.goRight((short)nParaBeginn, false);</b>
+<b class="nc">&nbsp;    if (error != null) {</b>
+<b class="nc">&nbsp;      xTextCursor.goRight((short)(error.nErrorStart), false);</b>
+<b class="nc">&nbsp;      undoMarkUp.nStart = error.nErrorStart;</b>
+<b class="nc">&nbsp;      undoMarkUp.underline = new UndoMarkupContainer.Underline[error.nErrorLength];</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; error.nErrorLength; i++) {</b>
+<b class="nc">&nbsp;        if (debugMode) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupOneParagraph: i: &quot; + i);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        xTextCursor.goRight((short)1, true);</b>
+<b class="nc">&nbsp;        XPropertySet xPropertySet = UnoRuntime.queryInterface(XPropertySet.class, xTextCursor);</b>
+<b class="nc">&nbsp;        Object o = xPropertySet.getPropertyValue(&quot;CharUnderline&quot;);</b>
+&nbsp;        short font;
+&nbsp;        boolean hasColor;
+&nbsp;        int color;
+<b class="nc">&nbsp;        if (o != null) {</b>
+<b class="nc">&nbsp;          font = (short) o;</b>
+<b class="nc">&nbsp;          o = xPropertySet.getPropertyValue(&quot;CharUnderlineHasColor&quot;);</b>
+<b class="nc">&nbsp;          if (o != null) {</b>
+<b class="nc">&nbsp;            hasColor = (boolean) o;</b>
+<b class="nc">&nbsp;            o = xPropertySet.getPropertyValue(&quot;CharUnderlineColor&quot;);</b>
+<b class="nc">&nbsp;            if (o != null) {</b>
+<b class="nc">&nbsp;              color = (int) o;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              color = (int) 0;</b>
+&nbsp;            }
+&nbsp;          } else {
+<b class="nc">&nbsp;            hasColor = (boolean) false;</b>
+<b class="nc">&nbsp;            color = (int) 0;</b>
+&nbsp;          }
+&nbsp;        } else {
+<b class="nc">&nbsp;          font = (short) 0;</b>
+<b class="nc">&nbsp;          hasColor = (boolean) false;</b>
+<b class="nc">&nbsp;          color = (int) 0;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        undoMarkUp.underline[i] = new UndoMarkupContainer.Underline (font, color, hasColor);</b>
+<b class="nc">&nbsp;        xPropertySet.setPropertyValue(&quot;CharUnderline&quot;, FontUnderline.WAVE);</b>
+<b class="nc">&nbsp;        PropertyValue[] properties = error.aProperties;</b>
+<b class="nc">&nbsp;        color = -1;</b>
+<b class="nc">&nbsp;        for (PropertyValue property : properties) {</b>
+<b class="nc">&nbsp;          if (&quot;LineColor&quot;.equals(property.Name)) {</b>
+<b class="nc">&nbsp;            color = (int) property.Value;</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        if (color &lt; 0) {</b>
+<b class="nc">&nbsp;          color = Color.blue.getRGB() &amp; 0xFFFFFF;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        xPropertySet.setPropertyValue(&quot;CharUnderlineColor&quot;, color);</b>
+<b class="nc">&nbsp;        xPropertySet.setPropertyValue(&quot;CharUnderlineHasColor&quot;, true);</b>
+<b class="nc">&nbsp;        xTextCursor.goLeft((short)1, false);</b>
+<b class="nc">&nbsp;        xTextCursor.goRight((short)1, false);</b>
+&nbsp;      }
+&nbsp;    } else {
+<b class="nc">&nbsp;      xTextCursor.goRight((short)(undoMarkUp.nStart), false);</b>
+<b class="nc">&nbsp;      for (int i = 0; i &lt; undoMarkUp.underline.length; i++) {</b>
+<b class="nc">&nbsp;        xTextCursor.goRight((short)1, true);</b>
+<b class="nc">&nbsp;        XPropertySet xPropertySet = UnoRuntime.queryInterface(XPropertySet.class, xTextCursor);</b>
+<b class="nc">&nbsp;        xPropertySet.setPropertyValue(&quot;CharUnderlineColor&quot;, undoMarkUp.underline[i].color);</b>
+<b class="nc">&nbsp;        xPropertySet.setPropertyValue(&quot;CharUnderlineHasColor&quot;, undoMarkUp.underline[i].hasColor);</b>
+<b class="nc">&nbsp;        xPropertySet.setPropertyValue(&quot;CharUnderline&quot;, undoMarkUp.underline[i].font);</b>
+<b class="nc">&nbsp;        xTextCursor.goLeft((short)1, false);</b>
+<b class="nc">&nbsp;        xTextCursor.goRight((short)1, false);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * remove the last mark up
+&nbsp;   */
+&nbsp;  public static void removeMarkup(UndoMarkupContainer undoMarkup, XComponent xComponent) {
+<b class="nc">&nbsp;    if (undoMarkup != null) {</b>
+<b class="nc">&nbsp;      setMarkup(undoMarkup.nPara, null, undoMarkup, xComponent);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * mark up an error in a paragraph /remove last mark up if error == null
+&nbsp;   */
+&nbsp;  public static void setMarkup(int nPara, SingleProofreadingError error, UndoMarkupContainer undoMarkup, XComponent xComponent) {
+<b class="nc">&nbsp;    if (undoMarkup == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupParagraph: UndoMarkupContainer is null: return&quot;);</b>
+&nbsp;      return;
+&nbsp;    }
+&nbsp;    try {
+<b class="nc">&nbsp;      int nParaCount = 0;</b>
+<b class="nc">&nbsp;      int pageCount = OfficeDrawTools.getDrawPageCount(xComponent);</b>
+<b class="nc">&nbsp;      if (error == null) {</b>
+<b class="nc">&nbsp;        nPara = undoMarkup.nPara;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      for (int i = 0; i &lt; pageCount; i++) {</b>
+<b class="nc">&nbsp;        XDrawPage xDrawPage = null;</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; 2; n++) {</b>
+<b class="nc">&nbsp;          if (n == 0) {</b>
+<b class="nc">&nbsp;            xDrawPage = OfficeDrawTools.getDrawPageByIndex(xComponent, i);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            xDrawPage = getNotesPage(xDrawPage);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          XShapes xShapes = OfficeDrawTools.getShapes(xDrawPage);</b>
+<b class="nc">&nbsp;          int nShapes = xShapes.getCount();</b>
+<b class="nc">&nbsp;          for(int j = 0; j &lt; nShapes; j++) {</b>
+<b class="nc">&nbsp;            Object oShape = xShapes.getByIndex(j);</b>
+<b class="nc">&nbsp;            XShape xShape = UnoRuntime.queryInterface(XShape.class, oShape);</b>
+<b class="nc">&nbsp;            if (xShape != null) {</b>
+<b class="nc">&nbsp;              XText xText = UnoRuntime.queryInterface(XText.class, xShape);</b>
+<b class="nc">&nbsp;              if (xText != null) {</b>
+<b class="nc">&nbsp;                XTextCursor xTextCursor = xText.createTextCursor();</b>
+<b class="nc">&nbsp;                String sText = xText.getString();</b>
+<b class="nc">&nbsp;                if (nParaCount == nPara) {</b>
+<b class="nc">&nbsp;                  if (debugMode) {</b>
+<b class="nc">&nbsp;                    MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupParagraphs: sText: &quot; + sText);</b>
+<b class="nc">&nbsp;                    if (error != null) {</b>
+<b class="nc">&nbsp;                      MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupParagraphs: error Beginn: &quot; + error.nErrorStart</b>
+&nbsp;                          + &quot;, error Length: &quot; + error.nErrorLength);
+&nbsp;                    }
+&nbsp;                  }
+<b class="nc">&nbsp;                  if (error != null) {</b>
+<b class="nc">&nbsp;                    undoMarkup.nPara = nPara;</b>
+&nbsp;                  }
+<b class="nc">&nbsp;                  markupOneParagraph(0, error, undoMarkup, xTextCursor);</b>
+&nbsp;                  return;
+&nbsp;                }
+<b class="nc">&nbsp;                int lastParaEnd = 0;</b>
+<b class="nc">&nbsp;                if (debugMode &amp;&amp; nPara &lt; 12) {</b>
+<b class="nc">&nbsp;                  MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupParagraphs: sText: &quot; + sText);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                for (int k = 0; k &lt; sText.length(); k++) {</b>
+<b class="nc">&nbsp;                  if (sText.charAt(k) == OfficeTools.SINGLE_END_OF_PARAGRAPH.charAt(0)) {</b>
+<b class="nc">&nbsp;                    nParaCount++;</b>
+<b class="nc">&nbsp;                    if (debugMode &amp;&amp; nPara &lt; 12) {</b>
+<b class="nc">&nbsp;                      MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupParagraphs: nPara: &quot; + nPara + &quot;, nParaCount: &quot; + nParaCount);</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    lastParaEnd = k;</b>
+<b class="nc">&nbsp;                    if (nParaCount == nPara) {</b>
+<b class="nc">&nbsp;                      if (debugMode) {</b>
+<b class="nc">&nbsp;                        MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupParagraphs: sText: &quot; + sText);</b>
+<b class="nc">&nbsp;                        if (error != null) {</b>
+<b class="nc">&nbsp;                          MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupParagraphs: error Beginn: &quot; + error.nErrorStart</b>
+&nbsp;                            + &quot;, error Length: &quot; + error.nErrorLength);
+&nbsp;                        }
+&nbsp;                      }
+<b class="nc">&nbsp;                      if (error != null) {</b>
+<b class="nc">&nbsp;                        undoMarkup.nPara = nPara;</b>
+&nbsp;                      }
+<b class="nc">&nbsp;                      markupOneParagraph(k + 1, error, undoMarkup, xTextCursor);</b>
+&nbsp;                      return;
+&nbsp;                    }
+&nbsp;                  }
+&nbsp;                }
+<b class="nc">&nbsp;                if (lastParaEnd &lt; sText.length() - 1) {</b>
+<b class="nc">&nbsp;                  nParaCount++;</b>
+&nbsp;                }
+<b class="nc">&nbsp;                if (debugMode &amp;&amp; nPara &lt; 12) {</b>
+<b class="nc">&nbsp;                  MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupParagraphs: nPara: &quot; + nPara + &quot;, nParaCount: &quot; + nParaCount);</b>
+&nbsp;                }
+&nbsp;              }
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;OfficeDrawTools: markupParagraph: xShape &quot; + j + &quot; is null&quot;);</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.showError(t);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public static class ParagraphContainer {
+&nbsp;    public List&lt;String&gt; paragraphs;
+&nbsp;    public List&lt;Locale&gt; locales;
+&nbsp;    public List&lt;Integer&gt; pageBegins;
+&nbsp;    
+<b class="nc">&nbsp;    ParagraphContainer(List&lt;String&gt; paragraphs, List&lt;Locale&gt; locales, List&lt;Integer&gt; pageBegins) {</b>
+<b class="nc">&nbsp;      this.paragraphs = paragraphs;</b>
+<b class="nc">&nbsp;      this.locales = locales;</b>
+<b class="nc">&nbsp;      this.pageBegins = pageBegins;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  public static class UndoMarkupContainer {
+&nbsp;    int nPara;
+&nbsp;    int nStart;
+&nbsp;    Underline underline[];
+&nbsp;    
+<b class="nc">&nbsp;    UndoMarkupContainer () {</b>
+&nbsp;    }
+&nbsp;    
+<b class="nc">&nbsp;    UndoMarkupContainer (int nPara, int nStart, Underline[] underline) {</b>
+<b class="nc">&nbsp;      this.nPara = nPara;</b>
+<b class="nc">&nbsp;      this.nStart = nStart;</b>
+<b class="nc">&nbsp;      this.underline = underline;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    public static class Underline {
+&nbsp;      short font;
+&nbsp;      int color;
+&nbsp;      boolean hasColor;
+&nbsp;      
+<b class="nc">&nbsp;      Underline(short font, int color, boolean hasColor){</b>
+<b class="nc">&nbsp;        this.font = font;</b>
+<b class="nc">&nbsp;        this.color = color;</b>
+<b class="nc">&nbsp;        this.hasColor = hasColor;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;}
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

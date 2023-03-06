@@ -1,0 +1,386 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Portuguese</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.language</a>
+</div>
+
+<h1>Coverage Summary for Class: Portuguese (org.languagetool.language)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Portuguese</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/198)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/84)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2007 Daniel Naber (http://www.danielnaber.de)
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.language;
+&nbsp;
+&nbsp;import org.jetbrains.annotations.NotNull;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.languagetool.*;
+&nbsp;import org.languagetool.languagemodel.LanguageModel;
+&nbsp;import org.languagetool.rules.*;
+&nbsp;import org.languagetool.rules.pt.*;
+&nbsp;import org.languagetool.rules.spelling.hunspell.HunspellRule;
+&nbsp;import org.languagetool.synthesis.Synthesizer;
+&nbsp;import org.languagetool.synthesis.pt.PortugueseSynthesizer;
+&nbsp;import org.languagetool.tagging.Tagger;
+&nbsp;import org.languagetool.tagging.disambiguation.Disambiguator;
+&nbsp;import org.languagetool.tagging.disambiguation.pt.PortugueseHybridDisambiguator;
+&nbsp;import org.languagetool.tagging.pt.PortugueseTagger;
+&nbsp;import org.languagetool.tokenizers.*;
+&nbsp;import org.languagetool.tokenizers.pt.PortugueseWordTokenizer;
+&nbsp;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * Post-spelling-reform Portuguese.
+&nbsp; */
+<b class="nc">&nbsp;public class Portuguese extends Language implements AutoCloseable {</b>
+&nbsp;
+<b class="nc">&nbsp;  private static final Language PORTUGAL_PORTUGUESE = new PortugalPortuguese();</b>
+&nbsp;
+&nbsp;  private LanguageModel languageModel;
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getName() {
+<b class="nc">&nbsp;    return &quot;Portuguese&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getShortCode() {
+<b class="nc">&nbsp;    return &quot;pt&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String[] getCountries() {
+<b class="nc">&nbsp;    return new String[]{&quot;&quot;, &quot;CV&quot;, &quot;GW&quot;, &quot;MO&quot;, &quot;ST&quot;, &quot;TL&quot;};</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Language getDefaultLanguageVariant() {
+<b class="nc">&nbsp;    return PORTUGAL_PORTUGUESE;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Contributor[] getMaintainers() {
+<b class="nc">&nbsp;    return new Contributor[] {</b>
+&nbsp;            new Contributor(&quot;Marco A.G. Pinto&quot;, &quot;http://www.marcoagpinto.com/&quot;),
+&nbsp;            new Contributor(&quot;Susana Boatto (pt-BR)&quot;),
+&nbsp;            new Contributor(&quot;Tiago F. Santos (3.6-4.7)&quot;, &quot;https://github.com/TiagoSantos81&quot;),
+&nbsp;            new Contributor(&quot;Matheus Poletto (pt-BR)&quot;, &quot;https://github.com/MatheusPoletto&quot;)
+&nbsp;    };
+&nbsp;  }
+&nbsp;
+&nbsp;  @NotNull
+&nbsp;  @Override
+&nbsp;  public Tagger createDefaultTagger() {
+<b class="nc">&nbsp;    return new PortugueseTagger();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Disambiguator createDefaultDisambiguator() {
+<b class="nc">&nbsp;    return new PortugueseHybridDisambiguator();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Tokenizer createDefaultWordTokenizer() {
+<b class="nc">&nbsp;    return new PortugueseWordTokenizer();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Nullable
+&nbsp;  @Override
+&nbsp;  public Synthesizer createDefaultSynthesizer() {
+<b class="nc">&nbsp;    return PortugueseSynthesizer.INSTANCE;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public SentenceTokenizer createDefaultSentenceTokenizer() {
+<b class="nc">&nbsp;    return new SRXSentenceTokenizer(this);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public List&lt;Rule&gt; getRelevantRules(ResourceBundle messages, UserConfig userConfig, Language motherTongue, List&lt;Language&gt; altLanguages) throws IOException {
+<b class="nc">&nbsp;    return Arrays.asList(</b>
+&nbsp;            new CommaWhitespaceRule(messages,
+<b class="nc">&nbsp;                Example.wrong(&quot;Tomamos café&lt;marker&gt; ,&lt;/marker&gt; queijo, bolachas e uvas.&quot;),</b>
+<b class="nc">&nbsp;                Example.fixed(&quot;Tomamos café&lt;marker&gt;,&lt;/marker&gt; queijo, bolachas e uvas.&quot;)),</b>
+&nbsp;            new GenericUnpairedBracketsRule(messages,
+<b class="nc">&nbsp;                    Arrays.asList(&quot;[&quot;, &quot;(&quot;, &quot;{&quot;, &quot;\&quot;&quot;, &quot;“&quot; /*, &quot;«&quot;, &quot;&#39;&quot;, &quot;‘&quot; */),</b>
+<b class="nc">&nbsp;                    Arrays.asList(&quot;]&quot;, &quot;)&quot;, &quot;}&quot;, &quot;\&quot;&quot;, &quot;”&quot; /*, &quot;»&quot;, &quot;&#39;&quot;, &quot;’&quot; */)),</b>
+&nbsp;            new HunspellRule(messages, this, userConfig, altLanguages),
+&nbsp;            new LongSentenceRule(messages, userConfig, 50),
+&nbsp;            new LongParagraphRule(messages, this, userConfig),
+&nbsp;            new UppercaseSentenceStartRule(messages, this,
+<b class="nc">&nbsp;                Example.wrong(&quot;Esta casa é velha. &lt;marker&gt;foi&lt;/marker&gt; construida em 1950.&quot;),</b>
+<b class="nc">&nbsp;                Example.fixed(&quot;Esta casa é velha. &lt;marker&gt;Foi&lt;/marker&gt; construida em 1950.&quot;)),</b>
+&nbsp;            new MultipleWhitespaceRule(messages, this),
+&nbsp;            new SentenceWhitespaceRule(messages),
+&nbsp;            new WhiteSpaceBeforeParagraphEnd(messages, this),
+&nbsp;            new WhiteSpaceAtBeginOfParagraph(messages),
+&nbsp;            new EmptyLineRule(messages, this),
+&nbsp;            new ParagraphRepeatBeginningRule(messages, this),
+&nbsp;            new PunctuationMarkAtParagraphEnd(messages, this, true),
+&nbsp;            //Specific to Portuguese:
+&nbsp;            new PostReformPortugueseCompoundRule(messages, this, userConfig),
+&nbsp;            new PortugueseReplaceRule(messages),
+&nbsp;            new PortugueseBarbarismsRule(messages, &quot;/pt/barbarisms-pt.txt&quot;),
+&nbsp;            //new PortugueseArchaismsRule(messages, &quot;/pt/archaisms-pt.txt&quot;),   // see https://github.com/languagetool-org/languagetool/issues/3095
+&nbsp;            new PortugueseClicheRule(messages),
+&nbsp;            new PortugueseFillerWordsRule(messages, this, userConfig),
+&nbsp;            new PortugueseRedundancyRule(messages),
+&nbsp;            new PortugueseWordinessRule(messages),
+&nbsp;            //new PortugueseWeaselWordsRule(messages),
+&nbsp;            new PortugueseWikipediaRule(messages),
+&nbsp;            new PortugueseWordRepeatRule(messages, this),
+&nbsp;            new PortugueseWordRepeatBeginningRule(messages, this),
+&nbsp;            new PortugueseAccentuationCheckRule(messages),
+&nbsp;            new PortugueseDiacriticsRule(messages),
+&nbsp;            new PortugueseWrongWordInContextRule(messages),
+&nbsp;            new PortugueseWordCoherencyRule(messages),
+&nbsp;            new PortugueseUnitConversionRule(messages),
+&nbsp;            new PortugueseReadabilityRule(messages, this, userConfig, true),
+&nbsp;            new PortugueseReadabilityRule(messages, this, userConfig, false),
+&nbsp;            new DoublePunctuationRule(messages)
+&nbsp;    );
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public LanguageMaintainedState getMaintainedState() {
+<b class="nc">&nbsp;    return LanguageMaintainedState.ActivelyMaintained;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 3.6 */
+&nbsp;  @Override
+&nbsp;  public synchronized LanguageModel getLanguageModel(File indexDir) throws IOException {
+<b class="nc">&nbsp;    languageModel = initLanguageModel(indexDir, languageModel);</b>
+<b class="nc">&nbsp;    return languageModel;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 3.6 */
+&nbsp;  @Override
+&nbsp;  public List&lt;Rule&gt; getRelevantLanguageModelRules(ResourceBundle messages, LanguageModel languageModel, UserConfig userConfig) throws IOException {
+<b class="nc">&nbsp;    return Arrays.asList(</b>
+&nbsp;            new PortugueseConfusionProbabilityRule(messages, languageModel, this)
+&nbsp;    );
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 3.6 */
+&nbsp;  @Override
+&nbsp;  public void close() throws Exception {
+<b class="nc">&nbsp;    if (languageModel != null) {</b>
+<b class="nc">&nbsp;      languageModel.close();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getOpeningDoubleQuote() {
+<b class="nc">&nbsp;    return &quot;“&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getClosingDoubleQuote() {
+<b class="nc">&nbsp;    return &quot;”&quot;;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getOpeningSingleQuote() {
+<b class="nc">&nbsp;    return &quot;‘&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getClosingSingleQuote() {
+<b class="nc">&nbsp;    return &quot;’&quot;;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public boolean isAdvancedTypographyEnabled() {
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  @Override
+&nbsp;  protected int getPriorityForId(String id) {
+<b class="nc">&nbsp;    switch (id) {</b>
+<b class="nc">&nbsp;      case &quot;FRAGMENT_TWO_ARTICLES&quot;:     return 50;</b>
+<b class="nc">&nbsp;      case &quot;DEGREE_MINUTES_SECONDS&quot;:    return 30;</b>
+<b class="nc">&nbsp;      case &quot;INTERJECTIONS_PUNTUATION&quot;:  return 20;</b>
+<b class="nc">&nbsp;      case &quot;CONFUSION_POR&quot;:             return 10;</b>
+<b class="nc">&nbsp;      case &quot;VERB_COMMA_CONJUNCTION&quot;:    return 10; // greater than PORTUGUESE_WORD_REPEAT_RULE</b>
+<b class="nc">&nbsp;      case &quot;HOMOPHONE_AS_CARD&quot;:         return  5;</b>
+<b class="nc">&nbsp;      case &quot;TODOS_FOLLOWED_BY_NOUN_PLURAL&quot;:    return  3;</b>
+<b class="nc">&nbsp;      case &quot;TODOS_FOLLOWED_BY_NOUN_SINGULAR&quot;:  return  2;</b>
+<b class="nc">&nbsp;      case &quot;AUSENCIA_VIRGULA&quot;:  return  1;</b>
+<b class="nc">&nbsp;      case &quot;EMAIL&quot;:                     return  1;</b>
+<b class="nc">&nbsp;      case &quot;UNPAIRED_BRACKETS&quot;:         return -5;</b>
+<b class="nc">&nbsp;      case &quot;PROFANITY&quot;:                 return -6;</b>
+<b class="nc">&nbsp;      case &quot;PT_BARBARISMS_REPLACE&quot;:     return -10;</b>
+<b class="nc">&nbsp;      case &quot;BARBARISMS_PT_PT_V2&quot;:       return -10;</b>
+<b class="nc">&nbsp;      case &quot;PT_PT_SIMPLE_REPLACE&quot;:      return -11;</b>
+<b class="nc">&nbsp;      case &quot;PT_REDUNDANCY_REPLACE&quot;:     return -12;</b>
+<b class="nc">&nbsp;      case &quot;PT_WORDINESS_REPLACE&quot;:      return -13;</b>
+<b class="nc">&nbsp;      case &quot;PT_CLICHE_REPLACE&quot;:         return -17;</b>
+<b class="nc">&nbsp;      case &quot;INTERNET_ABBREVIATIONS&quot;:    return -24;</b>
+<b class="nc">&nbsp;      case &quot;CHILDISH_LANGUAGE&quot;:         return -25;</b>
+<b class="nc">&nbsp;      case &quot;ARCHAISMS&quot;:                 return -26;</b>
+<b class="nc">&nbsp;      case &quot;INFORMALITIES&quot;:             return -27;</b>
+<b class="nc">&nbsp;      case &quot;PUFFERY&quot;:                   return -30;</b>
+<b class="nc">&nbsp;      case &quot;BIASED_OPINION_WORDS&quot;:      return -31;</b>
+<b class="nc">&nbsp;      case &quot;WEAK_WORDS&quot;:                return -32;</b>
+<b class="nc">&nbsp;      case &quot;PT_AGREEMENT_REPLACE&quot;:      return -35;</b>
+<b class="nc">&nbsp;      case &quot;PT_DIACRITICS_REPLACE&quot;:     return -45;   // prefer over spell checker</b>
+<b class="nc">&nbsp;      case &quot;DIACRITICS&quot;:     return -45;</b>
+<b class="nc">&nbsp;      case &quot;PT_COMPOUNDS_POST_REFORM&quot;:     return -45;</b>
+<b class="nc">&nbsp;      case &quot;HUNSPELL_RULE&quot;:             return -50;</b>
+<b class="nc">&nbsp;      case &quot;CRASE_CONFUSION&quot;:           return -55;</b>
+<b class="nc">&nbsp;      case &quot;GENERAL_VERB_AGREEMENT_ERRORS&quot;:           return -55;</b>
+<b class="nc">&nbsp;      case &quot;GENERAL_GENDER_NUMBER_AGREEMENT_ERRORS&quot;:           return -56;</b>
+<b class="nc">&nbsp;      case &quot;FINAL_STOPS&quot;:               return -75;</b>
+<b class="nc">&nbsp;      case &quot;EU_NÓS_REMOVAL&quot;:            return -90;</b>
+<b class="nc">&nbsp;      case &quot;T-V_DISTINCTION&quot;:           return -100;</b>
+<b class="nc">&nbsp;      case &quot;T-V_DISTINCTION_ALL&quot;:       return -101;</b>
+<b class="nc">&nbsp;      case &quot;REPEATED_WORDS&quot;:            return -210;</b>
+<b class="nc">&nbsp;      case &quot;REPEATED_WORDS_3X&quot;:         return -211;</b>
+<b class="nc">&nbsp;      case &quot;PT_WIKIPEDIA_COMMON_ERRORS&quot;:return -500;</b>
+<b class="nc">&nbsp;      case &quot;FILLER_WORDS_PT&quot;:           return -990;</b>
+<b class="nc">&nbsp;      case LongSentenceRule.RULE_ID:    return -997;</b>
+<b class="nc">&nbsp;      case LongParagraphRule.RULE_ID:   return -998;</b>
+<b class="nc">&nbsp;      case &quot;READABILITY_RULE_SIMPLE_PT&quot;:       return -1100;</b>
+<b class="nc">&nbsp;      case &quot;READABILITY_RULE_DIFFICULT_PT&quot;:    return -1101;</b>
+<b class="nc">&nbsp;      case &quot;CACOPHONY&quot;:                 return -1500;</b>
+<b class="nc">&nbsp;      case &quot;UNKNOWN_WORD&quot;:              return -2000;</b>
+<b class="nc">&nbsp;      case &quot;NO_VERB&quot;:                   return -2100;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (id.startsWith(&quot;AI_PT_HYDRA_LEO&quot;)) { // prefer more specific rules (also speller)</b>
+<b class="nc">&nbsp;      if (id.startsWith(&quot;AI_PT_HYDRA_LEO_MISSING_COMMA&quot;)) {</b>
+<b class="nc">&nbsp;        return -51; // prefer comma style rules.</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return -51;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return super.getPriorityForId(id);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

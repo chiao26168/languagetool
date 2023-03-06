@@ -1,0 +1,903 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CacheIO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: CacheIO (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CacheIO</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/100)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/160)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CacheIO$AllCaches</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/35)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CacheIO$CacheFile</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/40)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CacheIO$CacheFile$CacheCleanUp</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/38)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/39)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CacheIO$CacheFile$CacheMap</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/27)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/180)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/301)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.io.File;
+&nbsp;import java.io.FileInputStream;
+&nbsp;import java.io.FileOutputStream;
+&nbsp;import java.io.ObjectInputStream;
+&nbsp;import java.io.ObjectOutputStream;
+&nbsp;import java.io.Serializable;
+&nbsp;import java.net.URI;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.zip.GZIPInputStream;
+&nbsp;import java.util.zip.GZIPOutputStream;
+&nbsp;
+&nbsp;import org.languagetool.JLanguageTool;
+&nbsp;import org.languagetool.gui.Configuration;
+&nbsp;import org.languagetool.openoffice.SingleDocument.IgnoredMatches;
+&nbsp;
+&nbsp;import com.sun.star.frame.XModel;
+&nbsp;import com.sun.star.lang.XComponent;
+&nbsp;import com.sun.star.uno.UnoRuntime;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class to read and write LT-Office-Extension-Cache
+&nbsp; * @since 5.2
+&nbsp; * @author Fred Kruse
+&nbsp; */
+<b class="nc">&nbsp;public class CacheIO implements Serializable {</b>
+&nbsp;
+&nbsp;  private static final long serialVersionUID = 1L;
+<b class="nc">&nbsp;  private static final boolean DEBUG_MODE = OfficeTools.DEBUG_MODE_IO;</b>
+&nbsp;
+&nbsp;  private static final long MAX_CACHE_TIME = 365 * 24 * 3600000;      //  Save cache files maximal one year
+&nbsp;  private static final String CACHEFILE_MAP = &quot;LtCacheMap&quot;;           //  Name of cache map file
+&nbsp;  private static final String CACHEFILE_PREFIX = &quot;LtCache&quot;;           //  Prefix for cache files (simply a number is added for file name)
+&nbsp;  private static final String CACHEFILE_EXTENSION = &quot;lcz&quot;;            //  extension of the files name (Note: cache files are in zip format)
+&nbsp;  private static final int MIN_CHARACTERS_TO_SAVE_CACHE = 25000;      //  Minimum characters of document for saving cache 
+&nbsp;  
+<b class="nc">&nbsp;  private String documentPath = null;</b>
+&nbsp;  private AllCaches allCaches;
+&nbsp;  
+<b class="nc">&nbsp;  CacheIO(XComponent xComponent) {</b>
+<b class="nc">&nbsp;    setDocumentPath(xComponent);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  void setDocumentPath(XComponent xComponent) {
+<b class="nc">&nbsp;    if (xComponent != null) {</b>
+<b class="nc">&nbsp;      documentPath = getDocumentPath(xComponent);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * returns the text cursor (if any)
+&nbsp;   * returns null if it fails
+&nbsp;   */
+&nbsp;  private static String getDocumentPath(XComponent xComponent) {
+&nbsp;    try {
+&nbsp;/*      
+&nbsp;      XTextDocument curDoc = UnoRuntime.queryInterface(XTextDocument.class, xComponent);
+&nbsp;      if (curDoc == null) {
+&nbsp;        MessageHandler.printToLogFile(&quot;CacheIO: getDocumentPath: XTextDocument not found!&quot;);
+&nbsp;        return null;
+&nbsp;      }
+&nbsp;      XController xController = curDoc.getCurrentController();
+&nbsp;      if (xController == null) {
+&nbsp;        MessageHandler.printToLogFile(&quot;CacheIO: getDocumentPath: XController not found!&quot;);
+&nbsp;        return null;
+&nbsp;      }
+&nbsp;      XModel xModel = xController.getModel();
+&nbsp;*/
+<b class="nc">&nbsp;      XModel xModel = UnoRuntime.queryInterface(XModel.class, xComponent);</b>
+<b class="nc">&nbsp;      if (xModel == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CacheIO: getDocumentPath: XModel not found!&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      String url = xModel.getURL();</b>
+<b class="nc">&nbsp;      if (url == null || !url.startsWith(&quot;file://&quot;)) {</b>
+<b class="nc">&nbsp;        if (url != null &amp;&amp; !url.isEmpty()) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Not a file URL: &quot; + (url == null ? &quot;null&quot; : url));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CacheIO: getDocumentPath: file URL: &quot; + url);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      URI uri = new URI(url);</b>
+<b class="nc">&nbsp;      return uri.getPath();</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      return null;           // Return null as method failed</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * get the path to the cache file
+&nbsp;   * if create == true: a new file is created if the file does not exist
+&nbsp;   * if create == false: null is returned if the file does not exist
+&nbsp;   */
+&nbsp;  private String getCachePath(boolean create) {
+<b class="nc">&nbsp;    if (documentPath == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CacheIO: getCachePath: documentPath == null!&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    File cacheDir = OfficeTools.getCacheDir();</b>
+<b class="nc">&nbsp;    if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CacheIO: getCachePath: cacheDir: &quot; + cacheDir.getAbsolutePath());</b>
+&nbsp;    }
+<b class="nc">&nbsp;    CacheFile cacheFile = new CacheFile(cacheDir);</b>
+<b class="nc">&nbsp;    String cacheFileName = cacheFile.getCacheFileName(documentPath, create);</b>
+<b class="nc">&nbsp;    if (cacheFileName == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CacheIO: getCachePath: cacheFileName == null!&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    File cacheFilePath = new File(cacheDir, cacheFileName);</b>
+<b class="nc">&nbsp;    if (!create) {</b>
+<b class="nc">&nbsp;      cacheFile.cleanUp(cacheFileName);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;CacheIO: getCachePath: cacheFilePath: &quot; + cacheFilePath.getAbsolutePath());</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return cacheFilePath.getAbsolutePath();</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * save all caches (document cache, all result caches) to cache file
+&nbsp;   */
+&nbsp;  private void saveAllCaches(String cachePath) {
+&nbsp;    try {
+<b class="nc">&nbsp;      GZIPOutputStream fileOut = new GZIPOutputStream(new FileOutputStream(cachePath));</b>
+<b class="nc">&nbsp;      ObjectOutputStream out = new ObjectOutputStream(fileOut);</b>
+<b class="nc">&nbsp;      out.writeObject(allCaches);</b>
+<b class="nc">&nbsp;      out.close();</b>
+<b class="nc">&nbsp;      fileOut.close();</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;Caches saved to: &quot; + cachePath);</b>
+<b class="nc">&nbsp;      if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;        printCacheInfo();</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * returns true if the number of characters of a document exceeds 
+&nbsp;   * the minimal number of characters to save the cache
+&nbsp;   */
+&nbsp;  private boolean exceedsSaveSize(DocumentCache docCache) {
+<b class="nc">&nbsp;    int nChars = 0;</b>
+<b class="nc">&nbsp;    for (int i = 0; i &lt; docCache.size(); i++) {</b>
+<b class="nc">&nbsp;      nChars += docCache.getFlatParagraph(i).length();</b>
+<b class="nc">&nbsp;      if (nChars &gt; MIN_CHARACTERS_TO_SAVE_CACHE) {</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * save all caches if the document exceeds the defined minimum of paragraphs
+&nbsp;   */
+&nbsp;  public void saveCaches(DocumentCache docCache, List&lt;ResultCache&gt; paragraphsCache,
+&nbsp;      IgnoredMatches ignoredMatches, Configuration config, MultiDocumentsHandler mDocHandler) {
+<b class="nc">&nbsp;    String cachePath = getCachePath(true);</b>
+<b class="nc">&nbsp;    if (cachePath != null) {</b>
+&nbsp;      try {
+<b class="nc">&nbsp;        if (exceedsSaveSize(docCache)) {</b>
+<b class="nc">&nbsp;          allCaches = new AllCaches(docCache, paragraphsCache, mDocHandler.getAllDisabledRules(), config.getDisabledRuleIds(), config.getDisabledCategoryNames(), </b>
+<b class="nc">&nbsp;              config.getEnabledRuleIds(), ignoredMatches, JLanguageTool.VERSION);</b>
+<b class="nc">&nbsp;          saveAllCaches(cachePath);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          File file = new File( cachePath );</b>
+<b class="nc">&nbsp;          if (file.exists() &amp;&amp; !file.isDirectory()) {</b>
+<b class="nc">&nbsp;            file.delete();</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;      } catch (Throwable t) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;CacheIO: saveCaches: &quot; + t.getMessage());</b>
+<b class="nc">&nbsp;        if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+&nbsp;        }
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * read all caches (document cache, all result caches) from cache file if it exists
+&nbsp;   */
+&nbsp;  public boolean readAllCaches(Configuration config, MultiDocumentsHandler mDocHandler) {
+<b class="nc">&nbsp;    String cachePath = getCachePath(false);</b>
+<b class="nc">&nbsp;    if (cachePath == null) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;    try {
+<b class="nc">&nbsp;      File file = new File( cachePath );</b>
+<b class="nc">&nbsp;      if (file.exists() &amp;&amp; !file.isDirectory()) {</b>
+<b class="nc">&nbsp;        GZIPInputStream fileIn = new GZIPInputStream(new FileInputStream(file));</b>
+<b class="nc">&nbsp;        ObjectInputStream in = new ObjectInputStream(fileIn);</b>
+<b class="nc">&nbsp;        allCaches = (AllCaches) in.readObject();</b>
+<b class="nc">&nbsp;        in.close();</b>
+<b class="nc">&nbsp;        fileIn.close();</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;Caches read from: &quot; + cachePath);</b>
+<b class="nc">&nbsp;        if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;          printCacheInfo();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (runSameRules(config, mDocHandler)) {</b>
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Version or active rules have changed: Cache rejected (Cache Version: &quot; </b>
+&nbsp;                + allCaches.ltVersion + &quot;, actual LT Version: &quot; + JLanguageTool.VERSION + &quot;)&quot;);
+<b class="nc">&nbsp;          return false;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Test if cache was created with same rules
+&nbsp;   */
+&nbsp;  private boolean runSameRules(Configuration config, MultiDocumentsHandler mDocHandler) {
+<b class="nc">&nbsp;    if (!allCaches.ltVersion.equals(JLanguageTool.VERSION)) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (config.getEnabledRuleIds().size() != allCaches.enabledRuleIds.size() || config.getDisabledRuleIds().size() != allCaches.disabledRuleIds.size() </b>
+<b class="nc">&nbsp;          || config.getDisabledCategoryNames().size() != allCaches.disabledCategories.size()) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    for (String ruleId : config.getEnabledRuleIds()) {</b>
+<b class="nc">&nbsp;      if (!allCaches.enabledRuleIds.contains(ruleId)) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    for (String category : config.getDisabledCategoryNames()) {</b>
+<b class="nc">&nbsp;      if (!allCaches.disabledCategories.contains(category)) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    Set&lt;String&gt; disabledRuleIds = new HashSet&lt;String&gt;(config.getDisabledRuleIds());</b>
+<b class="nc">&nbsp;    String langCode = OfficeTools.localeToString(mDocHandler.getLocale());</b>
+<b class="nc">&nbsp;    for (String ruleId : mDocHandler.getDisabledRules(langCode)) {</b>
+<b class="nc">&nbsp;      disabledRuleIds.add(ruleId);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (disabledRuleIds.size() != allCaches.disabledRuleIds.size()) {</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    for (String ruleId : disabledRuleIds) {</b>
+<b class="nc">&nbsp;      if (!allCaches.disabledRuleIds.contains(ruleId)) {</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    Map&lt;String, Set&lt;String&gt;&gt; disabledRulesUI = new HashMap&lt;String, Set&lt;String&gt;&gt;();</b>
+<b class="nc">&nbsp;    for (String lang : allCaches.disabledRulesUI.keySet()) {</b>
+<b class="nc">&nbsp;      Set&lt;String &gt; ruleIDs = new HashSet&lt;String&gt;();</b>
+<b class="nc">&nbsp;      for (String ruleID : allCaches.disabledRulesUI.get(lang)) {</b>
+<b class="nc">&nbsp;        ruleIDs.add(ruleID);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      disabledRulesUI.put(langCode, ruleIDs);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    mDocHandler.setAllDisabledRules(disabledRulesUI);</b>
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get document cache
+&nbsp;   */
+&nbsp;  public DocumentCache getDocumentCache() {
+<b class="nc">&nbsp;    return allCaches.docCache;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get paragraph caches (results for check of paragraphes)
+&nbsp;   */
+&nbsp;  public List&lt;ResultCache&gt; getParagraphsCache() {
+<b class="nc">&nbsp;    return allCaches.paragraphsCache;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * get ignored matches
+&nbsp;   */
+&nbsp;  public Map&lt;Integer, Map&lt;String, Set&lt;Integer&gt;&gt;&gt; getIgnoredMatches() {
+<b class="nc">&nbsp;    Map&lt;Integer, Map&lt;String, Set&lt;Integer&gt;&gt;&gt; ignoredMatches = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;    for (int y : allCaches.ignoredMatches.keySet()) {</b>
+<b class="nc">&nbsp;      Map&lt;String, Set&lt;Integer&gt;&gt; newIdMap = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;      Map&lt;String, Set&lt;Integer&gt;&gt; idMap = new HashMap&lt;&gt;(allCaches.ignoredMatches.get(y));</b>
+<b class="nc">&nbsp;      for (String id : idMap.keySet()) {</b>
+<b class="nc">&nbsp;        Set&lt;Integer&gt; xSet = new HashSet&lt;&gt;(idMap.get(id));</b>
+<b class="nc">&nbsp;        newIdMap.put(id, xSet);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      ignoredMatches.put(y, newIdMap);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return ignoredMatches;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * set all caches to null
+&nbsp;   */
+&nbsp;  public void resetAllCache() {
+<b class="nc">&nbsp;    allCaches = null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * print debug information of caches to log file
+&nbsp;   */
+&nbsp;  private void printCacheInfo() {
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;CacheIO: saveCaches:&quot;);</b>
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;Document Cache: Number of paragraphs: &quot; + allCaches.docCache.size());</b>
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;Paragraph Cache(0): Number of paragraphs: &quot; + allCaches.paragraphsCache.get(0).getNumberOfParas() </b>
+<b class="nc">&nbsp;        + &quot;, Number of matches: &quot; + allCaches.paragraphsCache.get(0).getNumberOfMatches());</b>
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;Paragraph Cache(1): Number of paragraphs: &quot; + allCaches.paragraphsCache.get(1).getNumberOfParas() </b>
+<b class="nc">&nbsp;        + &quot;, Number of matches: &quot; + allCaches.paragraphsCache.get(1).getNumberOfMatches());</b>
+<b class="nc">&nbsp;    for (int n = 0; n &lt; allCaches.docCache.size(); n++) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;allCaches.docCache.getFlatParagraphLocale(&quot; + n + &quot;): &quot; </b>
+<b class="nc">&nbsp;            + (allCaches.docCache.getFlatParagraphLocale(n) == null ? &quot;null&quot; : OfficeTools.localeToString(allCaches.docCache.getFlatParagraphLocale(n))));</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (allCaches.paragraphsCache.get(0) == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;paragraphsCache(0) == null&quot;);</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      if (allCaches.paragraphsCache.get(0).getNumberOfMatches() &gt; 0) {</b>
+<b class="nc">&nbsp;        for (int n = 0; n &lt; allCaches.paragraphsCache.get(0).getNumberOfParas(); n++) {</b>
+<b class="nc">&nbsp;          if (allCaches.paragraphsCache.get(0).getMatches(n) == null) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;allCaches.sentencesCache.getMatches(&quot; + n + &quot;) == null&quot;);</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            if (allCaches.paragraphsCache.get(0).getMatches(n).length &gt; 0) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;Paragraph &quot; + n + &quot; sentence match[0]: &quot; </b>
+<b class="nc">&nbsp;                  + &quot;nStart = &quot; + allCaches.paragraphsCache.get(0).getMatches(n)[0].nErrorStart </b>
+<b class="nc">&nbsp;                  + &quot;, nLength = &quot; + allCaches.paragraphsCache.get(0).getMatches(n)[0].nErrorLength</b>
+&nbsp;                  + &quot;, errorID = &quot; 
+<b class="nc">&nbsp;                  + (allCaches.paragraphsCache.get(0).getMatches(n)[0].aRuleIdentifier == null ? &quot;null&quot; : allCaches.paragraphsCache.get(0).getMatches(n)[0].aRuleIdentifier));</b>
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  class AllCaches implements Serializable {
+&nbsp;
+&nbsp;    private static final long serialVersionUID = 5L;
+&nbsp;
+&nbsp;    DocumentCache docCache;                 //  cache of paragraphs
+&nbsp;    List&lt;ResultCache&gt; paragraphsCache;      //  Cache for matches of text rules
+&nbsp;    Map&lt;String, List&lt;String&gt;&gt; disabledRulesUI;
+&nbsp;    List&lt;String&gt; disabledRuleIds;
+&nbsp;    List&lt;String&gt; disabledCategories;
+&nbsp;    List&lt;String&gt; enabledRuleIds;
+&nbsp;    Map&lt;Integer, Map&lt;String, Set&lt;Integer&gt;&gt;&gt; ignoredMatches;          //  Map of matches (number of paragraph, number of character) that should be ignored after ignoreOnce was called
+&nbsp;    String ltVersion;
+&nbsp;    
+&nbsp;    AllCaches(DocumentCache docCache, List&lt;ResultCache&gt; paragraphsCache, Map&lt;String, Set&lt;String&gt;&gt; disabledRulesUI, Set&lt;String&gt; disabledRuleIds, 
+<b class="nc">&nbsp;        Set&lt;String&gt; disabledCategories, Set&lt;String&gt; enabledRuleIds, IgnoredMatches ignoredMatches, String ltVersion) {</b>
+<b class="nc">&nbsp;      this.docCache = docCache;</b>
+<b class="nc">&nbsp;      this.paragraphsCache = paragraphsCache;</b>
+<b class="nc">&nbsp;      this.disabledRulesUI = new HashMap&lt;String, List&lt;String&gt;&gt;();</b>
+<b class="nc">&nbsp;      for (String langCode : disabledRulesUI.keySet()) {</b>
+<b class="nc">&nbsp;        List &lt;String &gt;ruleIDs = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;        for (String ruleID : disabledRulesUI.get(langCode)) {</b>
+<b class="nc">&nbsp;          ruleIDs.add(ruleID);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.disabledRulesUI.put(langCode, ruleIDs);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      this.disabledRuleIds = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;      for (String ruleID : disabledRuleIds) {</b>
+<b class="nc">&nbsp;        this.disabledRuleIds.add(ruleID);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      this.disabledCategories = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;      for (String category : disabledCategories) {</b>
+<b class="nc">&nbsp;        this.disabledCategories.add(category);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      this.enabledRuleIds = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;      for (String ruleID : enabledRuleIds) {</b>
+<b class="nc">&nbsp;        this.enabledRuleIds.add(ruleID);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      this.ltVersion = ltVersion;</b>
+<b class="nc">&nbsp;      Map&lt;Integer, Map&lt;String, Set&lt;Integer&gt;&gt;&gt; clone = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;      for (int y : ignoredMatches.getFullMap().keySet()) {</b>
+<b class="nc">&nbsp;        Map&lt;String, Set&lt;Integer&gt;&gt; newIdMap = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        Map&lt;String, Set&lt;Integer&gt;&gt; idMap = new HashMap&lt;&gt;(ignoredMatches.get(y));</b>
+<b class="nc">&nbsp;        for (String id : idMap.keySet()) {</b>
+<b class="nc">&nbsp;          Set&lt;Integer&gt; xSet = new HashSet&lt;&gt;(idMap.get(id));</b>
+<b class="nc">&nbsp;          newIdMap.put(id, xSet);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        clone.put(y, newIdMap);</b>
+<b class="nc">&nbsp;      }</b>
+<b class="nc">&nbsp;      this.ignoredMatches = clone;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Class to to handle the cache files
+&nbsp;   * cache files are stored in the LT configuration directory subdirectory &#39;cache&#39;
+&nbsp;   * the paths of documents are mapped to cache files and stored in the cache map
+&nbsp;   */
+&nbsp;  private class CacheFile implements Serializable {
+&nbsp;
+&nbsp;    private static final long serialVersionUID = 1L;
+&nbsp;    private CacheMap cacheMap;
+&nbsp;    private File cacheMapFile;
+&nbsp;
+&nbsp;    CacheFile() {
+<b class="nc">&nbsp;      this(OfficeTools.getCacheDir());</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    CacheFile(File cacheDir) {</b>
+<b class="nc">&nbsp;      cacheMapFile = new File(cacheDir, CACHEFILE_MAP);</b>
+<b class="nc">&nbsp;      if (cacheMapFile != null) {</b>
+<b class="nc">&nbsp;        if (cacheMapFile.exists() &amp;&amp; !cacheMapFile.isDirectory()) {</b>
+<b class="nc">&nbsp;          if (read()) {</b>
+&nbsp;            return;
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;        cacheMap = new CacheMap();</b>
+<b class="nc">&nbsp;        if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;CacheIO: CacheFile: create cacheMap file&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        write(cacheMap);</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * read the cache map from file
+&nbsp;     */
+&nbsp;    public boolean read() {
+&nbsp;      try {
+<b class="nc">&nbsp;        FileInputStream fileIn = new FileInputStream(cacheMapFile);</b>
+<b class="nc">&nbsp;        ObjectInputStream in = new ObjectInputStream(fileIn);</b>
+<b class="nc">&nbsp;        cacheMap = (CacheMap) in.readObject();</b>
+<b class="nc">&nbsp;        if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;CacheIO: CacheFile: read cacheMap file: size=&quot; + cacheMap.size());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        in.close();</b>
+<b class="nc">&nbsp;        fileIn.close();</b>
+<b class="nc">&nbsp;        return true;</b>
+<b class="nc">&nbsp;      } catch (Throwable t) {</b>
+<b class="nc">&nbsp;        MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * write the cache map to file
+&nbsp;     */
+&nbsp;    public void write(CacheMap cacheMap) {
+&nbsp;      try {
+<b class="nc">&nbsp;        FileOutputStream fileOut = new FileOutputStream(cacheMapFile);</b>
+<b class="nc">&nbsp;        ObjectOutputStream out = new ObjectOutputStream(fileOut);</b>
+<b class="nc">&nbsp;        if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;CacheIO: CacheFile: write cacheMap file: size=&quot; + cacheMap.size());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        out.writeObject(cacheMap);</b>
+<b class="nc">&nbsp;        out.close();</b>
+<b class="nc">&nbsp;        fileOut.close();</b>
+<b class="nc">&nbsp;      } catch (Throwable t) {</b>
+<b class="nc">&nbsp;        MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * get the cache file name for a given document path
+&nbsp;     * if create == true: create a cache file if it not exists 
+&nbsp;     */
+&nbsp;    public String getCacheFileName(String docPath, boolean create) {
+<b class="nc">&nbsp;      if (cacheMap == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      int orgSize = cacheMap.size();</b>
+<b class="nc">&nbsp;      String cacheFileName = cacheMap.getOrCreateCacheFile(docPath, create);</b>
+<b class="nc">&nbsp;      if (cacheMap.size() != orgSize) {</b>
+<b class="nc">&nbsp;        write(cacheMap);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return cacheFileName;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;   /**
+&nbsp;    * remove unused files from cache directory
+&nbsp;    */
+&nbsp;    public void cleanUp(String curCacheFile) {
+<b class="nc">&nbsp;      CacheCleanUp cacheCleanUp = new CacheCleanUp(cacheMap, curCacheFile);</b>
+<b class="nc">&nbsp;      cacheCleanUp.start();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Class to create and handle the cache map
+&nbsp;     * the clean up process is run in a separate parallel thread
+&nbsp;     */
+&nbsp;    private class CacheMap implements Serializable {
+&nbsp;      private static final long serialVersionUID = 1L;
+&nbsp;      private Map&lt;String, String&gt; cacheNames;     //  contains the mapping from document paths to cache file names
+&nbsp;      
+<b class="nc">&nbsp;      CacheMap() {</b>
+<b class="nc">&nbsp;        cacheNames = new HashMap&lt;&gt;();</b>
+&nbsp;      }
+&nbsp;      
+<b class="nc">&nbsp;      CacheMap(CacheMap in) {</b>
+<b class="nc">&nbsp;        cacheNames = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        cacheNames.putAll(in.getCacheNames());</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      /**
+&nbsp;       * get the cache map that contains the mapping from document paths to cache file names 
+&nbsp;       */
+&nbsp;      private Map&lt;String, String&gt; getCacheNames() {
+<b class="nc">&nbsp;        return cacheNames;</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      /**
+&nbsp;       * get the size of the cache map
+&nbsp;       */
+&nbsp;      public int size() {
+<b class="nc">&nbsp;        return cacheNames.keySet().size();</b>
+&nbsp;      }
+&nbsp;      
+&nbsp;      /**
+&nbsp;       * return true if the map contains the cache file name
+&nbsp;       */
+&nbsp;      public boolean containsValue(String value) {
+<b class="nc">&nbsp;        return cacheNames.containsValue(value);</b>
+&nbsp;      }
+&nbsp;      
+&nbsp;      /**
+&nbsp;       * get all document paths contained in the map
+&nbsp;       */
+&nbsp;      public Set&lt;String&gt; keySet() {
+<b class="nc">&nbsp;        return cacheNames.keySet();</b>
+&nbsp;      }
+&nbsp;      
+&nbsp;      /**
+&nbsp;       * get the cache file name from a document path
+&nbsp;       */
+&nbsp;      public String get(String key) {
+<b class="nc">&nbsp;        return cacheNames.get(key);</b>
+&nbsp;      }
+&nbsp;      
+&nbsp;      /**
+&nbsp;       * remove a document paths from the map (inclusive the mapped cache file name)
+&nbsp;       */
+&nbsp;      public String remove(String key) {
+<b class="nc">&nbsp;        return cacheNames.remove(key);</b>
+&nbsp;      }
+&nbsp;      
+&nbsp;      /**
+&nbsp;       * get the cache file name for a document paths
+&nbsp;       * if create == true:  create the file if not exist
+&nbsp;       * if create == false: return null if not exist
+&nbsp;       */
+&nbsp;      public String getOrCreateCacheFile(String docPath, boolean create) {
+<b class="nc">&nbsp;        if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;CacheIO: getOrCreateCacheFile: docPath=&quot; + docPath);</b>
+<b class="nc">&nbsp;          for (String file : cacheNames.keySet()) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;cacheNames: docPath=&quot; + file + &quot;, cache=&quot; + cacheNames.get(file));</b>
+<b class="nc">&nbsp;          }</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (cacheNames.containsKey(docPath)) {</b>
+<b class="nc">&nbsp;          return cacheNames.get(docPath);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (!create) {</b>
+<b class="nc">&nbsp;          return null;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        int i = 1;</b>
+<b class="nc">&nbsp;        String cacheName = CACHEFILE_PREFIX + i + &quot;.&quot; + CACHEFILE_EXTENSION;</b>
+<b class="nc">&nbsp;        while (cacheNames.containsValue(cacheName)) {</b>
+<b class="nc">&nbsp;          i++;</b>
+<b class="nc">&nbsp;          cacheName = CACHEFILE_PREFIX + i + &quot;.&quot; + CACHEFILE_EXTENSION;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        cacheNames.put(docPath, cacheName);</b>
+<b class="nc">&nbsp;        return cacheName;</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * class to clean up cache
+&nbsp;     * delete cache files for not existent document paths
+&nbsp;     * remove not existent document paths and cache files from map
+&nbsp;     * the clean up process is ran in a separate thread 
+&nbsp;     */
+&nbsp;    private class CacheCleanUp extends Thread implements Serializable {
+&nbsp;      private static final long serialVersionUID = 1L;
+&nbsp;      private CacheMap cacheMap;
+&nbsp;      private String currentFile;
+&nbsp;      
+<b class="nc">&nbsp;      CacheCleanUp(CacheMap in, String curFile) {</b>
+<b class="nc">&nbsp;        cacheMap = new CacheMap(in);</b>
+<b class="nc">&nbsp;        currentFile = curFile;</b>
+&nbsp;      }
+&nbsp;      
+&nbsp;      /**
+&nbsp;       * run clean up process
+&nbsp;       */
+&nbsp;      @Override
+&nbsp;      public void run() {
+&nbsp;        try {
+<b class="nc">&nbsp;          long systemTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;          boolean mapChanged = false;</b>
+<b class="nc">&nbsp;          File cacheDir = OfficeTools.getCacheDir();</b>
+<b class="nc">&nbsp;          List&lt;String&gt; mapedDocs = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;          for (String doc : cacheMap.keySet()) {</b>
+<b class="nc">&nbsp;            mapedDocs.add(doc);</b>
+<b class="nc">&nbsp;          }</b>
+<b class="nc">&nbsp;          for (String doc : mapedDocs) {</b>
+<b class="nc">&nbsp;            File docFile = new File(doc);</b>
+<b class="nc">&nbsp;            String cacheFileName = cacheMap.get(doc);</b>
+<b class="nc">&nbsp;            File cacheFile = new File(cacheDir, cacheFileName);</b>
+<b class="nc">&nbsp;            if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;CacheIO: CacheCleanUp: CacheMap: docPath=&quot; + doc + &quot;, docFile exist: &quot; + (docFile == null ? &quot;null&quot; : docFile.exists()) + </b>
+<b class="nc">&nbsp;                  &quot;, cacheFile exist: &quot; + (cacheFile == null ? &quot;null&quot; : cacheFile.exists()));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if (docFile == null || !docFile.exists() || cacheFile == null || !cacheFile.exists() </b>
+<b class="nc">&nbsp;                || (systemTime - cacheFile.lastModified() &gt; MAX_CACHE_TIME &amp;&amp; !cacheFileName.equals(currentFile))) {</b>
+<b class="nc">&nbsp;              cacheMap.remove(doc);</b>
+<b class="nc">&nbsp;              mapChanged = true;</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;CacheIO: CacheCleanUp: Remove Path from CacheMap: &quot; + doc);</b>
+<b class="nc">&nbsp;              if (cacheFile != null &amp;&amp; cacheFile.exists()) {</b>
+<b class="nc">&nbsp;                cacheFile.delete();</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;CacheIO: CacheCleanUp: Delete cache file: &quot; + cacheFile.getAbsolutePath());</b>
+&nbsp;              }
+&nbsp;            }
+<b class="nc">&nbsp;          }</b>
+<b class="nc">&nbsp;          if (mapChanged) {</b>
+<b class="nc">&nbsp;            if (DEBUG_MODE) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;CacheIO: CacheCleanUp: Write CacheMap&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            write(cacheMap);</b>
+&nbsp;          }
+<b class="nc">&nbsp;          File[] cacheFiles = cacheDir.listFiles();</b>
+<b class="nc">&nbsp;          if (cacheFiles != null) {</b>
+<b class="nc">&nbsp;            for (File cacheFile : cacheFiles) {</b>
+<b class="nc">&nbsp;              if (!cacheMap.containsValue(cacheFile.getName()) &amp;&amp; !cacheFile.getName().equals(CACHEFILE_MAP)) {</b>
+<b class="nc">&nbsp;                cacheFile.delete();</b>
+<b class="nc">&nbsp;                MessageHandler.printToLogFile(&quot;Delete cache file: &quot; + cacheFile.getAbsolutePath());</b>
+&nbsp;              }
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;        } catch (Throwable t) {</b>
+<b class="nc">&nbsp;          MessageHandler.printException(t);     // all Exceptions thrown by UnoRuntime.queryInterface are caught</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;      }
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

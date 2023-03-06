@@ -1,0 +1,578 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LinguisticServices</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.openoffice</a>
+</div>
+
+<h1>Coverage Summary for Class: LinguisticServices (org.languagetool.openoffice)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LinguisticServices</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/104)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/197)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2011 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.openoffice;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;import org.languagetool.Language;
+&nbsp;import org.languagetool.LinguServices;
+&nbsp;import org.languagetool.rules.Rule;
+&nbsp;
+&nbsp;import com.sun.star.beans.Property;
+&nbsp;import com.sun.star.beans.PropertyValue;
+&nbsp;import com.sun.star.beans.XPropertySet;
+&nbsp;import com.sun.star.beans.XPropertySetInfo;
+&nbsp;import com.sun.star.lang.Locale;
+&nbsp;import com.sun.star.lang.XMultiComponentFactory;
+&nbsp;import com.sun.star.linguistic2.XHyphenator;
+&nbsp;import com.sun.star.linguistic2.XLinguServiceManager;
+&nbsp;import com.sun.star.linguistic2.XMeaning;
+&nbsp;import com.sun.star.linguistic2.XPossibleHyphens;
+&nbsp;import com.sun.star.linguistic2.XSpellAlternatives;
+&nbsp;import com.sun.star.linguistic2.XSpellChecker;
+&nbsp;import com.sun.star.linguistic2.XThesaurus;
+&nbsp;import com.sun.star.uno.Exception;
+&nbsp;import com.sun.star.uno.UnoRuntime;
+&nbsp;import com.sun.star.uno.XComponentContext;
+&nbsp;
+&nbsp;/**
+&nbsp; * Class to handle information from linguistic services of LibreOffice/OpenOffice
+&nbsp; * @since 4.3
+&nbsp; * @author Fred Kruse
+&nbsp; */
+&nbsp;public class LinguisticServices extends LinguServices {
+&nbsp;  
+<b class="nc">&nbsp;  private static boolean isSetLt = false;</b>
+<b class="nc">&nbsp;  private XThesaurus thesaurus = null;</b>
+<b class="nc">&nbsp;  private XSpellChecker spellChecker = null;</b>
+<b class="nc">&nbsp;  private XHyphenator hyphenator = null;</b>
+&nbsp;  private Map&lt;String, List&lt;String&gt;&gt; synonymsCache;
+<b class="nc">&nbsp;  private List&lt;String&gt; thesaurusRelevantRules = null;</b>
+<b class="nc">&nbsp;  private boolean noSynonymsAsSuggestions = false;</b>
+&nbsp;
+<b class="nc">&nbsp;  public LinguisticServices(XComponentContext xContext) {</b>
+<b class="nc">&nbsp;    if (xContext != null) {</b>
+<b class="nc">&nbsp;      XLinguServiceManager mxLinguSvcMgr = getLinguSvcMgr(xContext);</b>
+<b class="nc">&nbsp;      thesaurus = getThesaurus(mxLinguSvcMgr);</b>
+<b class="nc">&nbsp;      spellChecker = getSpellChecker(mxLinguSvcMgr);</b>
+<b class="nc">&nbsp;      hyphenator = getHyphenator(mxLinguSvcMgr);</b>
+<b class="nc">&nbsp;      synonymsCache = new HashMap&lt;&gt;();</b>
+&nbsp;//      printLinguProperties(xContext);
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Set Parameter to generate no synonyms (makes some rules faster, but results in no suggestions)
+&nbsp;   */
+&nbsp;  public void setNoSynonymsAsSuggestions (boolean noSynonymsAsSuggestions) {
+<b class="nc">&nbsp;    this.noSynonymsAsSuggestions = noSynonymsAsSuggestions;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * returns if spell checker can be used
+&nbsp;   * if false initialize LinguisticServices again
+&nbsp;   */
+&nbsp;  public boolean spellCheckerIsActive () {
+<b class="nc">&nbsp;    return (spellChecker != null);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Get the LinguServiceManager to be used for example 
+&nbsp;   * to access spell checker, thesaurus and hyphenator
+&nbsp;   */
+&nbsp;  private XLinguServiceManager getLinguSvcMgr(XComponentContext xContext) {
+&nbsp;    try {
+<b class="nc">&nbsp;      XMultiComponentFactory xMCF = UnoRuntime.queryInterface(XMultiComponentFactory.class,</b>
+<b class="nc">&nbsp;          xContext.getServiceManager());</b>
+<b class="nc">&nbsp;      if (xMCF == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LinguisticServices: getLinguSvcMgr: XMultiComponentFactory == null&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+&nbsp;      // retrieve Office&#39;s remote component context as a property
+<b class="nc">&nbsp;      XPropertySet props = UnoRuntime.queryInterface(XPropertySet.class, xMCF);</b>
+<b class="nc">&nbsp;      if (props == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LinguisticServices: getLinguSvcMgr: XPropertySet == null&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Object defaultContext = props.getPropertyValue(&quot;DefaultContext&quot;);</b>
+&nbsp;      // get the remote interface XComponentContext
+<b class="nc">&nbsp;      XComponentContext xComponentContext = UnoRuntime.queryInterface(XComponentContext.class, defaultContext);</b>
+<b class="nc">&nbsp;      if (xComponentContext == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LinguisticServices: getLinguSvcMgr: XComponentContext == null&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Object o = xMCF.createInstanceWithContext(&quot;com.sun.star.linguistic2.LinguServiceManager&quot;, xComponentContext);     </b>
+&nbsp;      // create service component using the specified component context
+<b class="nc">&nbsp;      XLinguServiceManager mxLinguSvcMgr = UnoRuntime.queryInterface(XLinguServiceManager.class, o);</b>
+<b class="nc">&nbsp;      if (mxLinguSvcMgr == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LinguisticServices: getLinguSvcMgr: XLinguServiceManager2 == null&quot;);</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return mxLinguSvcMgr;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+&nbsp;      // If anything goes wrong, give the user a stack trace
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Get XLinguProperties
+&nbsp;   */
+&nbsp;  private static XPropertySet getLinguProperties(XComponentContext xContext) {
+<b class="nc">&nbsp;    if (xContext == null) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    XMultiComponentFactory xMCF = UnoRuntime.queryInterface(XMultiComponentFactory.class,</b>
+<b class="nc">&nbsp;            xContext.getServiceManager());</b>
+<b class="nc">&nbsp;    if (xMCF == null) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Object linguProperties = null;</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      linguProperties = xMCF.createInstanceWithContext(&quot;com.sun.star.linguistic2.LinguProperties&quot;, xContext);</b>
+<b class="nc">&nbsp;    } catch (Exception e) {</b>
+<b class="nc">&nbsp;      MessageHandler.printException(e);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    if (linguProperties == null) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return UnoRuntime.queryInterface(XPropertySet.class, linguProperties);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Print LiguProperties to log file (Used for tests only)
+&nbsp;   */
+&nbsp;  
+&nbsp;  public void printLinguProperties(XComponentContext xContext) {
+<b class="nc">&nbsp;    XPropertySet propSet = getLinguProperties(xContext);</b>
+<b class="nc">&nbsp;    XPropertySetInfo propertySetInfo = propSet.getPropertySetInfo();</b>
+<b class="nc">&nbsp;    MessageHandler.printToLogFile(&quot;OfficeTools: printPropertySet: PropertySet:&quot;);</b>
+<b class="nc">&nbsp;    for (Property property : propertySetInfo.getProperties()) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;Name: &quot; + property.Name + &quot;, Type: &quot; + property.Type.getTypeName());</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** 
+&nbsp;   * Get the Thesaurus to be used.
+&nbsp;   */
+&nbsp;  private XThesaurus getThesaurus(XLinguServiceManager mxLinguSvcMgr) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (mxLinguSvcMgr != null) {</b>
+<b class="nc">&nbsp;        return mxLinguSvcMgr.getThesaurus();</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+&nbsp;      // If anything goes wrong, give the user a stack trace
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * Get the Hyphenator to be used.
+&nbsp;   */
+&nbsp;  private XHyphenator getHyphenator(XLinguServiceManager mxLinguSvcMgr) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (mxLinguSvcMgr != null) {</b>
+<b class="nc">&nbsp;        return mxLinguSvcMgr.getHyphenator();</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+&nbsp;      // If anything goes wrong, give the user a stack trace
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** 
+&nbsp;   * Get the SpellChecker to be used.
+&nbsp;   */
+&nbsp;  private XSpellChecker getSpellChecker(XLinguServiceManager mxLinguSvcMgr) {
+&nbsp;    try {
+<b class="nc">&nbsp;      if (mxLinguSvcMgr != null) {</b>
+<b class="nc">&nbsp;        return mxLinguSvcMgr.getSpellChecker();</b>
+&nbsp;      }
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+&nbsp;      // If anything goes wrong, give the user a stack trace
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;    }</b>
+<b class="nc">&nbsp;    return null;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Get a Locale from a LT defined language
+&nbsp;   */
+&nbsp;  public static Locale getLocale(Language lang) {
+<b class="nc">&nbsp;    if (lang == null) {</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    Locale locale = new Locale();</b>
+<b class="nc">&nbsp;    locale.Language = lang.getShortCode();</b>
+<b class="nc">&nbsp;    if ((lang.getCountries() == null || lang.getCountries().length != 1) &amp;&amp; lang.getDefaultLanguageVariant() != null) {</b>
+<b class="nc">&nbsp;      locale.Country = lang.getDefaultLanguageVariant().getCountries()[0];</b>
+<b class="nc">&nbsp;    } else if (lang.getCountries() != null &amp;&amp; lang.getCountries().length &gt; 0) {</b>
+<b class="nc">&nbsp;      locale.Country = lang.getCountries()[0];</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      locale.Country = &quot;&quot;;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (lang.getVariant() == null) {</b>
+<b class="nc">&nbsp;      locale.Variant = &quot;&quot;;</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      locale.Variant = lang.getVariant();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return locale;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Get all synonyms of a word as list of strings.
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public List&lt;String&gt; getSynonyms(String word, Language lang) {
+<b class="nc">&nbsp;    return getSynonyms(word, getLocale(lang));</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public List&lt;String&gt; getSynonyms(String word, Locale locale) {
+<b class="nc">&nbsp;    if (noSynonymsAsSuggestions) {</b>
+<b class="nc">&nbsp;      return new ArrayList&lt;&gt;();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (synonymsCache.containsKey(word)) {</b>
+<b class="nc">&nbsp;      return synonymsCache.get(word);</b>
+&nbsp;    }
+<b class="nc">&nbsp;    List&lt;String&gt; synonyms = new ArrayList&lt;&gt;();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      if (thesaurus == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LinguisticServices: getSynonyms: XThesaurus == null&quot;);</b>
+<b class="nc">&nbsp;        return synonyms;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      if (locale == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LinguisticServices: getSynonyms: Locale == null&quot;);</b>
+<b class="nc">&nbsp;        return synonyms;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      PropertyValue[] properties = new PropertyValue[0];</b>
+<b class="nc">&nbsp;      XMeaning[] meanings = thesaurus.queryMeanings(word, locale, properties);</b>
+<b class="nc">&nbsp;      for (XMeaning meaning : meanings) {</b>
+<b class="nc">&nbsp;        if (synonyms.size() &gt;= OfficeTools.MAX_SUGGESTIONS) {</b>
+<b class="nc">&nbsp;          break;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        String[] singleSynonyms = meaning.querySynonyms();</b>
+<b class="nc">&nbsp;        Collections.addAll(synonyms, singleSynonyms);</b>
+&nbsp;      }
+<b class="nc">&nbsp;      synonymsCache.put(word, synonyms);</b>
+<b class="nc">&nbsp;      return synonyms;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+&nbsp;      // If anything goes wrong, give the user a stack trace
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;      return synonyms;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns true if the spell check is positive
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public boolean isCorrectSpell(String word, Language lang) {
+<b class="nc">&nbsp;    return isCorrectSpell(word, getLocale(lang));</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public boolean isCorrectSpell(String word, Locale locale) {
+<b class="nc">&nbsp;    if (spellChecker == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LinguisticServices: isCorrectSpell: XSpellChecker == null&quot;);</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    PropertyValue[] properties = new PropertyValue[0];</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      return spellChecker.isValid(word, locale, properties);</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+&nbsp;      // If anything goes wrong, give the user a stack trace
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns Alternatives to  wrong spelled word
+&nbsp;   */
+&nbsp;  public String[] getSpellAlternatives(String word, Language lang) {
+<b class="nc">&nbsp;    return getSpellAlternatives(word, getLocale(lang));</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public String[] getSpellAlternatives(String word, Locale locale) {
+<b class="nc">&nbsp;    if (spellChecker == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LinguisticServices: getSpellAlternatives: XSpellChecker == null&quot;);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    PropertyValue[] properties = new PropertyValue[0];</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XSpellAlternatives spellAlternatives = spellChecker.spell(word, locale, properties);</b>
+<b class="nc">&nbsp;      if (spellAlternatives == null) {</b>
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      return spellAlternatives.getAlternatives();</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+&nbsp;      // If anything goes wrong, give the user a stack trace
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;      return null;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Returns the number of syllable of a word
+&nbsp;   * Returns -1 if the word was not found or anything goes wrong
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public int getNumberOfSyllables(String word, Language lang) {
+<b class="nc">&nbsp;    return getNumberOfSyllables(word, getLocale(lang));</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public int getNumberOfSyllables(String word, Locale locale) {
+<b class="nc">&nbsp;    if (hyphenator == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LinguisticServices: getNumberOfSyllables: XHyphenator == null&quot;);</b>
+<b class="nc">&nbsp;      return 1;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    PropertyValue[] properties = new PropertyValue[0];</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      XPossibleHyphens possibleHyphens = hyphenator.createPossibleHyphens(word, locale, properties);</b>
+<b class="nc">&nbsp;      if (possibleHyphens == null) {</b>
+<b class="nc">&nbsp;        return 1;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      short[] numSyllable = possibleHyphens.getHyphenationPositions();</b>
+<b class="nc">&nbsp;      return numSyllable.length + 1;</b>
+<b class="nc">&nbsp;    } catch (Throwable t) {</b>
+&nbsp;      // If anything goes wrong, give the user a stack trace
+<b class="nc">&nbsp;      MessageHandler.printException(t);</b>
+<b class="nc">&nbsp;      return 1;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;  
+&nbsp;  /**
+&nbsp;   * Set LT as grammar checker for a specific language
+&nbsp;   * is normally used deactivate lightproof 
+&nbsp;   */
+&nbsp;  public boolean setLtAsGrammarService(XComponentContext xContext, Locale locale) {
+<b class="nc">&nbsp;    if (xContext != null) {</b>
+<b class="nc">&nbsp;      XLinguServiceManager mxLinguSvcMgr = getLinguSvcMgr(xContext); </b>
+<b class="nc">&nbsp;      if (mxLinguSvcMgr == null) {</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LinguisticServices: setLtAsGrammarService: XLinguServiceManager == null&quot;);</b>
+<b class="nc">&nbsp;        return false;</b>
+&nbsp;      }
+<b class="nc">&nbsp;      Locale[] locales = MultiDocumentsHandler.getLocales();</b>
+<b class="nc">&nbsp;      for (Locale loc : locales) {</b>
+<b class="nc">&nbsp;        if (OfficeTools.isEqualLocale(locale, loc)) {</b>
+<b class="nc">&nbsp;          String[] serviceNames = mxLinguSvcMgr.getConfiguredServices(&quot;com.sun.star.linguistic2.Proofreader&quot;, locale);</b>
+<b class="nc">&nbsp;          if (serviceNames.length == 0) {</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;LinguisticServices: setLtAsGrammarService: No configured Service for: &quot; + OfficeTools.localeToString(locale));</b>
+&nbsp;          } else {
+<b class="nc">&nbsp;            for (String service : serviceNames) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;Configured Linguistic Service: &quot; + service + &quot;, &quot; + OfficeTools.localeToString(locale));</b>
+&nbsp;            }
+&nbsp;          }
+<b class="nc">&nbsp;          if (serviceNames.length != 1 || !serviceNames[0].equals(OfficeTools.LT_SERVICE_NAME)) {</b>
+<b class="nc">&nbsp;            String[] aServiceNames = mxLinguSvcMgr.getAvailableServices(&quot;com.sun.star.linguistic2.Proofreader&quot;, locale);</b>
+<b class="nc">&nbsp;            for (String service : aServiceNames) {</b>
+<b class="nc">&nbsp;              MessageHandler.printToLogFile(&quot;Available Linguistic Service: &quot; + service + &quot;, &quot; + OfficeTools.localeToString(locale));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            String[] configuredServices = new String[1];</b>
+<b class="nc">&nbsp;            configuredServices[0] = new String(OfficeTools.LT_SERVICE_NAME);</b>
+<b class="nc">&nbsp;            mxLinguSvcMgr.setConfiguredServices(&quot;com.sun.star.linguistic2.Proofreader&quot;, locale, configuredServices);</b>
+<b class="nc">&nbsp;            MessageHandler.printToLogFile(&quot;LT set as configured Service for Language: &quot; + OfficeTools.localeToString(locale));</b>
+&nbsp;          }
+<b class="nc">&nbsp;          return true;</b>
+&nbsp;        }
+&nbsp;      }
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LT doesn&#39;t support language: &quot; + OfficeTools.localeToString(locale));</b>
+&nbsp;    }
+<b class="nc">&nbsp;    return false;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Set LT as grammar checker for all supported languages
+&nbsp;   * is normally used deactivate lightproof 
+&nbsp;   */
+&nbsp;  public boolean setLtAsGrammarService(XComponentContext xContext) {
+<b class="nc">&nbsp;    if (xContext != null) {</b>
+<b class="nc">&nbsp;      return setLtAsGrammarService(getLinguSvcMgr(xContext));</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Set LT as grammar checker for all supported languages
+&nbsp;   * is normally used deactivate lightproof 
+&nbsp;   */
+&nbsp;  private boolean setLtAsGrammarService(XLinguServiceManager mxLinguSvcMgr) {
+<b class="nc">&nbsp;    if (isSetLt) {</b>
+<b class="nc">&nbsp;      return true;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    if (mxLinguSvcMgr == null) {</b>
+<b class="nc">&nbsp;      MessageHandler.printToLogFile(&quot;LinguisticServices: setLtAsGrammarService: XLinguServiceManager == null&quot;);</b>
+<b class="nc">&nbsp;      return false;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    isSetLt = true;</b>
+<b class="nc">&nbsp;    Locale[] locales = MultiDocumentsHandler.getLocales();</b>
+<b class="nc">&nbsp;    for (Locale locale : locales) {</b>
+<b class="nc">&nbsp;      String[] serviceNames = mxLinguSvcMgr.getConfiguredServices(&quot;com.sun.star.linguistic2.Proofreader&quot;, locale);</b>
+<b class="nc">&nbsp;      if (serviceNames.length != 1 || !serviceNames[0].equals(OfficeTools.LT_SERVICE_NAME)) {</b>
+<b class="nc">&nbsp;        String[] aServiceNames = mxLinguSvcMgr.getAvailableServices(&quot;com.sun.star.linguistic2.Proofreader&quot;, locale);</b>
+<b class="nc">&nbsp;        for (String service : aServiceNames) {</b>
+<b class="nc">&nbsp;          MessageHandler.printToLogFile(&quot;Available Linguistic Service: &quot; + service + &quot;, &quot; + OfficeTools.localeToString(locale));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        String[] configuredServices = new String[1];</b>
+<b class="nc">&nbsp;        configuredServices[0] = new String(OfficeTools.LT_SERVICE_NAME);</b>
+<b class="nc">&nbsp;        mxLinguSvcMgr.setConfiguredServices(&quot;com.sun.star.linguistic2.Proofreader&quot;, locale, configuredServices);</b>
+<b class="nc">&nbsp;        MessageHandler.printToLogFile(&quot;LT set as configured Service for Language: &quot; + OfficeTools.localeToString(locale));</b>
+&nbsp;      }
+&nbsp;    }
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Set a thesaurus relevant rule
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public void setThesaurusRelevantRule (Rule rule) {
+<b class="nc">&nbsp;    if (thesaurusRelevantRules == null) {</b>
+<b class="nc">&nbsp;      thesaurusRelevantRules = new ArrayList&lt;String&gt;();</b>
+&nbsp;    }
+<b class="nc">&nbsp;    String ruleId = rule.getId();</b>
+<b class="nc">&nbsp;    if (!thesaurusRelevantRules.contains(ruleId)) {</b>
+<b class="nc">&nbsp;      thesaurusRelevantRules.add(ruleId);</b>
+&nbsp;//      MessageHandler.printToLogFile(&quot;LinguisticServices: setThesaurusRelevantRule: Add ruleId:&quot; + ruleId);
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Test if rule is thesaurus relevant 
+&nbsp;   * (match should give suggestions from thesaurus)
+&nbsp;   */
+&nbsp;  public boolean isThesaurusRelevantRule (String ruleId) {
+&nbsp;//    for (String id : thesaurusRelevantRules) {
+&nbsp;//      MessageHandler.printToLogFile(&quot;LinguisticServices: isThesaurusRelevantRule: contains rule:&quot; + id);
+&nbsp;//    }
+<b class="nc">&nbsp;    return !noSynonymsAsSuggestions &amp;&amp; thesaurusRelevantRules != null &amp;&amp; thesaurusRelevantRules.contains(ruleId);</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,464 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > DutchTagger</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.tagging.nl</a>
+</div>
+
+<h1>Coverage Summary for Class: DutchTagger (org.languagetool.tagging.nl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DutchTagger</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/108)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/177)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker 
+&nbsp; * Copyright (C) 2006 Daniel Naber (http://www.danielnaber.de)
+&nbsp; * 
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.tagging.nl;
+&nbsp;
+&nbsp;import org.languagetool.AnalyzedToken;
+&nbsp;import org.languagetool.AnalyzedTokenReadings;
+&nbsp;import org.languagetool.tagging.BaseTagger;
+&nbsp;import org.languagetool.tools.StringTools;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * Dutch tagger.
+&nbsp; * 
+&nbsp; * @author Marcin Milkowski
+&nbsp; */
+&nbsp;public class DutchTagger extends BaseTagger {
+&nbsp;
+&nbsp;  public DutchTagger() {
+<b class="nc">&nbsp;    super(&quot;/nl/dutch.dict&quot;, new Locale(&quot;nl&quot;));</b>
+&nbsp;  }
+&nbsp;    // custom code to deal with words carrying optional accents
+&nbsp;  @Override
+&nbsp;  public List&lt;AnalyzedTokenReadings&gt; tag(final List&lt;String&gt; sentenceTokens) {
+<b class="nc">&nbsp;    final List&lt;AnalyzedTokenReadings&gt; tokenReadings = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    int pos = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;    for (String word : sentenceTokens) {</b>
+<b class="nc">&nbsp;      boolean ignoreSpelling = false;</b>
+&nbsp;
+&nbsp;      // make treatment of weird apostrophes same as in tokenizer (R. Baars, 2020-11-06)
+<b class="nc">&nbsp;      String originalWord = word;</b>
+<b class="nc">&nbsp;      word = word.replace(&quot;`&quot;,&quot;&#39;&quot;).replace(&quot;’&quot;,&quot;&#39;&quot;).replace(&quot;‘&quot;,&quot;&#39;&quot;).replace(&quot;´&quot;,&quot;&#39;&quot;);</b>
+&nbsp;      
+<b class="nc">&nbsp;      final List&lt;AnalyzedToken&gt; l = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;      final String lowerWord = word.toLowerCase(locale);</b>
+<b class="nc">&nbsp;      final boolean isLowercase = word.equals(lowerWord);</b>
+<b class="nc">&nbsp;      final boolean isMixedCase = StringTools.isMixedCase(word);</b>
+<b class="nc">&nbsp;      final boolean isAllUpper = StringTools.isAllUppercase(word);</b>
+&nbsp;
+&nbsp;      // assign tokens for flattened word to original word
+<b class="nc">&nbsp;      List&lt;AnalyzedToken&gt; taggerTokens = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(word));</b>
+&nbsp;      //List&lt;AnalyzedToken&gt; taggerTokens = asAnalyzedTokenListForTaggedWords(word, getWordTagger().tag(word));
+&nbsp;      // normal case:
+<b class="nc">&nbsp;      addTokens(taggerTokens, l);</b>
+&nbsp;      // tag non-lowercase (alluppercase or startuppercase), but not mixedcase
+&nbsp;      // word with lowercase word tags:
+<b class="nc">&nbsp;      if (!isLowercase &amp;&amp; !isMixedCase) {</b>
+<b class="nc">&nbsp;        List&lt;AnalyzedToken&gt; lowerTaggerTokens = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(lowerWord));</b>
+<b class="nc">&nbsp;        addTokens(lowerTaggerTokens, l);</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      // tag all-uppercase proper nouns
+<b class="nc">&nbsp;      if (l.isEmpty() &amp;&amp; isAllUpper) {</b>
+<b class="nc">&nbsp;        final String firstUpper = StringTools.uppercaseFirstChar(lowerWord);</b>
+<b class="nc">&nbsp;        List&lt;AnalyzedToken&gt; firstupperTaggerTokens = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(firstUpper));</b>
+<b class="nc">&nbsp;        addTokens(firstupperTaggerTokens, l);</b>
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      if (l.isEmpty()) {</b>
+&nbsp;        // there is still no postag found
+&nbsp;        //String word2 = lowerWord;
+<b class="nc">&nbsp;        String word2 = word; // why the lowerword?</b>
+&nbsp;        // remove single accented characters
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;([^aeiouáéíóú])(á)([^aeiouáéíóú])&quot;, &quot;$1a$3&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;([^aeiouáéíóú])(é)([^aeiouáéíóú])&quot;, &quot;$1e$3&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;([^aeiouáéíóú])(í)([^aeiouáéíóú])&quot;, &quot;$1i$3&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;([^aeiouáéíóú])(ó)([^aeiouáéíóú])&quot;, &quot;$1o$3&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;([^aeiouáéíóú])(ú)([^aeiouáéíóú])&quot;, &quot;$1u$3&quot;);</b>
+&nbsp;
+&nbsp;        // remove allowed accented characters
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;áá&quot;, &quot;aa&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;áé&quot;, &quot;ae&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;áí&quot;, &quot;ai&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;áú&quot;, &quot;au&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;éé&quot;, &quot;ee&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;éí&quot;, &quot;ei&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;éú&quot;, &quot;eu&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;íé&quot;, &quot;ie&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;óé&quot;, &quot;oe&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;óí&quot;, &quot;oi&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;óó&quot;, &quot;oo&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;óú&quot;, &quot;ou&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;úí&quot;, &quot;ui&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;úú&quot;, &quot;uu&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replace(&quot;íj&quot;, &quot;ij&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;(^|[^aeiou])á([^aeiou]|$)&quot;, &quot;$1a$2&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;(^|[^aeiou])é([^aeiou]|$)&quot;, &quot;$1e$2&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;(^|[^aeiou])í([^aeiou]|$)&quot;, &quot;$1i$2&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;(^|[^aeiou])ó([^aeiou]|$)&quot;, &quot;$1o$2&quot;);</b>
+<b class="nc">&nbsp;        word2 = word2.replaceAll(&quot;(^|[^aeiou])ú([^aeiou]|$)&quot;, &quot;$1u$2&quot;);</b>
+&nbsp;
+&nbsp;        // best would be to check the parts as well (uncompound)
+<b class="nc">&nbsp;        if (word2.contains(&quot;-&quot;)) {</b>
+&nbsp;          //String part1 = word2.replaceAll(&quot;(^.*)-(.*$)&quot;, &quot;$1&quot;);
+&nbsp;          //List&lt;AnalyzedToken&gt; p1 = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(part1));
+<b class="nc">&nbsp;          String part2 = word2.replaceAll(&quot;(^.*)-(.*$)&quot;, &quot;$2&quot;);</b>
+<b class="nc">&nbsp;          List&lt;AnalyzedToken&gt; p2 = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(part2));</b>
+&nbsp;          //if (!(p1.isEmpty()||p2.isEmpty())) {
+<b class="nc">&nbsp;          if (!p2.isEmpty()) {</b>
+&nbsp;            // word is split on a likely location
+<b class="nc">&nbsp;            word2 = word2.replaceAll(&quot;([a-z])-([a-z])&quot;, &quot;$1$2&quot;);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (!word2.equals(word)) {</b>
+<b class="nc">&nbsp;          List&lt;AnalyzedToken&gt; l2 = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(word2));</b>
+<b class="nc">&nbsp;          if (!l2.isEmpty()) {</b>
+&nbsp;            // woord bestaat
+<b class="nc">&nbsp;            addTokens(l2, l);</b>
+<b class="nc">&nbsp;            ignoreSpelling = true;</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;        //*************** START OF ADDED UNCOMPOUNDER CODE ****************** //
+&nbsp;        // (still too) simple uncompounder
+&nbsp;        // it needs check for postags and substring
+&nbsp;        // nevertheless, 5 is rather safe
+&nbsp;        // TODO :
+&nbsp;        // - optimize code
+&nbsp;        // - move code to separate file/function/class
+&nbsp;        // - add more safe word types
+&nbsp;        // wordExceptions TODO: implement this as textfile, it is quite a big list, at least theoretically
+<b class="nc">&nbsp;        Boolean activateUncompounder=false; // to switch uncompounder code on and off</b>
+<b class="nc">&nbsp;        if (activateUncompounder &amp;&amp; l.isEmpty()) {</b>
+<b class="nc">&nbsp;          String wordExceptions=&quot;translating|voorzittersschap|weerszijden|bijenkomst|stijlwestie&quot;;</b>
+&nbsp;          // TODO make riskyParts a list or even a file. Or better still, add 2 lists: 1 for trustworthy fronts and one for trustworthy ends
+<b class="nc">&nbsp;          String riskyParts=&quot;vergoding|bijbel|tegens|rood|geel|groen|blauw|paars|oranje|bronzen|stat|westie|westies|barheid|douch|vrouwe|ellen|geluis|beroes|heep|hepen&quot;;</b>
+<b class="nc">&nbsp;          if (!word.matches(wordExceptions)) {</b>
+<b class="nc">&nbsp;            int size =word.length();</b>
+<b class="nc">&nbsp;            String trueCollisions=&quot;.*(a~[aeéiu]|[eé]~[eéiu]|i~[e]|o~[eiou]|i~j|[A-Z]~[a-z]|[a-z]~[A-Z]|[0-9]~[a-zA-Z]|[a-zA-Z]~[0-9]).*&quot;;</b>
+&nbsp;            // other false patterns
+<b class="nc">&nbsp;            trueCollisions+=&quot;|(tegen|voor|achter|midden|open)~(s|s-)~.*|(af|aan|uit|op)?(rijd|snijd|glijd)~.*&quot;;</b>
+<b class="nc">&nbsp;            for (int i = 5; i &lt;= size-5; i++) {</b>
+&nbsp;              // end is most significant, so check that
+<b class="nc">&nbsp;              String end=word.substring(i);</b>
+&nbsp;              // betther make riskyparts a list
+<b class="nc">&nbsp;              if (!end.matches(riskyParts)) {</b>
+<b class="nc">&nbsp;                List&lt;AnalyzedToken&gt; e = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(end));</b>
+<b class="nc">&nbsp;                String front=word.substring(0,i);</b>
+<b class="nc">&nbsp;                if (!front.matches(riskyParts)) {</b>
+<b class="nc">&nbsp;                  if (!e.isEmpty()) {</b>
+&nbsp;                    // is a word
+&nbsp;                    //System.out.println(&quot;front:&quot;+front);
+&nbsp;                    // check front
+<b class="nc">&nbsp;                    List&lt;AnalyzedToken&gt; f = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(front));</b>
+<b class="nc">&nbsp;                    if (!f.isEmpty()) {</b>
+&nbsp;                      // front is a valid word
+<b class="nc">&nbsp;                      String option=front+&quot;~&quot;+end;</b>
+<b class="nc">&nbsp;                      if (!option.matches(trueCollisions)) {</b>
+&nbsp;                        // there is no character collision
+&nbsp;                        // get the tags now, and check the combinations
+<b class="nc">&nbsp;                        for(int j=0;j&lt;e.size();j++){</b>
+<b class="nc">&nbsp;                          String eTag=e.get(j).getPOSTag();</b>
+<b class="nc">&nbsp;                          String eWord=e.get(j).getLemma();</b>
+<b class="nc">&nbsp;                          for(int k=0;k&lt;f.size();k++){</b>
+<b class="nc">&nbsp;                            String fTag=f.get(k).getPOSTag();</b>
+<b class="nc">&nbsp;                            String fWord=f.get(k).getLemma();</b>
+&nbsp;
+<b class="nc">&nbsp;                            String tagCombi=(fTag+&quot;~&quot;+eTag);</b>
+&nbsp;                            //System.out.println(option+&quot;:&quot;+tagCombi);
+&nbsp;
+<b class="nc">&nbsp;                            if (tagCombi.matches(&quot;^(ZNW:EKV|ZNW:EKV:DE_|ZNW:EKV:HET|ZNW:MRV:VRK:HET|WKW:TGW:1EP)~ZNW:.*$&quot;)) {</b>
+&nbsp;                              // the end tag determines the total tag
+<b class="nc">&nbsp;                              l.add(new AnalyzedToken(word, eTag, front+eWord));</b>
+<b class="nc">&nbsp;                              ignoreSpelling=true;</b>
+<b class="nc">&nbsp;                              l.add (new AnalyzedToken(word, &quot;LIKELY_SPELLING&quot;, word));</b>
+<b class="nc">&nbsp;                            } else if (tagCombi.matches(&quot;^ZNW:MRV:DE_~ZNW:.*$&quot;)&amp;&amp;(front.matches(&quot;.*en$&quot;))) {</b>
+&nbsp;                              // the end tag determines the total tag
+&nbsp;                              // compounding with -n when there is also a plural with -s is forbidden\
+<b class="nc">&nbsp;                              String otherPlural=front.replaceAll(&quot;n$&quot;,&quot;s&quot;);</b>
+<b class="nc">&nbsp;                              System.out.println(otherPlural);</b>
+<b class="nc">&nbsp;                              List&lt;AnalyzedToken&gt; o = asAnalyzedTokenListForTaggedWords(otherPlural, getWordTagger().tag(otherPlural));</b>
+<b class="nc">&nbsp;                              if (o.isEmpty()) {</b>
+&nbsp;                                // in fact, all tags should be checked to be ZNW:MRV:DE_, if so, then reject
+<b class="nc">&nbsp;                                AnalyzedToken temp = new AnalyzedToken(word, eTag, front+eWord);</b>
+<b class="nc">&nbsp;                                l.add( new AnalyzedToken(word, eTag, front+eWord) );</b>
+<b class="nc">&nbsp;                                l.add (new AnalyzedToken(word, &quot;LIKELY_SPELLING&quot;, word));</b>
+<b class="nc">&nbsp;                                ignoreSpelling=true;</b>
+&nbsp;                              }
+&nbsp;                            }
+&nbsp;                          }
+&nbsp;                        }
+&nbsp;                      }
+&nbsp;                    }
+&nbsp;                  }
+&nbsp;                }
+<b class="nc">&nbsp;                if (word.substring(i-2,i).equals(&quot;s-&quot;)) {</b>
+&nbsp;                  //System.out.println(&quot;s-&quot;+front);
+&nbsp;                  // front could have an compounding s and dash
+<b class="nc">&nbsp;                  front=word.substring(0,i-2);</b>
+<b class="nc">&nbsp;                  if (!front.matches(riskyParts)) {</b>
+<b class="nc">&nbsp;                    List&lt;AnalyzedToken&gt; f = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(front));</b>
+<b class="nc">&nbsp;                    if (!f.isEmpty()) {</b>
+<b class="nc">&nbsp;                      String option=front+&quot;~s-~&quot;+end;</b>
+<b class="nc">&nbsp;                      for(int j=0;j&lt;e.size();j++){</b>
+<b class="nc">&nbsp;                        String eTag=e.get(j).getPOSTag();</b>
+<b class="nc">&nbsp;                        String eWord=e.get(j).getLemma();</b>
+<b class="nc">&nbsp;                        for(int k=0;k&lt;f.size();k++){</b>
+<b class="nc">&nbsp;                          String fTag=f.get(k).getPOSTag();</b>
+<b class="nc">&nbsp;                          String fWord=f.get(k).getLemma();</b>
+&nbsp;
+<b class="nc">&nbsp;                          String tagCombi=(fTag+&quot;~s-~&quot;+eTag);</b>
+&nbsp;                          //System.out.println(option+&quot;:&quot;+tagCombi);
+<b class="nc">&nbsp;                          if (tagCombi.matches(&quot;^(ZNW:EKV|ZNW:EKV:DE_|ZNW:EKV:HET|ZNW:MRV:VRK:HET)~s-~ZNW:.*$&quot;)&amp;&amp;(!option.matches(&quot;.*e~s-~.*&quot;))) {</b>
+&nbsp;                            // the end tag determines the total tag
+<b class="nc">&nbsp;                            l.add( new AnalyzedToken(word, eTag, front+&quot;s-&quot;+eWord) );</b>
+<b class="nc">&nbsp;                            l.add (new AnalyzedToken(word, &quot;LIKELY_SPELLING&quot;, word));</b>
+<b class="nc">&nbsp;                            ignoreSpelling=true;</b>
+&nbsp;                          }
+&nbsp;                        }
+&nbsp;                      }
+&nbsp;                    }
+&nbsp;                  }
+&nbsp;                }
+<b class="nc">&nbsp;                if (word.substring(i-1,i).equals(&quot;s&quot;)) {</b>
+&nbsp;                  //System.out.println(&quot;s$&quot;);
+&nbsp;                  // front could have an compounding s and dash
+<b class="nc">&nbsp;                  front=word.substring(0,i-1);</b>
+<b class="nc">&nbsp;                  if (!front.matches(riskyParts)) {</b>
+<b class="nc">&nbsp;                    List&lt;AnalyzedToken&gt; f = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(front));</b>
+<b class="nc">&nbsp;                    if (!f.isEmpty()) {</b>
+<b class="nc">&nbsp;                      String option=front+&quot;~s~&quot;+end;</b>
+<b class="nc">&nbsp;                      if (!option.matches(&quot;.*~s~[A-Z0-9].*&quot;)) {</b>
+<b class="nc">&nbsp;                        for(int j=0;j&lt;e.size();j++){</b>
+<b class="nc">&nbsp;                          String eTag=e.get(j).getPOSTag();</b>
+<b class="nc">&nbsp;                          String eWord=e.get(j).getLemma();</b>
+<b class="nc">&nbsp;                          for(int k=0;k&lt;f.size();k++){</b>
+<b class="nc">&nbsp;                            String fTag=f.get(k).getPOSTag();</b>
+<b class="nc">&nbsp;                            String fWord=f.get(k).getLemma();</b>
+<b class="nc">&nbsp;                            String tagCombi=(fTag+&quot;~s~&quot;+eTag);</b>
+&nbsp;                            //System.out.println(option+&quot;:&quot;+tagCombi);
+<b class="nc">&nbsp;                            if (tagCombi.matches(&quot;^(ZNW:EKV|ZNW:EKV:DE_|ZNW:EKV:HET|ZNW:MRV:VRK:HET)~s~ZNW:.*$&quot;)&amp;&amp;(!option.matches(&quot;.*e~s~.*&quot;))) {</b>
+<b class="nc">&nbsp;                              l.add( new AnalyzedToken(word, eTag, front+&quot;s&quot;+eWord) );</b>
+<b class="nc">&nbsp;                              l.add (new AnalyzedToken(word, &quot;LIKELY_SPELLING&quot;, word));</b>
+<b class="nc">&nbsp;                              ignoreSpelling=true;</b>
+&nbsp;                            }
+&nbsp;                          }
+&nbsp;                        }
+&nbsp;                      }
+&nbsp;                    }
+&nbsp;                  }
+&nbsp;                }
+<b class="nc">&nbsp;                if (word.substring(i-1,i).equals(&quot;-&quot;)) {</b>
+&nbsp;                  // front could have an compounding s and dash
+<b class="nc">&nbsp;                  front=word.substring(0,i-1);</b>
+<b class="nc">&nbsp;                  if (!front.matches(riskyParts)) {</b>
+<b class="nc">&nbsp;                    List&lt;AnalyzedToken&gt; f = asAnalyzedTokenListForTaggedWords(originalWord, getWordTagger().tag(front));</b>
+<b class="nc">&nbsp;                    if (!f.isEmpty()) {</b>
+<b class="nc">&nbsp;                      String option=front+&quot;~-~&quot;+end;</b>
+<b class="nc">&nbsp;                      for(int j=0;j&lt;e.size();j++){</b>
+<b class="nc">&nbsp;                        String eTag=e.get(j).getPOSTag();</b>
+<b class="nc">&nbsp;                        String eWord=e.get(j).getLemma();</b>
+<b class="nc">&nbsp;                        for(int k=0;k&lt;f.size();k++){</b>
+<b class="nc">&nbsp;                          String fTag=f.get(k).getPOSTag();</b>
+<b class="nc">&nbsp;                          String fWord=f.get(k).getLemma();</b>
+<b class="nc">&nbsp;                          String tagCombi=(fTag+&quot;~-~&quot;+eTag);</b>
+&nbsp;                          //System.out.println(option+&quot;:&quot;+tagCombi);
+<b class="nc">&nbsp;                          if (tagCombi.matches(&quot;^(ZNW:EKV|ZNW:EKV:DE_|ZNW:EKV:HET|ZNW:MRV:VRK:HET|WKW:TGW:1EP)~-~ZNW:.*$&quot;)) {</b>
+&nbsp;                            // the end tag determines the total tag
+&nbsp;                            // this could be added
+<b class="nc">&nbsp;                            l.add( new AnalyzedToken(word, eTag, front+&quot;-&quot;+eWord) );</b>
+<b class="nc">&nbsp;                            l.add (new AnalyzedToken(word, &quot;LIKELY_SPELLING&quot;, word));</b>
+<b class="nc">&nbsp;                            ignoreSpelling=true;</b>
+<b class="nc">&nbsp;                          } else if (tagCombi.matches(&quot;^ZNW:MRV:DE_~ZNW:.*$&quot;)&amp;&amp;(front.matches(&quot;.*en$&quot;))) {</b>
+<b class="nc">&nbsp;                            String otherPlural=front.replaceAll(&quot;n$&quot;,&quot;s&quot;);</b>
+&nbsp;                            //System.out.println(otherPlural);
+&nbsp;                            //compounding with -n when there is also a plural with -s is forbidden
+<b class="nc">&nbsp;                            List&lt;AnalyzedToken&gt; o = asAnalyzedTokenListForTaggedWords(otherPlural, getWordTagger().tag(otherPlural));</b>
+<b class="nc">&nbsp;                            if (o.isEmpty()) {</b>
+&nbsp;                              // in fact, all tags should be checked to be ZNW:MRV:DE_, if so, then reject
+<b class="nc">&nbsp;                              System.out.println(o.toString());</b>
+<b class="nc">&nbsp;                              AnalyzedToken temp = new AnalyzedToken(word, eTag, front+eWord);</b>
+<b class="nc">&nbsp;                              l.add( new AnalyzedToken(word, eTag, front+&quot;-&quot;+eWord) );</b>
+<b class="nc">&nbsp;                              l.add (new AnalyzedToken(word, &quot;LIKELY_SPELLING&quot;, word));</b>
+<b class="nc">&nbsp;                              ignoreSpelling=true;</b>
+&nbsp;                            }
+&nbsp;                          }
+&nbsp;                        }
+&nbsp;                      }
+&nbsp;                    }
+&nbsp;                  }
+&nbsp;                }
+&nbsp;              }
+&nbsp;            }
+&nbsp;          }
+&nbsp;        }
+&nbsp;        // ********* END OF UNCOMPOUNDER CODE *************** //
+&nbsp;      }
+&nbsp;
+&nbsp;      // set word to original
+<b class="nc">&nbsp;      word = originalWord;</b>
+&nbsp;
+<b class="nc">&nbsp;      if (l.isEmpty()) {</b>
+<b class="nc">&nbsp;        l.add(new AnalyzedToken(originalWord, null, null));</b>
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      AnalyzedTokenReadings atr = new AnalyzedTokenReadings(l, pos);</b>
+<b class="nc">&nbsp;      if (ignoreSpelling) {</b>
+&nbsp;        // it might be a word that needs captials! Check this in dictionary
+<b class="nc">&nbsp;        if (isLowercase) {</b>
+<b class="nc">&nbsp;          List&lt;AnalyzedToken&gt; fu = asAnalyzedTokenListForTaggedWords(StringTools.uppercaseFirstChar(originalWord), getWordTagger().tag(StringTools.uppercaseFirstChar(originalWord)));</b>
+<b class="nc">&nbsp;          if (fu.isEmpty()) {</b>
+&nbsp;            // does not exist in dictionary having firstupper
+<b class="nc">&nbsp;            atr.ignoreSpelling();</b>
+&nbsp;          } else {
+&nbsp;            // there is an uppercased form in the dictionary; so this one is probably wrong
+&nbsp;            //System.out.println(&quot;=&gt;&quot;+l.toString());
+&nbsp;            // TODO clearing the l list does not work here; the &#39;LIKELY_SPELLING&#39; tag should be removed! But somehow, this does not work when done here.
+<b class="nc">&nbsp;            l.clear();</b>
+<b class="nc">&nbsp;            l.add(new AnalyzedToken(originalWord, null, null));</b>
+&nbsp;            //System.out.println(&quot;=&gt;&quot;+l.toString());
+&nbsp;          }
+<b class="nc">&nbsp;        } else {</b>
+<b class="nc">&nbsp;            atr.ignoreSpelling();</b>
+&nbsp;        }
+&nbsp;      }
+&nbsp;
+<b class="nc">&nbsp;      tokenReadings.add(atr);</b>
+&nbsp;      
+<b class="nc">&nbsp;      pos += word.length();</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;    
+<b class="nc">&nbsp;    return tokenReadings;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void addTokens(final List&lt;AnalyzedToken&gt; taggedTokens, final List&lt;AnalyzedToken&gt; l) {
+<b class="nc">&nbsp;    if (taggedTokens != null) {</b>
+<b class="nc">&nbsp;      l.addAll(taggedTokens);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>

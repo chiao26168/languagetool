@@ -1,0 +1,400 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Spanish</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">org.languagetool.language</a>
+</div>
+
+<h1>Coverage Summary for Class: Spanish (org.languagetool.language)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Spanish</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/234)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/97)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/* LanguageTool, a natural language style checker
+&nbsp; * Copyright (C) 2007 Daniel Naber (http://www.danielnaber.de)
+&nbsp; *
+&nbsp; * This library is free software; you can redistribute it and/or
+&nbsp; * modify it under the terms of the GNU Lesser General Public
+&nbsp; * License as published by the Free Software Foundation; either
+&nbsp; * version 2.1 of the License, or (at your option) any later version.
+&nbsp; *
+&nbsp; * This library is distributed in the hope that it will be useful,
+&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+&nbsp; * Lesser General Public License for more details.
+&nbsp; *
+&nbsp; * You should have received a copy of the GNU Lesser General Public
+&nbsp; * License along with this library; if not, write to the Free Software
+&nbsp; * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
+&nbsp; * USA
+&nbsp; */
+&nbsp;package org.languagetool.language;
+&nbsp;
+&nbsp;import org.jetbrains.annotations.NotNull;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.languagetool.*;
+&nbsp;import org.languagetool.languagemodel.LanguageModel;
+&nbsp;import org.languagetool.rules.*;
+&nbsp;import org.languagetool.rules.es.*;
+&nbsp;import org.languagetool.rules.spelling.SpellingCheckRule;
+&nbsp;import org.languagetool.synthesis.Synthesizer;
+&nbsp;import org.languagetool.synthesis.es.SpanishSynthesizer;
+&nbsp;import org.languagetool.tagging.Tagger;
+&nbsp;import org.languagetool.tagging.disambiguation.Disambiguator;
+&nbsp;import org.languagetool.tagging.disambiguation.es.SpanishHybridDisambiguator;
+&nbsp;import org.languagetool.tagging.es.SpanishTagger;
+&nbsp;import org.languagetool.tokenizers.*;
+&nbsp;import org.languagetool.tokenizers.es.SpanishWordTokenizer;
+&nbsp;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.*;
+&nbsp;import java.util.regex.Matcher;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;
+<b class="nc">&nbsp;public class Spanish extends Language implements AutoCloseable {</b>
+&nbsp;
+<b class="nc">&nbsp;  private static final Language DEFAULT_VARIANT = new Spanish();</b>
+&nbsp;  
+&nbsp;  private LanguageModel languageModel;
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getName() {
+<b class="nc">&nbsp;    return &quot;Spanish&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String getShortCode() {
+<b class="nc">&nbsp;    return &quot;es&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public String[] getCountries() {
+<b class="nc">&nbsp;    return new String[]{</b>
+&nbsp;            &quot;ES&quot;, &quot;&quot;, &quot;MX&quot;, &quot;GT&quot;, &quot;CR&quot;, &quot;PA&quot;, &quot;DO&quot;,
+&nbsp;            &quot;VE&quot;, &quot;PE&quot;, &quot;AR&quot;, &quot;EC&quot;, &quot;CL&quot;, &quot;UY&quot;, &quot;PY&quot;,
+&nbsp;            &quot;BO&quot;, &quot;SV&quot;, &quot;HN&quot;, &quot;NI&quot;, &quot;PR&quot;, &quot;US&quot;, &quot;CU&quot;
+&nbsp;    };
+&nbsp;  }
+&nbsp;  
+&nbsp;  public Language getDefaultLanguageVariant() {
+<b class="nc">&nbsp;    return DEFAULT_VARIANT;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @NotNull
+&nbsp;  @Override
+&nbsp;  public Tagger createDefaultTagger() {
+<b class="nc">&nbsp;    return SpanishTagger.INSTANCE;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Disambiguator createDefaultDisambiguator() {
+<b class="nc">&nbsp;    return new SpanishHybridDisambiguator();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Tokenizer createDefaultWordTokenizer() {
+<b class="nc">&nbsp;    return new SpanishWordTokenizer();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Nullable
+&nbsp;  @Override
+&nbsp;  public Synthesizer createDefaultSynthesizer() {
+<b class="nc">&nbsp;    return SpanishSynthesizer.INSTANCE;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public SentenceTokenizer createDefaultSentenceTokenizer() {
+<b class="nc">&nbsp;    return new SRXSentenceTokenizer(this);</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  @Override
+&nbsp;  public Contributor[] getMaintainers() {
+<b class="nc">&nbsp;    return new Contributor[] {</b>
+&nbsp;            new Contributor(&quot;Jaume Ortolà&quot;)
+&nbsp;    };
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public SpellingCheckRule createDefaultSpellingRule(ResourceBundle messages) throws IOException {
+<b class="nc">&nbsp;    return new MorfologikSpanishSpellerRule(messages, this, null, Collections.emptyList());</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public List&lt;Rule&gt; getRelevantRules(ResourceBundle messages, UserConfig userConfig, Language motherTongue, List&lt;Language&gt; altLanguages) throws IOException {
+<b class="nc">&nbsp;    return Arrays.asList(</b>
+&nbsp;            new CommaWhitespaceRule(messages,
+<b class="nc">&nbsp;                Example.wrong(&quot;En su opinión&lt;marker&gt; ,&lt;/marker&gt; no era verdad.&quot;),</b>
+<b class="nc">&nbsp;                Example.fixed(&quot;En su opinión&lt;marker&gt;,&lt;/marker&gt; no era verdad.&quot;)),</b>
+&nbsp;            new DoublePunctuationRule(messages),
+&nbsp;            new SpanishUnpairedBracketsRule(messages),
+&nbsp;            new QuestionMarkRule(messages),
+&nbsp;            new MorfologikSpanishSpellerRule(messages, this, userConfig, altLanguages),
+&nbsp;            new UppercaseSentenceStartRule(messages, this, 
+<b class="nc">&nbsp;                Example.wrong(&quot;Venta al público. &lt;marker&gt;ha&lt;/marker&gt; subido mucho.&quot;),</b>
+<b class="nc">&nbsp;                Example.fixed(&quot;Venta al público. &lt;marker&gt;Ha&lt;/marker&gt; subido mucho.&quot;)),</b>
+&nbsp;            new SpanishWordRepeatRule(messages, this),
+&nbsp;            new MultipleWhitespaceRule(messages, this),
+&nbsp;            new SpanishWikipediaRule(messages),
+&nbsp;            new SpanishWrongWordInContextRule(messages),
+&nbsp;            new LongSentenceRule(messages, userConfig, 60),
+&nbsp;            new LongParagraphRule(messages, this, userConfig),
+&nbsp;            new SimpleReplaceRule(messages),
+&nbsp;            new SimpleReplaceVerbsRule(messages, this),
+&nbsp;            new SpanishWordRepeatBeginningRule(messages, this),
+&nbsp;            new CompoundRule(messages, this, userConfig),
+&nbsp;            new SpanishRepeatedWordsRule(messages)
+&nbsp;    );
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 3.1 */
+&nbsp;  @Override
+&nbsp;  public synchronized LanguageModel getLanguageModel(File indexDir) throws IOException {
+<b class="nc">&nbsp;    languageModel = initLanguageModel(indexDir, languageModel);</b>
+<b class="nc">&nbsp;    return languageModel;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 3.1 */
+&nbsp;  @Override
+&nbsp;  public List&lt;Rule&gt; getRelevantLanguageModelRules(ResourceBundle messages, LanguageModel languageModel, UserConfig userConfig) throws IOException {
+<b class="nc">&nbsp;    return Arrays.asList(</b>
+&nbsp;            new SpanishConfusionProbabilityRule(messages, languageModel, this)
+&nbsp;    );
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** @since 5.1 */
+&nbsp;  public String getOpeningDoubleQuote() {
+<b class="nc">&nbsp;    return &quot;«&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 5.1 */
+&nbsp;  public String getClosingDoubleQuote() {
+<b class="nc">&nbsp;    return &quot;»&quot;;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getOpeningSingleQuote() {
+<b class="nc">&nbsp;    return &quot;‘&quot;;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public String getClosingSingleQuote() {
+<b class="nc">&nbsp;    return &quot;’&quot;;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  /** @since 5.1 */
+&nbsp;  @Override
+&nbsp;  public boolean isAdvancedTypographyEnabled() {
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  /**
+&nbsp;   * Closes the language model, if any. 
+&nbsp;   * @since 3.1
+&nbsp;   */
+&nbsp;  @Override
+&nbsp;  public void close() throws Exception {
+<b class="nc">&nbsp;    if (languageModel != null) {</b>
+<b class="nc">&nbsp;      languageModel.close();</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public LanguageMaintainedState getMaintainedState() {
+<b class="nc">&nbsp;    return LanguageMaintainedState.ActivelyMaintained;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  @Override
+&nbsp;  protected int getPriorityForId(String id) {
+<b class="nc">&nbsp;    if (id.startsWith(&quot;ES_SIMPLE_REPLACE&quot;)) {</b>
+<b class="nc">&nbsp;      id = &quot;ES_SIMPLE_REPLACE&quot;;</b>
+&nbsp;    }
+<b class="nc">&nbsp;    switch (id) {</b>
+<b class="nc">&nbsp;      case &quot;ES_COMPOUNDS&quot;: return 50;</b>
+<b class="nc">&nbsp;      case &quot;CONFUSIONS2&quot;: return 50; // greater than CONFUSIONS</b>
+<b class="nc">&nbsp;      case &quot;RARE_WORDS&quot;: return 50;</b>
+<b class="nc">&nbsp;      case &quot;LOS_MAPUCHE&quot;: return 50;</b>
+<b class="nc">&nbsp;      case &quot;TE_TILDE&quot;: return 50;</b>
+<b class="nc">&nbsp;      case &quot;DE_TILDE&quot;: return 50; // greater than CONTRACCIONES</b>
+<b class="nc">&nbsp;      case &quot;PLURAL_SEPARADO&quot;: return 50;</b>
+<b class="nc">&nbsp;      case &quot;PERSONAJES_FAMOSOS&quot;: return 50;</b>
+<b class="nc">&nbsp;      case &quot;INCORRECT_EXPRESSIONS&quot;: return 40;</b>
+<b class="nc">&nbsp;      case &quot;MISSPELLING&quot;: return 40;  </b>
+<b class="nc">&nbsp;      case &quot;CONFUSIONS&quot;: return 40;</b>
+<b class="nc">&nbsp;      case &quot;NO_SEPARADO&quot;: return 40;</b>
+<b class="nc">&nbsp;      case &quot;PARTICIPIO_MS&quot;: return 40;</b>
+<b class="nc">&nbsp;      case &quot;VERBO_MODAL_INFINITIVO&quot;: return 40; // greater than DIACRITICS</b>
+<b class="nc">&nbsp;      case &quot;EL_NO_TILDE&quot;: return 40; // greater than SE_CREO</b>
+<b class="nc">&nbsp;      case &quot;SE_CREO&quot;: return 35; // greater than DIACRITICS --&gt; or less than DIACRITICS_VERB_N_ADJ ????</b>
+<b class="nc">&nbsp;      case &quot;DIACRITICS&quot;: return 30;</b>
+<b class="nc">&nbsp;      case &quot;POR_CIERTO&quot;: return 30;</b>
+<b class="nc">&nbsp;      case &quot;DEGREE_CHAR&quot;: return 30; // greater than SPACE_UNITIES</b>
+<b class="nc">&nbsp;      case &quot;LO_LOS&quot;: return 30;</b>
+<b class="nc">&nbsp;      case &quot;ES_SIMPLE_REPLACE&quot;: return 30; // greater than typography rules</b>
+<b class="nc">&nbsp;      case &quot;ETCETERA&quot;: return 30; // greater than other typography rules</b>
+<b class="nc">&nbsp;      case &quot;P_EJ&quot;: return 30; // greater than other typography rules</b>
+&nbsp;      //case &quot;ESPACIO_DESPUES_DE_PUNTO&quot;: return 25; // greater than other typography rules
+<b class="nc">&nbsp;      case &quot;AGREEMENT_ADJ_NOUN_AREA&quot;: return 30; // greater than AGREEMENT_DET_NOUN</b>
+<b class="nc">&nbsp;      case &quot;PRONOMBRE_SIN_VERBO&quot;: return 25; // inside CONFUSIONS, but less than other rules ?</b>
+<b class="nc">&nbsp;      case &quot;AGREEMENT_DET_ABREV&quot;: return 25; // greater than AGREEMENT_DET_NOUN</b>
+<b class="nc">&nbsp;      case &quot;MUCHO_NF&quot;: return 25; // greater than AGREEMENT_DET_NOUN</b>
+<b class="nc">&nbsp;      case &quot;AGREEMENT_DET_NOUN_EXCEPTIONS&quot;: return 25; // greater than AGREEMENT_DET_NOUN</b>
+<b class="nc">&nbsp;      case &quot;TYPOGRAPHY&quot;: return 20; // greater than AGREEMENT_DET_NOUN</b>
+<b class="nc">&nbsp;      case &quot;AGREEMENT_DET_NOUN&quot;: return 15;</b>
+&nbsp;      //case &quot;PRONOMBRE_SIN_VERBO&quot;: return 20;
+<b class="nc">&nbsp;      case &quot;AGREEMENT_DET_ADJ&quot;: return 10;</b>
+<b class="nc">&nbsp;      case &quot;HALLA_HAYA&quot;: return 10;</b>
+<b class="nc">&nbsp;      case &quot;VALLA_VAYA&quot;: return 10;</b>
+<b class="nc">&nbsp;      case &quot;SI_AFIRMACION&quot;: return 10; // less than DIACRITICS</b>
+<b class="nc">&nbsp;      case &quot;TE_TILDE2&quot;: return 10; // less than PRONOMBRE_SIN_VERBO</b>
+<b class="nc">&nbsp;      case &quot;SEPARADO&quot;: return 1;</b>
+<b class="nc">&nbsp;      case &quot;ES_SPLIT_WORDS&quot;: return -10; </b>
+<b class="nc">&nbsp;      case &quot;E_EL&quot;: return -10;</b>
+<b class="nc">&nbsp;      case &quot;EL_TILDE&quot;: return -10;</b>
+<b class="nc">&nbsp;      case &quot;SINGLE_CHARACTER&quot;: return -15; // less than ES_SPLIT_WORDS</b>
+<b class="nc">&nbsp;      case &quot;TOO_LONG_PARAGRAPH&quot;: return -15;</b>
+<b class="nc">&nbsp;      case &quot;PREP_VERB&quot;: return -20;</b>
+<b class="nc">&nbsp;      case &quot;SUBJUNTIVO_FUTURO&quot;: return -30;</b>
+<b class="nc">&nbsp;      case &quot;SUBJUNTIVO_PASADO&quot;: return -30;</b>
+<b class="nc">&nbsp;      case &quot;SUBJUNTIVO_PASADO2&quot;: return -30;</b>
+<b class="nc">&nbsp;      case &quot;AGREEMENT_ADJ_NOUN&quot;: return -30;</b>
+<b class="nc">&nbsp;      case &quot;AGREEMENT_PARTICIPLE_NOUN&quot;: return -30;</b>
+<b class="nc">&nbsp;      case &quot;AGREEMENT_POSTPONED_ADJ&quot;: return -30;</b>
+<b class="nc">&nbsp;      case &quot;MULTI_ADJ&quot;: return -30;</b>
+<b class="nc">&nbsp;      case &quot;SUBJUNTIVO_INCORRECTO&quot;: return -40;</b>
+<b class="nc">&nbsp;      case &quot;COMMA_SINO&quot;: return -40;</b>
+<b class="nc">&nbsp;      case &quot;VOSEO&quot;: return -40;</b>
+<b class="nc">&nbsp;      case &quot;REPETITIONS_STYLE&quot;: return -50;</b>
+<b class="nc">&nbsp;      case &quot;MORFOLOGIK_RULE_ES&quot;: return -100;</b>
+<b class="nc">&nbsp;      case &quot;PHRASE_REPETITION&quot;: return -150;</b>
+<b class="nc">&nbsp;      case &quot;SPANISH_WORD_REPEAT_RULE&quot;: return -150;</b>
+<b class="nc">&nbsp;      case &quot;UPPERCASE_SENTENCE_START&quot;: return -200;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    if (id.startsWith(&quot;AI_ES_HYDRA_LEO&quot;)) { // prefer more specific rules (also speller)</b>
+<b class="nc">&nbsp;      return -101;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //STYLE is -50
+<b class="nc">&nbsp;    return super.getPriorityForId(id);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  public boolean hasMinMatchesRules() {
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;  
+<b class="nc">&nbsp;  private static final Pattern ES_CONTRACTIONS = Pattern.compile(&quot;\\b([Aa]|[Dd]e) e(l)\\b&quot;);</b>
+&nbsp;  
+&nbsp;  @Override
+&nbsp;  public String adaptSuggestion(String replacement) {
+<b class="nc">&nbsp;    Matcher m = ES_CONTRACTIONS.matcher(replacement);</b>
+<b class="nc">&nbsp;    String newReplacement = m.replaceAll(&quot;$1$2&quot;);</b>
+<b class="nc">&nbsp;    return newReplacement;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 19:41</div>
+</div>
+</body>
+</html>
